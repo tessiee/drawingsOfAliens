@@ -262,6 +262,7 @@ const eventsFilter = document.getElementById("events-filter");
 const filterContainer = document.getElementById("filter-container");
 const eventsList = document.getElementById("events-list");
 const eventsLoader = document.getElementById("events-loader");
+let maxEvents = 8;
 
 function getEvents() {
   fetch("events.json")
@@ -277,9 +278,9 @@ function getEvents() {
         <h2 class="event-title">${event.title}</h2>
         <p class="event-description">${event.description}</p>
         </div>
-        <div class="extra-info">
         <button class="open-info">&#128712;</button>
-        <p class="event-info hide-info"${event.info}</p>
+        <div class="extra-info">
+        <p class="event-info hide-info">${event.info}</p>
         </div>
         `;
         eventsList.appendChild(eventEl);
@@ -306,43 +307,43 @@ function filterEvents(e) {
 
 eventsFilter.addEventListener("input", filterEvents);
 
-//SCROLL AND FETCH
+// // SCROLL AND FETCH
 
-// let maxEvents = 6;
+function showEvents() {
+  let events = document.querySelectorAll(".event");
+  for (x = 0; x < maxEvents; x++) {
+    events.forEach(() => {
+      events.item(x).classList.remove("hide-event");
+    });
+  }
+  console.log(events);
+}
 
-// function showEvents() {
-//   for (x = 0; x < maxEvents; x++) {
-//     let events = document.querySelectorAll(".event");
-//     events.forEach(() => {
-//       events.item(x).classList.remove("hide-event");
-//       console.log(events);
-//     });
-//   }
-// }
-// showEvents();
+showEvents();
 
-// function showLoading() {
-//   eventsLoader.classList.add("show");
+function showLoading() {
+  eventsLoader.classList.add("show");
 
-//   setTimeout(() => {
-//     eventsLoader.classList.remove("show");
+  setTimeout(() => {
+    eventsLoader.classList.remove("show");
 
-//     setTimeout(() => {
-//       maxEvents += 3;
-//       showEvents();
-//     }, 100);
-//   }, 1000);
-// }
+    setTimeout(() => {
+      maxEvents += 4;
+      console.log(maxEvents);
+      showEvents();
+    }, 100);
+  }, 1000);
+}
 
-// eventsBox.addEventListener("scroll", () => {
-//   let scrollTop = eventsBox.scrollTop;
-//   let scrollHeight = eventsBox.scrollHeight;
-//   let clientHeight = eventsBox.clientHeight;
+eventsBox.addEventListener("scroll", () => {
+  let scrollTop = eventsBox.scrollTop;
+  let scrollHeight = eventsBox.scrollHeight;
+  let clientHeight = eventsBox.clientHeight;
 
-//   if (scrollTop + clientHeight >= scrollHeight) {
-//     showLoading();
-//   }
-// });
+  if (scrollTop + clientHeight >= scrollHeight) {
+    showLoading();
+  }
+});
 
 //GAMES GENERAL
 let gamePlayed;
@@ -535,7 +536,7 @@ const bullet = {
   y: canvas1.height,
   size: 2,
   speed: 2,
-  dx: 1,
+  dx: 3,
   dy: -2,
 };
 
@@ -543,7 +544,7 @@ const enemy = {
   x: canvas1.width / 2,
   y: canvas1.height,
   size: 6,
-  dx: 3,
+  dx: 2,
 };
 
 function drawEarth() {
@@ -838,11 +839,11 @@ function returnBullet() {
 }
 
 function resetBullet() {
-  (bullet.x = enemy.x), (bullet.y = enemy.y), (bullet.dx = 1), (bullet.dy = -2);
+  (bullet.x = enemy.x), (bullet.y = enemy.y), (bullet.dx = 3), (bullet.dy = -2);
 }
 
 function resetEnemy() {
-  (enemy.x = canvas1.width / 2), (enemy.y = canvas1.height - 5), (enemy.dx = 3);
+  (enemy.x = canvas1.width / 2), (enemy.y = canvas1.height - 5), (enemy.dx = 2);
 }
 
 function resetUFO() {
@@ -924,13 +925,24 @@ const spaceship = {
 };
 
 const evilAlien = {
-  x: canvas2.width / 2,
+  x: 200,
   y: -10,
   w: 60,
   h: 4,
   size: 3,
-  speed: 1,
-  dx: 2,
+  speed: 1.2,
+  dx: 2.5,
+  dy: 1.5,
+};
+
+const evilAlien2 = {
+  x: 100,
+  y: -10,
+  w: 60,
+  h: 4,
+  size: 3,
+  speed: 1.5,
+  dx: -2,
   dy: 1.5,
 };
 
@@ -1018,6 +1030,55 @@ function drawEvilAlien() {
   ctx2.closePath();
 }
 
+function drawEvilAlien2() {
+  ctx2.beginPath();
+  ctx2.arc(
+    evilAlien2.x,
+    evilAlien2.y,
+    evilAlien2.size,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  ctx2.fillStyle = "#FF0000";
+  ctx2.fill();
+  ctx2.closePath();
+
+  ctx2.beginPath();
+  ctx2.arc(evilAlien2.x - 1.5, evilAlien2.y, 1, -100, Math.PI - 0.5, true);
+  ctx2.arc(evilAlien2.x + 1.5, evilAlien2.y, 1, -100, Math.PI - 0.5, true);
+  ctx2.fillStyle = "#05db05";
+  ctx2.fill();
+  ctx2.closePath();
+
+  ctx2.beginPath();
+  ctx2.ellipse(evilAlien2.x, evilAlien2.y + 4, 10, 2, 0, 0, Math.PI * 2, true);
+  ctx2.fillStyle = "#05db05";
+  ctx2.fill();
+  ctx2.closePath();
+
+  ctx2.beginPath();
+  ctx2.arc(evilAlien2.x - 3, evilAlien2.y + 4.2, 1, -100, Math.PI - 0.5, true);
+  ctx2.arc(evilAlien2.x + 3, evilAlien2.y + 4.2, 1, -100, Math.PI - 0.5, true);
+  ctx2.fillStyle = "#FF0000";
+  ctx2.fill();
+  ctx2.closePath();
+
+  ctx2.beginPath();
+  ctx2.arc(evilAlien2.x - 7, evilAlien2.y + 4, 1, -100, Math.PI - 0.5, true);
+  ctx2.arc(evilAlien2.x + 7, evilAlien2.y + 4, 1, -100, Math.PI - 0.5, true);
+  ctx2.fillStyle = "#FF0000";
+  ctx2.fill();
+  ctx2.closePath();
+
+  ctx2.beginPath();
+  ctx2.arc(evilAlien2.x - 11, evilAlien2.y + 3.8, 1, -100, Math.PI - 0.5, true);
+  ctx2.arc(evilAlien2.x + 11, evilAlien2.y + 3.8, 1, -100, Math.PI - 0.5, true);
+  ctx2.fillStyle = "#FF0000";
+  ctx2.fill();
+  ctx2.closePath();
+}
+
 function drawScore2() {
   ctx2.fillStyle = "#FF0000";
   ctx2.fillText(`Score: ${score2}`, canvas2.width - 55, 10);
@@ -1053,8 +1114,11 @@ function moveEvilAlien() {
   evilAlien.x += evilAlien.dx * evilAlien.speed;
   evilAlien.y += evilAlien.dy * evilAlien.speed;
 
-  if (evilAlien.x > canvas2.width || evilAlien.x < 0) {
-    evilAlien.dx *= -1;
+  if (evilAlien.dx > 5 || evilAlien.dx < -5) {
+    evilAlien.dx *= 0.8;
+  }
+  if (evilAlien.x + 10 > canvas2.width || evilAlien.x - 10 < 0) {
+    evilAlien.dx *= -1.1;
   }
   if (evilAlien.y < -10 || evilAlien.y > canvas2.height) {
     returnEvilAlien();
@@ -1064,14 +1128,46 @@ function moveEvilAlien() {
 }
 
 function returnEvilAlien() {
-  (evilAlien.x = canvas2.width / 2), (evilAlien.y = -10), evilAlien.dx * -1;
+  (evilAlien.x = canvas2.width / 2), (evilAlien.y = -10), evilAlien.dx * -1.1;
   evilAlien.dy = 1.5;
 }
 
 function resetEvilAlien() {
-  (evilAlien.x = canvas2.width / 2), (evilAlien.y = -10), (evilAlien.dx = 2);
+  (evilAlien.x = canvas2.width / 2), (evilAlien.y = -10), (evilAlien.dx = 2.5);
   evilAlien.dy = 1.5;
-  evilAlien.speed = 1;
+  evilAlien.speed = 1.2;
+}
+
+function moveEvilAlien2() {
+  evilAlien2.x += evilAlien2.dx * evilAlien2.speed;
+  evilAlien2.y += evilAlien2.dy * evilAlien2.speed;
+
+  if (evilAlien2.dx > 4.5 || evilAlien2.dx < -4.5) {
+    evilAlien2.dx *= 0.8;
+  }
+  if (evilAlien2.x + 10 > canvas2.width || evilAlien2.x - 10 < 0) {
+    evilAlien2.dx *= -1.15;
+  }
+  if (evilAlien2.y < -10 || evilAlien2.y > canvas2.height) {
+    returnEvilAlien2();
+    scorePoints2();
+    speedUp2();
+  }
+}
+
+function returnEvilAlien2() {
+  (evilAlien2.x = canvas2.width / 2),
+    (evilAlien2.y = -10),
+    evilAlien2.dx * -1.05;
+  evilAlien2.dy = 1.5;
+}
+
+function resetEvilAlien2() {
+  (evilAlien2.x = canvas2.width / 2),
+    (evilAlien2.y = -10),
+    (evilAlien2.dx = -2);
+  evilAlien2.dy = 1.5;
+  evilAlien2.speed = 1.5;
 }
 
 function speedUp2() {
@@ -1099,7 +1195,8 @@ function speedUp2() {
   }
 
   if (x == 5 || x == 15 || x == 25 || x == 35 || x == 45 || x == 55) {
-    evilAlien.speed *= 1.2;
+    evilAlien.speed *= 1.1;
+    evilAlien2.speed *= 1.1;
   }
 }
 
@@ -1109,6 +1206,13 @@ function gameOver2() {
     evilAlien.x + evilAlien.size < spaceship.x + 18 &&
     evilAlien.y + evilAlien.size > spaceship.y - 3 &&
     evilAlien.y - evilAlien.size < spaceship.y + 3 + spaceship.h * 2
+  ) {
+    resetGame2();
+  } else if (
+    evilAlien2.x - evilAlien2.size > spaceship.x - 10 &&
+    evilAlien2.x + evilAlien2.size < spaceship.x + 18 &&
+    evilAlien2.y + evilAlien2.size > spaceship.y - 3 &&
+    evilAlien2.y - evilAlien2.size < spaceship.y + 3 + spaceship.h * 2
   ) {
     resetGame2();
   }
@@ -1130,6 +1234,7 @@ function drawGame2Elements() {
   emptyCanvas2();
   drawSpaceship();
   drawEvilAlien();
+  drawEvilAlien2();
   drawScore2();
 }
 
@@ -1137,6 +1242,7 @@ function game2Action() {
   drawGame2Elements();
   moveSpaceship();
   moveEvilAlien();
+  moveEvilAlien2();
   gameOver2();
   requestIdGame2 = requestAnimationFrame(game2Action);
 }
@@ -1144,6 +1250,7 @@ function game2Action() {
 function resetGame2() {
   emptyCanvas2();
   resetEvilAlien();
+  resetEvilAlien2();
   resetSpaceship();
   resetScore2();
   cancelAnimationFrame(requestIdGame2);

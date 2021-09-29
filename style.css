@@ -1,0 +1,946 @@
+:root {
+  --dark-alien: rgb(4, 31, 0);
+  --alien-colour: rgb(5, 219, 5);
+  --light-alien: rgb(1, 92, 1);
+  --highlighted-alien: rgb(133, 240, 133);
+  --blood-red: rgb(168, 0, 0);
+  --highlighted-blood: rgb(255, 41, 41);
+}
+
+@font-face {
+  font-family: HarlowSolid;
+  src: url(Harlow\ Solid\ Regular.ttf);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: black;
+  color: red;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 18px;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+  position: relative;
+}
+
+hr.hr-1 {
+  border: 1px solid red;
+  margin-top: 10px;
+}
+
+hr.hr-2 {
+  border: 1px solid red;
+  margin-bottom: 10px;
+}
+
+.stop-scrolling {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* SIDEBAR OPEN BUTTON */
+
+.openSidebar {
+  background-color: var(--alien-colour);
+  border-radius: 7px;
+  position: fixed;
+  top: 140px;
+  left: -10px;
+  width: 213px;
+  height: 160px;
+  z-index: 2;
+}
+
+.openSidebar:hover {
+  cursor: pointer;
+}
+
+.openSidebar .open {
+  transform: rotate(270deg);
+  position: absolute;
+  color: black;
+  font-size: 160%;
+  right: -25%;
+  top: 38%;
+}
+
+/* SIDEBAR */
+
+.hideSidebar {
+  transform: translateX(-78%);
+}
+
+.hideSidebarButton {
+  transform: translateX(-66%);
+}
+
+#sidebar.highlighted {
+  border-style: solid;
+  box-shadow: 0 2px 10px var(--light-alien);
+}
+
+.sidebar {
+  background-color: black;
+  border: 8px double var(--alien-colour);
+  border-radius: 8px;
+  position: fixed;
+  top: 75px;
+  left: -10px;
+  width: 180px;
+  height: 510px;
+  z-index: 2;
+  box-shadow: 0 2px 10px rgb(0, 0, 0);
+}
+
+.sidebar .logo {
+  padding: 30px 0;
+  text-align: center;
+}
+
+.sidebar .logo img {
+  height: 120px;
+  width: 120px;
+  border-radius: 50%;
+  border: 6px double red;
+}
+
+.sidebar ul {
+  padding: 0;
+  list-style-type: none;
+  margin: 0;
+}
+
+.sidebar ul li {
+  padding: 5px;
+}
+
+.sidebar ul li a {
+  color: var(--alien-colour);
+  text-decoration: none;
+}
+
+.sidebar ul li a:hover {
+  text-shadow: 0 2px 10px rgb(0, 161, 0);
+}
+
+.sidebar ul li a.exclusive {
+  color: red;
+  font-family: HarlowSolid;
+  font-size: 23px;
+}
+
+.sidebar ul li a.exclusive:hover {
+  text-shadow: 0 2px 10px rgb(200, 0, 0);
+}
+
+/* BOXES WITH DRAWINGS  -------- CLOSE BUTTON NOG AANPASSEN*/
+
+.drawingsContainer {
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  position: fixed;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 1;
+}
+
+.drawingsBox {
+  position: absolute;
+  transform: translateX(-50%) translateY(5%);
+  top: 5%;
+  left: 50%;
+  width: 600px;
+  height: 500px;
+  background-color: black;
+  border: 2px solid var(--alien-colour);
+  border-radius: 15px;
+  z-index: 2;
+}
+
+.hide-box {
+  display: none;
+}
+
+.drawings {
+  position: absolute;
+  transform: translateX(-50%);
+  left: 50%;
+  width: 550px;
+  height: 495px;
+  border: none;
+  z-index: 2;
+}
+
+.drawings h2 {
+  padding-block: 30px;
+}
+
+.drawings p {
+  text-align: center;
+}
+
+.hideDrawings {
+  display: none;
+}
+
+.closeDrawings {
+  position: fixed;
+  top: 4px;
+  right: -17px;
+  background-color: black;
+  border: 3px double var(--alien-colour);
+  border-radius: 30%;
+  font-size: 80%;
+  color: var(--alien-colour);
+  z-index: 3;
+  cursor: pointer;
+}
+
+.closeDrawings:hover {
+  border-style: solid;
+  text-shadow: 0 2px 10px var(--alien-colour);
+}
+
+.hideCloseBtn {
+  display: none;
+}
+
+/* HEADER */
+
+header {
+  position: relative;
+}
+
+header h1 {
+  color: var(--alien-colour);
+  font-family: HarlowSolid;
+  font-size: 55px;
+}
+
+/* INTRO */
+
+.intro-container {
+  position: relative;
+  padding-bottom: 80px;
+  align-items: center;
+}
+
+.intro {
+  padding-top: 5px;
+}
+
+.startpic {
+  height: 300px;
+  width: 500px;
+  padding: 0px;
+  border: 2px solid var(--dark-alien);
+}
+
+.openReg2 {
+  color: var(--alien-colour);
+}
+
+.openReg2:hover {
+  text-shadow: 0 2px 10px var(--light-alien);
+  cursor: pointer;
+}
+
+/*LOG IN BUTTON */
+
+.openLogin {
+  position: fixed;
+  top: 8px;
+  right: 165px;
+  padding: 4px;
+  padding-top: 2px;
+  background-color: black;
+  border: 3px double red;
+  border-radius: 7px;
+  font-size: 19px;
+  font-family: HarlowSolid;
+  font-weight: bold;
+  color: red;
+  cursor: pointer;
+  z-index: 3;
+}
+
+.openLogin:hover {
+  border-style: solid;
+  box-shadow: 0 2px 10px var(--blood-red);
+}
+
+/* LOG IN FORM */
+
+.hideLogin {
+  display: none;
+}
+
+.login-container {
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  position: fixed;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 2;
+}
+
+.loginBox {
+  width: 280px;
+  height: 220px;
+  align-items: center;
+  background-color: black;
+  border: 3px solid red;
+  border-radius: 14px;
+  position: fixed;
+  z-index: 2;
+  top: 47px;
+  right: 40px;
+}
+
+.closeLogin {
+  color: red;
+  font-size: 100%;
+  background-color: transparent;
+  border-style: hidden;
+  cursor: pointer;
+  position: absolute;
+  right: 2%;
+  top: 0.5%;
+}
+
+.closeLogin:hover {
+  cursor: pointer;
+}
+
+.loginForm {
+  padding: 10px 20px;
+}
+
+.loginForm h2 {
+  padding-bottom: 5px;
+  color: red;
+}
+
+.loginFormField label {
+  color: red;
+  display: block;
+  text-align: left;
+  font-weight: bold;
+}
+
+.loginFormField input {
+  width: 200px;
+  background-color: black;
+  border: 2px solid rgb(90, 0, 0);
+  color: var(--highlighted-blood);
+  font-weight: bold;
+}
+
+.loginFormField input::placeholder {
+  color: var(--blood-red);
+}
+
+.loginFormField input:focus {
+  outline: 0;
+  border-color: var(--blood-red);
+}
+
+.loginField.error input {
+  border-color: var(--blood-red);
+}
+
+.loginFormField.error small {
+  visibility: visible;
+}
+
+.loginFormField small {
+  visibility: hidden;
+  color: red;
+}
+
+.loginFormField .far {
+  margin-left: -25px;
+  transform: translateX(-50%);
+  cursor: pointer;
+  font-size: 70%;
+  color: red;
+}
+
+/* SUBMIT LOGIN BUTTON */
+
+.loginUser {
+  margin-top: 20px;
+  padding: 4px;
+  padding-top: 2px;
+  background-color: transparent;
+  border: 3px double red;
+  border-radius: 7px;
+  font-size: 14px;
+  font-weight: bold;
+  color: red;
+  cursor: pointer;
+}
+
+.loginUser:hover {
+  border-style: solid;
+}
+
+/* LOGIN HELP BUTTON */
+
+.helpUser {
+  margin-top: 20px;
+  padding: 4px;
+  padding-top: 2px;
+  background-color: transparent;
+  border: 3px double red;
+  border-radius: 7px;
+  font-size: 14px;
+  font-weight: bold;
+  color: red;
+  cursor: pointer;
+}
+
+.helpUser:hover {
+  border-style: solid;
+}
+
+/* REGISTRATION FORM BUTTON */
+
+.openReg {
+  position: fixed;
+  top: 8px;
+  right: 40px;
+  padding: 4px;
+  padding-top: 2px;
+  background-color: black;
+  border: 3px double var(--alien-colour);
+  border-radius: 7px;
+  font-size: 19px;
+  font-family: HarlowSolid;
+  font-weight: bold;
+  color: var(--alien-colour);
+  cursor: pointer;
+  z-index: 3;
+}
+
+.openReg:hover {
+  border-style: solid;
+  box-shadow: 0 2px 10px var(--light-alien);
+}
+
+/* REGISTRATION FORM */
+
+.hideReg {
+  display: none;
+}
+
+.registrationBox {
+  width: 350px;
+  height: fit-content;
+  align-items: center;
+  background-color: black;
+  border: 3px solid var(--alien-colour);
+  border-radius: 14px;
+  position: fixed;
+  z-index: 3;
+  box-shadow: 0 2px 10px var(--light-alien);
+}
+
+.position-button {
+  top: 47px;
+  right: 40px;
+}
+
+.position-text {
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+}
+
+.reg-container {
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  position: fixed;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 2;
+}
+
+.closeReg {
+  color: var(--alien-colour);
+  font-size: 100%;
+  background-color: transparent;
+  border-style: hidden;
+  cursor: pointer;
+  position: absolute;
+  right: 2%;
+  top: 0.5%;
+}
+
+.closeReg:hover {
+  cursor: pointer;
+}
+
+.registerForm {
+  padding: 20px 20px;
+}
+
+.registerForm h2 {
+  padding-bottom: 10px;
+  color: red;
+}
+
+/* FIELDS + ERRORS */
+
+.registerFormField label {
+  color: var(--alien-colour);
+  display: block;
+  text-align: left;
+  font-weight: bold;
+}
+
+.registerFormField input {
+  width: 250px;
+  background-color: black;
+  border: 2px solid var(--dark-alien);
+  color: var(--highlighted-alien);
+}
+
+.registerFormField input::placeholder {
+  color: var(--light-alien);
+}
+
+.registerFormField input:focus {
+  outline: 0;
+  border-color: var(--light-alien);
+}
+
+.registerFormField.error input {
+  border-color: var(--alien-colour);
+}
+
+.registerFormField.error small {
+  visibility: visible;
+}
+
+.registerFormField small {
+  visibility: hidden;
+  color: red;
+}
+
+.registerFormField i.far {
+  position: absolute;
+  transform: translateX(-150%) translateY(45%);
+  cursor: pointer;
+  font-size: 70%;
+  color: var(--alien-colour);
+}
+
+/* SUBMIT REGISTER BUTTON */
+
+.regSubmit {
+  margin-top: 20px;
+  padding: 4px;
+  padding-top: 2px;
+  background-color: transparent;
+  border: 3px double var(--alien-colour);
+  border-radius: 7px;
+  font-size: 15px;
+  color: var(--alien-colour);
+  cursor: pointer;
+}
+
+.regSubmit:hover {
+  border-style: solid;
+}
+
+.signUp {
+  position: absolute;
+  left: 50%;
+  bottom: 18%;
+  transform: translateX(-50%);
+  color: var(--highlighted-alien);
+  display: none;
+}
+
+.signUpSuccessful {
+  display: contents;
+}
+
+/* BOX WITH EVENTS */
+
+.events-container {
+  position: relative;
+  align-items: center;
+  width: 650px;
+  height: 530px;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 90px;
+  background-color: black;
+}
+
+.events-container h1 {
+  color: var(--alien-colour);
+  font-size: 30px;
+  margin-bottom: 15px;
+}
+
+.events-container h2 {
+  color: var(--alien-colour);
+  font-size: 20px;
+}
+
+.events-box {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 400px;
+  margin-top: 20px;
+  background-color: black;
+  border: 3px double var(--alien-colour);
+  border-radius: 15px;
+}
+
+.events-box::-webkit-scrollbar {
+  width: 15px;
+  border: hidden;
+}
+
+.events-box::-webkit-scrollbar-track {
+  background-color: transparent;
+  border-radius: 50px;
+}
+
+.events-box::-webkit-scrollbar-thumb {
+  background: var(--light-alien);
+  box-shadow: inset 0 0 6px var(--alien-colour);
+  border-radius: 8px;
+}
+
+.filter-container {
+  position: absolute;
+  top: 8%;
+  right: 28%;
+  width: 50px;
+}
+
+.filter-container ::placeholder {
+  color: rgb(168, 0, 0);
+}
+
+.filter-container input {
+  padding-right: 8px;
+  text-align: right;
+}
+
+.filter-container input:focus {
+  outline: 0;
+}
+
+.events-filter {
+  border-radius: 15px;
+  border: 3px double var(--alien-colour);
+  background-color: transparent;
+  font-size: 15px;
+  color: red;
+}
+
+.events-filter:hover {
+  border-style: solid;
+}
+
+.events-list {
+  margin-top: 10px;
+}
+
+.event.hide-event {
+  visibility: hidden;
+}
+
+.event {
+  position: relative;
+  margin: 8px 6px;
+  border: 2px solid red;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(255, 0, 0, 0.6);
+  display: flex;
+  padding: 2px 3px;
+  align-items: center;
+  color: var(--alien-colour);
+}
+
+.event .date {
+  width: 120px;
+}
+
+.event h2 {
+  text-align: left;
+  padding-left: 10px;
+}
+
+.event .event-body {
+  width: 480px;
+  height: fit-content;
+}
+
+.event-info.hide-info {
+  display: none;
+}
+
+.event .open-info {
+  color: var(--alien-colour);
+  font-size: 100%;
+  background-color: transparent;
+  border-style: hidden;
+  cursor: pointer;
+  position: absolute;
+  right: 2%;
+  top: 0.5%;
+}
+
+.event p {
+  text-align: left;
+  padding-left: 10px;
+  color: red;
+}
+
+.events-loader {
+  opacity: 0;
+  display: flex;
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: opacity 0.3s ease-in;
+}
+
+.events-loader.show {
+  opacity: 1;
+}
+
+.circle {
+  background-color: var(--alien-colour);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin: 5px;
+  animation: bounce 0.5s ease-in infinite;
+}
+
+.circle:nth-of-type(2) {
+  animation-delay: 0.1s;
+}
+
+.circle:nth-of-type(3) {
+  animation-delay: 0.2s;
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(8px);
+  }
+}
+
+/* BOX WITH GAME */
+
+.gameBox {
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-block: 20px;
+  height: 1350px;
+  width: 650px;
+}
+
+.gameBox h1 {
+  color: var(--alien-colour);
+  font-size: 35px;
+}
+
+.gameBox1 {
+  position: relative;
+  z-index: 4;
+}
+
+.gameBox2 {
+  position: relative;
+  margin-top: 250px;
+  z-index: 3;
+}
+
+.gameBox3 {
+  position: relative;
+  margin-top: 500px;
+  z-index: 2;
+}
+
+.gameInfo {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 20px;
+  padding: 20px;
+  height: 140px;
+  width: 600px;
+  background-color: black;
+  border: 3px double red;
+  border-radius: 15px;
+  color: var(--alien-colour);
+}
+
+.gameInfo h2 {
+  font-size: 25px;
+}
+
+.gameInfo.highlightGame {
+  border-style: solid;
+  box-shadow: 0 2px 10px var(--blood-red);
+}
+
+.game {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 180px;
+  padding: 10px;
+  background-color: black;
+  border: 3px double red;
+  border-radius: 15px;
+}
+
+.game.highlightGame {
+  border-style: solid;
+  box-shadow: 0 2px 10px var(--blood-red);
+}
+
+.playGame {
+  padding: 4px;
+  padding-top: 2px;
+  background-color: black;
+  border-radius: 7px;
+  border: 3px double var(--alien-colour);
+  font-size: 19px;
+  font-family: HarlowSolid;
+  color: var(--alien-colour);
+}
+
+.playGame:hover {
+  border-style: solid;
+  cursor: pointer;
+  box-shadow: 0 2px 10px var(--light-alien);
+}
+
+.inGame {
+  border-style: double;
+  border-color: red;
+  color: red;
+  cursor: pointer;
+}
+
+.inGame:hover {
+  border-style: solid;
+  cursor: pointer;
+  box-shadow: 0 2px 10px red;
+}
+
+.theGame {
+  margin-top: 20px;
+  width: 580px;
+  height: 500px;
+  background-image: linear-gradient(rgb(0, 0, 5), rgb(0, 0, 0));
+  border: 3px double var(--alien-colour);
+  border-radius: 15px;
+}
+
+.theGame p {
+  margin-top: 40%;
+}
+
+.hide-game {
+  display: none;
+}
+
+/*  FOOTER */
+
+.footer {
+  position: fixed;
+  bottom: 8px;
+  right: 40px;
+  width: 80px;
+  height: 150px;
+  font-size: 18px;
+  font-family: HarlowSolid;
+  text-align: right;
+  z-index: 0;
+}
+
+.footer-textbox {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  width: 200px;
+  z-index: 0;
+}
+
+.footer p {
+  margin-top: 10px;
+  margin-bottom: 30px;
+  color: var(--blood-red);
+}
+
+.footer p.email {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 16px;
+  font-style: italic;
+  font-weight: bolder;
+  margin: 0;
+}
+
+.hide-text {
+  display: none;
+}
+
+.link {
+  list-style-type: none;
+  padding-bottom: 3px;
+}
+
+.link a {
+  border: none;
+  text-decoration: none;
+  font-size: 20px;
+  color: red;
+}
+
+.link a:hover {
+  color: var(--highlighted-blood);
+  text-shadow: 0 2px 10px var(--blood-red);
+  cursor: pointer;
+}
+
+.openReg3 {
+  color: var(--alien-colour);
+}
+
+.openReg3:hover {
+  text-shadow: 0 2px 5px rgb(0, 116, 0);
+  color: rgb(0, 255, 0);
+  cursor: pointer;
+}

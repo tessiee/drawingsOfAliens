@@ -271,7 +271,7 @@ function getEvents() {
       data.forEach((event) => {
         const eventEl = document.createElement("div");
         eventEl.classList.add("event");
-        // eventEl.classList.add("hide-event");
+        eventEl.classList.add("hide-event");
         eventEl.innerHTML = `
         <div class="date">${event.date}</div>
         <div class="event-body">
@@ -287,7 +287,6 @@ function getEvents() {
       })
     );
 }
-getEvents();
 
 function filterEvents(e) {
   const events = document.querySelectorAll(".event");
@@ -309,7 +308,8 @@ eventsFilter.addEventListener("input", filterEvents);
 
 // // SCROLL AND FETCH
 
-function showEvents() {
+async function showInitialEvents() {
+  await getEvents();
   let events = document.querySelectorAll(".event");
   for (x = 0; x < maxEvents; x++) {
     events.forEach(() => {
@@ -319,7 +319,17 @@ function showEvents() {
   console.log(events);
 }
 
-showEvents();
+showInitialEvents();
+
+function showEvents() {
+  let events = document.querySelectorAll(".event");
+  for (x = 0; x < maxEvents; x++) {
+    events.forEach(() => {
+      events.item(x).classList.remove("hide-event");
+    });
+  }
+  console.log(events);
+}
 
 function showLoading() {
   eventsLoader.classList.add("show");
@@ -375,6 +385,7 @@ function closeGames() {
 function resetAllGames() {
   resetGame1();
   resetGame2();
+  resetGame3();
 }
 
 function startGame() {
@@ -395,7 +406,7 @@ function startGame() {
       game2Action();
       break;
     case "game3":
-      //game3Action();
+      game3Action();
       break;
   }
 }
@@ -589,6 +600,72 @@ function drawRectObject(
   gameCanvas.fill();
   gameCanvas.closePath();
 }
+
+//GAME CONTROLS
+let controlledObject;
+
+function setControlledObject() {
+  switch (gamePlayed) {
+    case "game1":
+      controlledObject = ufo;
+      break;
+    case "game2":
+      controlledObject = spaceship;
+      break;
+    case "game3":
+      controlledObject = luke;
+      break;
+  }
+}
+
+function keyDown(e) {
+  setControlledObject();
+
+  if (e.key === "Right" || e.key === "ArrowRight") {
+    controlledObject.dx = controlledObject.speed;
+  } else if (e.key === "Left" || e.key === "ArrowLeft") {
+    controlledObject.dx = -controlledObject.speed;
+  }
+
+  if (e.key === "Up" || e.key === "ArrowUp") {
+    controlledObject.dy = `${
+      gamePlayed == "game1"
+        ? -controlledObject.speed / 4
+        : controlledObject.speed / 4
+    }`;
+  }
+  if (e.key === "Down" || e.key === "ArrowDown") {
+    controlledObject.dy = `${
+      gamePlayed == "game1"
+        ? controlledObject.speed / 4
+        : -controlledObject.speed / 4
+    }`;
+  }
+}
+
+function keyUp(e) {
+  setControlledObject();
+
+  if (
+    e.key === "Right" ||
+    e.key === "ArrowRight" ||
+    e.key === "Left" ||
+    e.key === "ArrowLeft"
+  ) {
+    controlledObject.dx = 0;
+  }
+  if (
+    e.key === "Up" ||
+    e.key === "ArrowUp" ||
+    e.key === "Down" ||
+    e.key === "ArrowDown"
+  ) {
+    controlledObject.dy = 0;
+  }
+}
+
+document.addEventListener("keydown", keyDown);
+document.addEventListener("keyup", keyUp);
 
 //GAME 1
 const canvas1 = document.getElementById("theGame1");
@@ -951,41 +1028,6 @@ function resetGame1() {
   resetScore();
   cancelAnimationFrame(requestIdGame1);
 }
-
-function keyDown(e) {
-  if (e.key === "Right" || e.key === "ArrowRight") {
-    ufo.dx = ufo.speed;
-  } else if (e.key === "Left" || e.key === "ArrowLeft") {
-    ufo.dx = -ufo.speed;
-  }
-  if (e.key === "Up" || e.key === "ArrowUp") {
-    ufo.dy = -ufo.speed / 4;
-  } else if (e.key === "Down" || e.key === "ArrowDown") {
-    ufo.dy = ufo.speed / 4;
-  }
-}
-
-function keyUp(e) {
-  if (
-    e.key === "Right" ||
-    e.key === "ArrowRight" ||
-    e.key === "Left" ||
-    e.key === "ArrowLeft"
-  ) {
-    ufo.dx = 0;
-  }
-  if (
-    e.key === "Up" ||
-    e.key === "ArrowUp" ||
-    e.key === "Down" ||
-    e.key === "ArrowDown"
-  ) {
-    ufo.dy = 0;
-  }
-}
-
-document.addEventListener("keydown", keyDown);
-document.addEventListener("keyup", keyUp);
 
 //GAME 2
 const canvas2 = document.getElementById("theGame2");
@@ -1390,8 +1432,10 @@ function moveEvilAlien() {
 }
 
 function returnEvilAlien() {
-  (evilAlien.x = canvas2.width / 2), (evilAlien.y = -10), evilAlien.dx * -1.1;
-  evilAlien.dy = 1.5;
+  (evilAlien.x = canvas2.width / 2),
+    (evilAlien.y = -10),
+    (evilAlien.dx = Math.random() * 4 + 1),
+    (evilAlien.dy = 1.5);
 }
 
 function resetEvilAlien() {
@@ -1420,7 +1464,7 @@ function moveEvilAlien2() {
 function returnEvilAlien2() {
   (evilAlien2.x = canvas2.width / 2),
     (evilAlien2.y = -10),
-    evilAlien2.dx * -1.05;
+    (evilAlien2.dx = -(Math.random() * 4 + 1));
   evilAlien2.dy = 1.5;
 }
 
@@ -1457,8 +1501,8 @@ function speedUp2() {
   }
 
   if (x == 5 || x == 15 || x == 25 || x == 35 || x == 45 || x == 55) {
-    evilAlien.speed *= 1.1;
-    evilAlien2.speed *= 1.1;
+    evilAlien.dx *= -1;
+    evilAlien2.dx *= -1;
   }
 }
 
@@ -1518,40 +1562,536 @@ function resetGame2() {
   cancelAnimationFrame(requestIdGame2);
 }
 
-function keyDown2(e) {
-  if (e.key === "Right" || e.key === "ArrowRight") {
-    spaceship.dx = spaceship.speed;
-  } else if (e.key === "Left" || e.key === "ArrowLeft") {
-    spaceship.dx = -spaceship.speed;
+//GAME 3
+const canvas3 = document.getElementById("theGame3");
+const ctx3 = canvas3.getContext("2d");
+let score3 = 0;
+let requestIdGame3;
+
+const luke = {
+  x: 30,
+  y: canvas3.height / 2,
+  w: 60,
+  h: 4,
+  size: 4.5,
+  speed: 5,
+  dx: 0,
+  dy: 0,
+};
+
+const alienEnemy = {
+  x: canvas3.width + 10,
+  y: canvas3.height * 0.3,
+  w: 60,
+  h: 4,
+  size: 3,
+  speed: 1.2,
+  dx: -2.5,
+  dy: 1.5,
+};
+
+const alienEnemy2 = {
+  x: canvas3.width + 10,
+  y: canvas3.height * 0.6,
+  w: 60,
+  h: 4,
+  size: 3,
+  speed: 1.5,
+  dx: -2,
+  dy: 1.5,
+};
+
+function drawLuke() {
+  drawRoundObject(
+    ctx3,
+    "#05db05",
+    luke.x,
+    luke.y,
+    luke.size,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx3,
+    "#000000",
+    luke.x - 2,
+    luke.y - 1,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx3,
+    "#000000",
+    luke.x + 2,
+    luke.y - 1,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawEllipseObject(
+    ctx3,
+    "#808080",
+    luke.x,
+    luke.y + 5,
+    20,
+    2,
+    0,
+    0,
+    Math.PI * 2,
+    true
+  );
+  drawRoundObject(
+    ctx3,
+    "#05db05",
+    luke.x - 4,
+    luke.y + 5.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx3,
+    "#05db05",
+    luke.x + 4,
+    luke.y + 5.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx3,
+    "#05db05",
+    luke.x - 11,
+    luke.y + 5.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx3,
+    "#05db05",
+    luke.x + 11,
+    luke.y + 5.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx3,
+    "#05db05",
+    luke.x - 18,
+    luke.y + 5.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx3,
+    "#05db05",
+    luke.x + 18,
+    luke.y + 5.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+}
+
+function drawAlienEnemy() {
+  drawRoundObject(
+    ctx3,
+    "#05db05",
+    alienEnemy.x,
+    alienEnemy.y,
+    alienEnemy.size,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx3,
+    "#FF0000",
+    alienEnemy.x - 1.5,
+    alienEnemy.y,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx3,
+    "#FF0000",
+    alienEnemy.x + 1.5,
+    alienEnemy.y,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawEllipseObject(
+    ctx3,
+    "#FF0000",
+    alienEnemy.x,
+    alienEnemy.y + 4,
+    10,
+    2,
+    0,
+    0,
+    Math.PI * 2,
+    true
+  );
+  drawRoundObject(
+    ctx3,
+    "#05db05",
+    alienEnemy.x - 3,
+    alienEnemy.y + 4.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx3,
+    "#05db05",
+    alienEnemy.x + 3,
+    alienEnemy.y + 4.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx3,
+    "#05db05",
+    alienEnemy.x - 7,
+    alienEnemy.y + 4.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx3,
+    "#05db05",
+    alienEnemy.x + 7,
+    alienEnemy.y + 4.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx3,
+    "#05db05",
+    alienEnemy.x - 11,
+    alienEnemy.y + 4.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx3,
+    "#05db05",
+    alienEnemy.x + 11,
+    alienEnemy.y + 4.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+}
+
+function drawAlienEnemy2() {
+  drawRoundObject(
+    ctx3,
+    "#FF0000",
+    alienEnemy2.x,
+    alienEnemy2.y,
+    alienEnemy2.size,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx3,
+    "#05db05",
+    alienEnemy2.x - 1.5,
+    alienEnemy2.y,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx3,
+    "#05db05",
+    alienEnemy2.x + 1.5,
+    alienEnemy2.y,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawEllipseObject(
+    ctx3,
+    "#05db05",
+    alienEnemy2.x,
+    alienEnemy2.y + 4,
+    10,
+    2,
+    0,
+    0,
+    Math.PI * 2,
+    true
+  );
+  drawRoundObject(
+    ctx3,
+    "#FF0000",
+    alienEnemy2.x - 3,
+    alienEnemy2.y + 4.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx3,
+    "#FF0000",
+    alienEnemy2.x + 3,
+    alienEnemy2.y + 4.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx3,
+    "#FF0000",
+    alienEnemy2.x - 7,
+    alienEnemy2.y + 4.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx3,
+    "#FF0000",
+    alienEnemy2.x + 7,
+    alienEnemy2.y + 4.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx3,
+    "#FF0000",
+    alienEnemy2.x - 11,
+    alienEnemy2.y + 4.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx3,
+    "#FF0000",
+    alienEnemy2.x + 11,
+    alienEnemy2.y + 4.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+}
+
+function drawScore3() {
+  ctx3.fillStyle = "#FF0000";
+  ctx3.fillText(`Score: ${score3}`, canvas3.width - 55, 10);
+}
+
+function moveLuke() {
+  luke.x += luke.dx;
+  luke.y -= luke.dy;
+
+  if (luke.x + 20 > canvas3.width) {
+    luke.x = canvas3.width - 20;
   }
-  if (e.key === "Up" || e.key === "ArrowUp") {
-    spaceship.dy = spaceship.speed / 4;
-  } else if (e.key === "Down" || e.key === "ArrowDown") {
-    spaceship.dy = -spaceship.speed / 4;
+
+  if (luke.x - 20 < 0) {
+    luke.x = 0 + 20;
+  }
+  if (luke.y > 140) {
+    luke.y = 140;
+  }
+
+  if (luke.y < 10) {
+    luke.y = 10;
   }
 }
 
-function keyUp2(e) {
-  if (
-    e.key === "Right" ||
-    e.key === "ArrowRight" ||
-    e.key === "Left" ||
-    e.key === "ArrowLeft"
-  ) {
-    spaceship.dx = 0;
+function resetLuke() {
+  (luke.x = 30), (luke.y = canvas3.height / 2), (luke.dx = 0);
+}
+
+function moveAlienEnemy() {
+  alienEnemy.x += alienEnemy.dx * alienEnemy.speed;
+  alienEnemy.y += alienEnemy.dy * alienEnemy.speed;
+}
+
+// const alienEnemy = {
+//   x: canvas3.width + 10,
+//   y: canvas3.height * 0.3,
+//   w: 60,
+//   h: 4,
+//   size: 3,
+//   speed: 1.2,
+//   dx: -2.5,
+//   dy: 1.5,
+// };
+
+// const alienEnemy2 = {
+//   x: canvas3.width + 10,
+//   y: canvas3.height * 0.6,
+//   w: 60,
+//   h: 4,
+//   size: 3,
+//   speed: 1.5,
+//   dx: -2,
+//   dy: 1.5,
+// };
+
+function returnAlienEnemy() {
+  (alienEnemy.x = canvas3.width + 10),
+    (alienEnemy.y = canvas3.height * 0.3),
+    (alienEnemy.dx = Math.random() * 4 + 1),
+    (alienEnemy.dy = 1.5);
+}
+
+function resetAlienEnemy() {
+  (alienEnemy.x = canvas3.width + 10),
+    (alienEnemy.y = canvas3.height * 0.3),
+    (alienEnemy.dx = 2.5);
+  alienEnemy.dy = 1.5;
+  alienEnemy.speed = 1.2;
+}
+
+function moveAlienEnemy2() {
+  alienEnemy2.x += alienEnemy2.dx * alienEnemy2.speed;
+  alienEnemy2.y += alienEnemy2.dy * alienEnemy2.speed;
+}
+
+function returnAlienEnemy2() {
+  (alienEnemy2.x = canvas3.width + 10),
+    (alienEnemy2.y = canvas3.height * 0.6),
+    (alienEnemy2.dx = -(Math.random() * 4 + 1));
+  alienEnemy2.dy = 1.5;
+}
+
+function resetAlienEnemy2() {
+  (alienEnemy2.x = canvas3.width + 10),
+    (alienEnemy2.y = canvas3.height * 0.6),
+    (alienEnemy2.dx = -2);
+  alienEnemy2.dy = 1.5;
+  alienEnemy2.speed = 1.5;
+}
+
+function speedUp3() {
+  let x = 0;
+
+  switch (score3) {
+    case 5:
+      x = 5;
+      break;
+    case 15:
+      x = 15;
+      break;
+    case 25:
+      x = 25;
+      break;
+    case 35:
+      x = 35;
+      break;
+    case 45:
+      x = 45;
+      break;
+    case 55:
+      x = 55;
+      break;
   }
-  if (
-    e.key === "Up" ||
-    e.key === "ArrowUp" ||
-    e.key === "Down" ||
-    e.key === "ArrowDown"
-  ) {
-    spaceship.dy = 0;
+
+  if (x == 5 || x == 15 || x == 25 || x == 35 || x == 45 || x == 55) {
+    alienEnemy.dx *= -1;
+    alienEnemy2.dx *= -1;
   }
 }
 
-document.addEventListener("keydown", keyDown2);
-document.addEventListener("keyup", keyUp2);
+function gameOver3() {
+  if (
+    alienEnemy.x - alienEnemy.size > luke.x - 10 &&
+    alienEnemy.x + alienEnemy.size < luke.x + 18 &&
+    alienEnemy.y + alienEnemy.size > luke.y - 3 &&
+    alienEnemy.y - alienEnemy.size < luke.y + 3 + luke.h * 2
+  ) {
+    resetGame3();
+  } else if (
+    alienEnemy2.x - alienEnemy2.size > luke.x - 10 &&
+    alienEnemy2.x + alienEnemy2.size < luke.x + 18 &&
+    alienEnemy2.y + alienEnemy2.size > luke.y - 3 &&
+    alienEnemy2.y - alienEnemy2.size < luke.y + 3 + luke.h * 2
+  ) {
+    resetGame3();
+  }
+}
+
+function scorePoints3() {
+  score3++;
+}
+
+function resetScore3() {
+  score3 = 0;
+}
+
+function emptyCanvas3() {
+  ctx3.clearRect(0, 0, canvas3.width, canvas3.height);
+}
+
+function drawGame3Elements() {
+  emptyCanvas3();
+  drawLuke();
+  drawAlienEnemy();
+  drawAlienEnemy2();
+  drawScore3();
+}
+
+function game3Action() {
+  drawGame3Elements();
+  moveLuke();
+  moveAlienEnemy();
+  moveAlienEnemy2();
+  gameOver3();
+  requestIdGame3 = requestAnimationFrame(game3Action);
+}
+
+function resetGame3() {
+  emptyCanvas3();
+  resetAlienEnemy();
+  resetAlienEnemy2();
+  resetLuke();
+  resetScore3();
+  cancelAnimationFrame(requestIdGame3);
+}
 
 //FOOTER
 const textsArr = document.getElementsByClassName("foot-text");

@@ -507,6 +507,89 @@ function gamesEventListeners() {
 }
 gamesEventListeners();
 
+//Drawing functions
+
+let gameCanvas;
+let objectColour;
+let objectX;
+let objectY;
+let objectW;
+let objectH;
+let radius;
+let radiusX;
+let radiusY;
+let rotation;
+let startAngle;
+let endAngle;
+let counterClockwise;
+
+function drawRoundObject(
+  gameCanvas,
+  objectColour,
+  objectX,
+  objectY,
+  radius,
+  startAngle,
+  endAngle,
+  counterClockwise
+) {
+  gameCanvas.beginPath();
+  gameCanvas.arc(
+    objectX,
+    objectY,
+    radius,
+    startAngle,
+    endAngle,
+    counterClockwise
+  );
+  gameCanvas.fillStyle = objectColour;
+  gameCanvas.fill();
+  gameCanvas.closePath();
+}
+
+function drawEllipseObject(
+  gameCanvas,
+  objectColour,
+  objectX,
+  objectY,
+  radiusX,
+  radiusY,
+  rotation,
+  startAngle,
+  endAngle,
+  counterClockwise
+) {
+  gameCanvas.beginPath();
+  gameCanvas.ellipse(
+    objectX,
+    objectY,
+    radiusX,
+    radiusY,
+    rotation,
+    startAngle,
+    endAngle,
+    counterClockwise
+  );
+  gameCanvas.fillStyle = objectColour;
+  gameCanvas.fill();
+  gameCanvas.closePath();
+}
+
+function drawRectObject(
+  gameCanvas,
+  objectColour,
+  objectX,
+  objectY,
+  objectW,
+  objectH
+) {
+  gameCanvas.beginPath();
+  gameCanvas.rect(objectX, objectY, objectW, objectH);
+  gameCanvas.fillStyle = objectColour;
+  gameCanvas.fill();
+  gameCanvas.closePath();
+}
+
 //GAME 1
 const canvas1 = document.getElementById("theGame1");
 const ctx1 = canvas1.getContext("2d");
@@ -547,185 +630,182 @@ const enemy = {
   dx: 2,
 };
 
-function drawEarth() {
-  ctx1.beginPath();
-  ctx1.rect(earth.x, earth.y, earth.w, earth.h);
-  ctx1.fillStyle = "#003b00";
-  ctx1.fill();
-  ctx1.closePath();
+function drawStars() {
+  drawRoundObject(ctx1, "#DAA520", 75, 62, 1, -100, Math.PI - 0.5, true);
+  drawRoundObject(ctx1, "#DAA520", 35, 112, 1, -100, Math.PI - 0.5, true);
+  drawRoundObject(ctx1, "#DAA520", 224, 59, 1, -100, Math.PI - 0.5, true);
+  drawRoundObject(ctx1, "#DAA520", 285, 21, 1, -100, Math.PI - 0.5, true);
+  drawRoundObject(ctx1, "#DAA520", 154, 39, 1, -100, Math.PI - 0.5, true);
+  drawRoundObject(ctx1, "#DAA520", 80, 42, 1, -100, Math.PI - 0.5, true);
+  drawRoundObject(ctx1, "#DAA520", 142, 14, 1, -100, Math.PI - 0.5, true);
+  drawRoundObject(ctx1, "#DAA520", 250, 61, 1, -100, Math.PI - 0.5, true);
+  drawRoundObject(ctx1, "#DAA520", 110, 90, 1, -100, Math.PI - 0.5, true);
+  drawRoundObject(ctx1, "#DAA520", 28, 17, 1, -100, Math.PI - 0.5, true);
+  drawRoundObject(ctx1, "#DAA520", 125, 46, 1, -100, Math.PI - 0.5, true);
+  drawRoundObject(ctx1, "#DAA520", 290, 24, 1, -100, Math.PI - 0.5, true);
+  drawRoundObject(ctx1, "#DAA520", 290, 76, 1, -100, Math.PI - 0.5, true);
+  drawRoundObject(ctx1, "#DAA520", 155, 17, 1, -100, Math.PI - 0.5, true);
+  drawRoundObject(ctx1, "#DAA520", 90, 75, 1, -100, Math.PI - 0.5, true);
+  drawRoundObject(ctx1, "#DAA520", 142, 114, 1, -100, Math.PI - 0.5, true);
+  drawRoundObject(ctx1, "#DAA520", 250, 99, 1, -100, Math.PI - 0.5, true);
+  drawRoundObject(ctx1, "#DAA520", 180, 94, 1, -100, Math.PI - 0.5, true);
+  drawRoundObject(ctx1, "#DAA520", 65, 94, 1, -100, Math.PI - 0.5, true);
 }
 
-function drawStars() {
-  ctx1.beginPath();
-  ctx1.arc(75, 63 - 1, 1, -100, Math.PI - 0.5, true);
-  ctx1.fillStyle = "#DAA520";
-  ctx1.fill();
-  ctx1.closePath();
-  ctx1.beginPath();
-  ctx1.arc(35, 113 - 1, 1, -100, Math.PI - 0.5, true);
-  ctx1.fillStyle = "#DAA520";
-  ctx1.fill();
-  ctx1.closePath();
-  ctx1.beginPath();
-  ctx1.arc(224, 60 - 1, 1, -100, Math.PI - 0.5, true);
-  ctx1.fillStyle = "#DAA520";
-  ctx1.fill();
-  ctx1.closePath();
-  ctx1.beginPath();
-  ctx1.arc(285, 22 - 1, 1, -100, Math.PI - 0.5, true);
-  ctx1.fillStyle = "#DAA520";
-  ctx1.fill();
-  ctx1.closePath();
-  ctx1.beginPath();
-  ctx1.arc(154, 40 - 1, 1, -100, Math.PI - 0.5, true);
-  ctx1.fillStyle = "#DAA520";
-  ctx1.fill();
-  ctx1.closePath();
-  ctx1.beginPath();
-  ctx1.arc(80, 43 - 1, 1, -100, Math.PI - 0.5, true);
-  ctx1.fillStyle = "#DAA520";
-  ctx1.fill();
-  ctx1.closePath();
-  ctx1.beginPath();
-  ctx1.arc(142, 15 - 1, 1, -100, Math.PI - 0.5, true);
-  ctx1.fillStyle = "#DAA520";
-  ctx1.fill();
-  ctx1.closePath();
-  ctx1.beginPath();
-  ctx1.arc(250, 62 - 1, 1, -100, Math.PI - 0.5, true);
-  ctx1.fillStyle = "#DAA520";
-  ctx1.fill();
-  ctx1.closePath();
-  ctx1.beginPath();
-  ctx1.arc(110, 91 - 1, 1, -100, Math.PI - 0.5, true);
-  ctx1.fillStyle = "#DAA520";
-  ctx1.fill();
-  ctx1.closePath();
-  ctx1.beginPath();
-  ctx1.arc(28, 18 - 1, 1, -100, Math.PI - 0.5, true);
-  ctx1.fillStyle = "#DAA520";
-  ctx1.fill();
-  ctx1.closePath();
-  ctx1.beginPath();
-  ctx1.arc(125, 47 - 1, 1, -100, Math.PI - 0.5, true);
-  ctx1.fillStyle = "#DAA520";
-  ctx1.fill();
-  ctx1.closePath();
-  ctx1.beginPath();
-  ctx1.arc(67, 25 - 1, 1, -100, Math.PI - 0.5, true);
-  ctx1.fillStyle = "#DAA520";
-  ctx1.fill();
-  ctx1.closePath();
-  ctx1.beginPath();
-  ctx1.arc(290, 77 - 1, 1, -100, Math.PI - 0.5, true);
-  ctx1.fillStyle = "#DAA520";
-  ctx1.fill();
-  ctx1.closePath();
-  ctx1.beginPath();
-  ctx1.arc(290, 18 - 1, 1, -100, Math.PI - 0.5, true);
-  ctx1.fillStyle = "#DAA520";
-  ctx1.fill();
-  ctx1.closePath();
-  ctx1.beginPath();
-  ctx1.arc(155, 99 - 1, 1, -100, Math.PI - 0.5, true);
-  ctx1.fillStyle = "#DAA520";
-  ctx1.fill();
-  ctx1.closePath();
-  ctx1.beginPath();
-  ctx1.arc(90, 76 - 1, 1, -100, Math.PI - 0.5, true);
-  ctx1.fillStyle = "#DAA520";
-  ctx1.fill();
-  ctx1.closePath();
-  ctx1.beginPath();
-  ctx1.arc(142, 115 - 1, 1, -100, Math.PI - 0.5, true);
-  ctx1.fillStyle = "#DAA520";
-  ctx1.fill();
-  ctx1.closePath();
-  ctx1.beginPath();
-  ctx1.arc(250, 100 - 1, 1, -100, Math.PI - 0.5, true);
-  ctx1.fillStyle = "#DAA520";
-  ctx1.fill();
-  ctx1.closePath();
-  ctx1.beginPath();
-  ctx1.arc(180, 95 - 1, 1, -100, Math.PI - 0.5, true);
-  ctx1.fillStyle = "#DAA520";
-  ctx1.fill();
-  ctx1.closePath();
-  ctx1.beginPath();
-  ctx1.arc(65, 95 - 1, 1, -100, Math.PI - 0.5, true);
-  ctx1.fillStyle = "#DAA520";
-  ctx1.fill();
-  ctx1.closePath();
+function drawEarth() {
+  drawRectObject(ctx1, "#003b00", earth.x, earth.y, earth.w, earth.h);
 }
 
 function drawUFO() {
-  ctx1.beginPath();
-  ctx1.arc(ufo.x, ufo.y, ufo.size, -100, Math.PI - 0.5, true);
-  ctx1.fillStyle = "#05db05";
-  ctx1.fill();
-  ctx1.closePath();
-
-  ctx1.beginPath();
-  ctx1.arc(ufo.x - 2, ufo.y - 1, 1, -100, Math.PI - 0.5, true);
-  ctx1.arc(ufo.x + 2, ufo.y - 1, 1, -100, Math.PI - 0.5, true);
-  ctx1.fillStyle = "#000000";
-  ctx1.fill();
-  ctx1.closePath();
-
-  ctx1.beginPath();
-  ctx1.ellipse(ufo.x, ufo.y + 5, 20, 2, 0, 0, Math.PI * 2, true);
-  ctx1.fillStyle = "#808080";
-  ctx1.fill();
-  ctx1.closePath();
-
-  ctx1.beginPath();
-  ctx1.arc(ufo.x - 4, ufo.y + 5.2, 1, -100, Math.PI - 0.5, true);
-  ctx1.arc(ufo.x + 4, ufo.y + 5.2, 1, -100, Math.PI - 0.5, true);
-  ctx1.fillStyle = "#05db05";
-  ctx1.fill();
-  ctx1.closePath();
-
-  ctx1.beginPath();
-  ctx1.arc(ufo.x - 11, ufo.y + 5, 1, -100, Math.PI - 0.5, true);
-  ctx1.arc(ufo.x + 11, ufo.y + 5, 1, -100, Math.PI - 0.5, true);
-  ctx1.fillStyle = "#05db05";
-  ctx1.fill();
-  ctx1.closePath();
-
-  ctx1.beginPath();
-  ctx1.arc(ufo.x - 18, ufo.y + 4.8, 1, -100, Math.PI - 0.5, true);
-  ctx1.arc(ufo.x + 18, ufo.y + 4.8, 1, -100, Math.PI - 0.5, true);
-  ctx1.fillStyle = "#05db05";
-  ctx1.fill();
-  ctx1.closePath();
+  drawRoundObject(
+    ctx1,
+    "#05db05",
+    ufo.x,
+    ufo.y,
+    ufo.size,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx1,
+    "#000000",
+    ufo.x - 2,
+    ufo.y - 1,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx1,
+    "#000000",
+    ufo.x + 2,
+    ufo.y - 1,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawEllipseObject(
+    ctx1,
+    "#808080",
+    ufo.x,
+    ufo.y + 5,
+    20,
+    2,
+    0,
+    0,
+    Math.PI * 2,
+    true
+  );
+  drawRoundObject(
+    ctx1,
+    "#05db05",
+    ufo.x - 4,
+    ufo.y + 5.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx1,
+    "#05db05",
+    ufo.x + 4,
+    ufo.y + 5.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx1,
+    "#05db05",
+    ufo.x - 11,
+    ufo.y + 5.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx1,
+    "#05db05",
+    ufo.x + 11,
+    ufo.y + 5.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx1,
+    "#05db05",
+    ufo.x - 18,
+    ufo.y + 5.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx1,
+    "#05db05",
+    ufo.x + 18,
+    ufo.y + 5.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
 }
 
 function drawBullets() {
-  ctx1.beginPath();
-  ctx1.arc(bullet.x, bullet.y - 10, bullet.size, 0, Math.PI * 2);
-  ctx1.fillStyle = "#808080";
-  ctx1.fill();
-  ctx1.closePath();
+  drawRoundObject(
+    ctx1,
+    "#808080",
+    bullet.x,
+    bullet.y - 10,
+    bullet.size,
+    0,
+    Math.PI * 2
+  );
 }
 
 function drawEnemy() {
-  ctx1.beginPath();
-  ctx1.arc(enemy.x, enemy.y - 10, 5, -100, Math.PI - 0.5, true);
-  ctx1.fillStyle = "#DAA520";
-  ctx1.fill();
-  ctx1.closePath();
-
-  ctx1.beginPath();
-  ctx1.arc(enemy.x, enemy.y - 4, enemy.size, -100, Math.PI - 0.5, true);
-  ctx1.fillStyle = "#DEB887";
-  ctx1.fill();
-  ctx1.closePath();
-
-  ctx1.beginPath();
-  ctx1.ellipse(enemy.x, enemy.y - 10, 15, 1, 0, 0, Math.PI * 2, true);
-  ctx1.fillStyle = "#DAA520";
-  ctx1.fill();
-  ctx1.closePath();
+  drawRoundObject(
+    ctx1,
+    "#DAA520",
+    enemy.x,
+    enemy.y - 10,
+    5,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx1,
+    "#DEB887",
+    enemy.x,
+    enemy.y - 4,
+    enemy.size,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawEllipseObject(
+    ctx1,
+    "#DAA520",
+    enemy.x,
+    enemy.y - 10,
+    15,
+    1,
+    0,
+    0,
+    Math.PI * 2,
+    true
+  );
 }
 
 function drawScore() {
@@ -947,92 +1027,219 @@ const evilAlien2 = {
 };
 
 function drawSpaceship() {
-  ctx2.beginPath();
-  ctx2.arc(spaceship.x, spaceship.y, spaceship.size, -100, Math.PI - 0.5, true);
-  ctx2.fillStyle = "#05db05";
-  ctx2.fill();
-  ctx2.closePath();
-
-  ctx2.beginPath();
-  ctx2.arc(spaceship.x - 2, spaceship.y - 1, 1, -100, Math.PI - 0.5, true);
-  ctx2.arc(spaceship.x + 2, spaceship.y - 1, 1, -100, Math.PI - 0.5, true);
-  ctx2.fillStyle = "#000000";
-  ctx2.fill();
-  ctx2.closePath();
-
-  ctx2.beginPath();
-  ctx2.ellipse(spaceship.x, spaceship.y + 5, 20, 2, 0, 0, Math.PI * 2, true);
-  ctx2.fillStyle = "#808080";
-  ctx2.fill();
-  ctx2.closePath();
-
-  ctx2.beginPath();
-  ctx2.arc(spaceship.x - 4, spaceship.y + 5.2, 1, -100, Math.PI - 0.5, true);
-  ctx2.arc(spaceship.x + 4, spaceship.y + 5.2, 1, -100, Math.PI - 0.5, true);
-  ctx2.fillStyle = "#05db05";
-  ctx2.fill();
-  ctx2.closePath();
-
-  ctx2.beginPath();
-  ctx2.arc(spaceship.x - 11, spaceship.y + 5, 1, -100, Math.PI - 0.5, true);
-  ctx2.arc(spaceship.x + 11, spaceship.y + 5, 1, -100, Math.PI - 0.5, true);
-  ctx2.fillStyle = "#05db05";
-  ctx2.fill();
-  ctx2.closePath();
-
-  ctx2.beginPath();
-  ctx2.arc(spaceship.x - 18, spaceship.y + 4.8, 1, -100, Math.PI - 0.5, true);
-  ctx2.arc(spaceship.x + 18, spaceship.y + 4.8, 1, -100, Math.PI - 0.5, true);
-  ctx2.fillStyle = "#05db05";
-  ctx2.fill();
-  ctx2.closePath();
+  drawRoundObject(
+    ctx2,
+    "#05db05",
+    spaceship.x,
+    spaceship.y,
+    spaceship.size,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx2,
+    "#000000",
+    spaceship.x - 2,
+    spaceship.y - 1,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx2,
+    "#000000",
+    spaceship.x + 2,
+    spaceship.y - 1,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawEllipseObject(
+    ctx2,
+    "#808080",
+    spaceship.x,
+    spaceship.y + 5,
+    20,
+    2,
+    0,
+    0,
+    Math.PI * 2,
+    true
+  );
+  drawRoundObject(
+    ctx2,
+    "#05db05",
+    spaceship.x - 4,
+    spaceship.y + 5.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx2,
+    "#05db05",
+    spaceship.x + 4,
+    spaceship.y + 5.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx2,
+    "#05db05",
+    spaceship.x - 11,
+    spaceship.y + 5.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx2,
+    "#05db05",
+    spaceship.x + 11,
+    spaceship.y + 5.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx2,
+    "#05db05",
+    spaceship.x - 18,
+    spaceship.y + 5.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx2,
+    "#05db05",
+    spaceship.x + 18,
+    spaceship.y + 5.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
 }
 
 function drawEvilAlien() {
-  ctx2.beginPath();
-  ctx2.arc(evilAlien.x, evilAlien.y, evilAlien.size, -100, Math.PI - 0.5, true);
-  ctx2.fillStyle = "##05db05";
-  ctx2.fill();
-  ctx2.closePath();
-
-  ctx2.beginPath();
-  ctx2.arc(evilAlien.x - 1.5, evilAlien.y, 1, -100, Math.PI - 0.5, true);
-  ctx2.arc(evilAlien.x + 1.5, evilAlien.y, 1, -100, Math.PI - 0.5, true);
-  ctx2.fillStyle = "#FF0000";
-  ctx2.fill();
-  ctx2.closePath();
-
-  ctx2.beginPath();
-  ctx2.ellipse(evilAlien.x, evilAlien.y + 4, 10, 2, 0, 0, Math.PI * 2, true);
-  ctx2.fillStyle = "#FF0000";
-  ctx2.fill();
-  ctx2.closePath();
-
-  ctx2.beginPath();
-  ctx2.arc(evilAlien.x - 3, evilAlien.y + 4.2, 1, -100, Math.PI - 0.5, true);
-  ctx2.arc(evilAlien.x + 3, evilAlien.y + 4.2, 1, -100, Math.PI - 0.5, true);
-  ctx2.fillStyle = "#05db05";
-  ctx2.fill();
-  ctx2.closePath();
-
-  ctx2.beginPath();
-  ctx2.arc(evilAlien.x - 7, evilAlien.y + 4, 1, -100, Math.PI - 0.5, true);
-  ctx2.arc(evilAlien.x + 7, evilAlien.y + 4, 1, -100, Math.PI - 0.5, true);
-  ctx2.fillStyle = "#05db05";
-  ctx2.fill();
-  ctx2.closePath();
-
-  ctx2.beginPath();
-  ctx2.arc(evilAlien.x - 11, evilAlien.y + 3.8, 1, -100, Math.PI - 0.5, true);
-  ctx2.arc(evilAlien.x + 11, evilAlien.y + 3.8, 1, -100, Math.PI - 0.5, true);
-  ctx2.fillStyle = "#05db05";
-  ctx2.fill();
-  ctx2.closePath();
+  drawRoundObject(
+    ctx2,
+    "#05db05",
+    evilAlien.x,
+    evilAlien.y,
+    evilAlien.size,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx2,
+    "#FF0000",
+    evilAlien.x - 1.5,
+    evilAlien.y,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx2,
+    "#FF0000",
+    evilAlien.x + 1.5,
+    evilAlien.y,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawEllipseObject(
+    ctx2,
+    "#FF0000",
+    evilAlien.x,
+    evilAlien.y + 4,
+    10,
+    2,
+    0,
+    0,
+    Math.PI * 2,
+    true
+  );
+  drawRoundObject(
+    ctx2,
+    "#05db05",
+    evilAlien.x - 3,
+    evilAlien.y + 4.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx2,
+    "#05db05",
+    evilAlien.x + 3,
+    evilAlien.y + 4.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx2,
+    "#05db05",
+    evilAlien.x - 7,
+    evilAlien.y + 4.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx2,
+    "#05db05",
+    evilAlien.x + 7,
+    evilAlien.y + 4.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx2,
+    "#05db05",
+    evilAlien.x - 11,
+    evilAlien.y + 4.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx2,
+    "#05db05",
+    evilAlien.x + 11,
+    evilAlien.y + 4.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
 }
 
 function drawEvilAlien2() {
-  ctx2.beginPath();
-  ctx2.arc(
+  drawRoundObject(
+    ctx2,
+    "#FF0000",
     evilAlien2.x,
     evilAlien2.y,
     evilAlien2.size,
@@ -1040,43 +1247,98 @@ function drawEvilAlien2() {
     Math.PI - 0.5,
     true
   );
-  ctx2.fillStyle = "#FF0000";
-  ctx2.fill();
-  ctx2.closePath();
-
-  ctx2.beginPath();
-  ctx2.arc(evilAlien2.x - 1.5, evilAlien2.y, 1, -100, Math.PI - 0.5, true);
-  ctx2.arc(evilAlien2.x + 1.5, evilAlien2.y, 1, -100, Math.PI - 0.5, true);
-  ctx2.fillStyle = "#05db05";
-  ctx2.fill();
-  ctx2.closePath();
-
-  ctx2.beginPath();
-  ctx2.ellipse(evilAlien2.x, evilAlien2.y + 4, 10, 2, 0, 0, Math.PI * 2, true);
-  ctx2.fillStyle = "#05db05";
-  ctx2.fill();
-  ctx2.closePath();
-
-  ctx2.beginPath();
-  ctx2.arc(evilAlien2.x - 3, evilAlien2.y + 4.2, 1, -100, Math.PI - 0.5, true);
-  ctx2.arc(evilAlien2.x + 3, evilAlien2.y + 4.2, 1, -100, Math.PI - 0.5, true);
-  ctx2.fillStyle = "#FF0000";
-  ctx2.fill();
-  ctx2.closePath();
-
-  ctx2.beginPath();
-  ctx2.arc(evilAlien2.x - 7, evilAlien2.y + 4, 1, -100, Math.PI - 0.5, true);
-  ctx2.arc(evilAlien2.x + 7, evilAlien2.y + 4, 1, -100, Math.PI - 0.5, true);
-  ctx2.fillStyle = "#FF0000";
-  ctx2.fill();
-  ctx2.closePath();
-
-  ctx2.beginPath();
-  ctx2.arc(evilAlien2.x - 11, evilAlien2.y + 3.8, 1, -100, Math.PI - 0.5, true);
-  ctx2.arc(evilAlien2.x + 11, evilAlien2.y + 3.8, 1, -100, Math.PI - 0.5, true);
-  ctx2.fillStyle = "#FF0000";
-  ctx2.fill();
-  ctx2.closePath();
+  drawRoundObject(
+    ctx2,
+    "#05db05",
+    evilAlien2.x - 1.5,
+    evilAlien2.y,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx2,
+    "#05db05",
+    evilAlien2.x + 1.5,
+    evilAlien2.y,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawEllipseObject(
+    ctx2,
+    "#05db05",
+    evilAlien2.x,
+    evilAlien2.y + 4,
+    10,
+    2,
+    0,
+    0,
+    Math.PI * 2,
+    true
+  );
+  drawRoundObject(
+    ctx2,
+    "#FF0000",
+    evilAlien2.x - 3,
+    evilAlien2.y + 4.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx2,
+    "#FF0000",
+    evilAlien2.x + 3,
+    evilAlien2.y + 4.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx2,
+    "#FF0000",
+    evilAlien2.x - 7,
+    evilAlien2.y + 4.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx2,
+    "#FF0000",
+    evilAlien2.x + 7,
+    evilAlien2.y + 4.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx2,
+    "#FF0000",
+    evilAlien2.x - 11,
+    evilAlien2.y + 4.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
+  drawRoundObject(
+    ctx2,
+    "#FF0000",
+    evilAlien2.x + 11,
+    evilAlien2.y + 4.2,
+    1,
+    -100,
+    Math.PI - 0.5,
+    true
+  );
 }
 
 function drawScore2() {

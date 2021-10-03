@@ -941,8 +941,15 @@ header h1 {
   cursor: pointer;
 }
 
+.foot-text {
+  margin-top: 10px;
+  margin-bottom: 30px;
+  color: var(--blood-red);
+}
+
 .openReg3 {
   color: var(--alien-colour);
+  list-style-type: none;
 }
 
 .openReg3:hover {

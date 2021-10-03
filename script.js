@@ -520,22 +520,6 @@ gamesEventListeners();
 
 //Drawing functions
 
-let gameCanvas;
-let canvasName;
-let objectColour;
-let objectX;
-let objectY;
-let objectW;
-let objectH;
-let radius;
-let radiusX;
-let radiusY;
-let rotation;
-let startAngle;
-let endAngle;
-let counterClockwise;
-let drawingSubject;
-
 function drawRoundObject(
   gameCanvas,
   objectColour,
@@ -909,8 +893,9 @@ function emptyCanvas(gameCanvas, canvasName) {
 }
 
 //GAME CONTROLS
-let controlledObject;
-let bulletYMovement;
+let enemySpeedUp = 1;
+let lukeSpeedUp = 1;
+let movement = "passive";
 
 function setControlledObject() {
   switch (gamePlayed) {
@@ -931,8 +916,16 @@ function keyDown(e) {
 
   if (e.key === "Right" || e.key === "ArrowRight") {
     controlledObject.dx = controlledObject.speed;
+    if (gamePlayed == "game3") {
+      enemySpeedUp = 1.2;
+      lukeSpeedUp = 1.2;
+    }
   } else if (e.key === "Left" || e.key === "ArrowLeft") {
     controlledObject.dx = -controlledObject.speed;
+    if (gamePlayed == "game3") {
+      enemySpeedUp = 0.5;
+      lukeSpeedUp = 0.5;
+    }
   }
 
   if (e.key === "Up" || e.key === "ArrowUp") {
@@ -956,6 +949,10 @@ function keyUp(e) {
     e.key === "ArrowLeft"
   ) {
     controlledObject.dx = 0;
+    if (gamePlayed == "game3") {
+      enemySpeedUp = 1;
+      lukeSpeedUp = 1;
+    }
   }
   if (
     e.key === "Up" ||
@@ -964,6 +961,10 @@ function keyUp(e) {
     e.key === "ArrowDown"
   ) {
     controlledObject.dy = 0;
+    if (gamePlayed == "game3") {
+      enemySpeedUp = 1;
+      lukeSpeedUp = 1;
+    }
   }
 }
 
@@ -971,13 +972,10 @@ document.addEventListener("keydown", keyDown);
 document.addEventListener("keyup", keyUp);
 
 //GAME OBJECT FUNCTIONS
-let enemyObject;
-let lukeNr;
-let movement = "passive";
 
 function moveLuke(lukeNr, canvasName, maxHeight, minHeight) {
-  lukeNr.x += lukeNr.dx;
-  lukeNr.y += lukeNr.dy;
+  lukeNr.x += lukeNr.dx * lukeSpeedUp;
+  lukeNr.y += lukeNr.dy * lukeSpeedUp;
 
   if (lukeNr.x + 22 > canvasName.width) {
     lukeNr.x = canvasName.width - 22;
@@ -1074,8 +1072,8 @@ function moveBullet(
 }
 
 function moveComet(enemyObject, canvasName, gameNr, marginX, marginY) {
-  enemyObject.x += enemyObject.dx * enemyObject.speed;
-  enemyObject.y += enemyObject.dy * enemyObject.speed;
+  enemyObject.x += enemyObject.dx * (enemyObject.speed * enemySpeedUp);
+  enemyObject.y += enemyObject.dy * (enemyObject.speed * enemySpeedUp);
 
   if (enemyObject.x > canvasName.width + 200 || enemyObject.x < -20) {
     returnComet(enemyObject, canvasName, marginX, marginY);
@@ -1115,8 +1113,8 @@ function moveAlienEnemy(
 }
 
 function moveAlienEnemy2(enemyObject, canvasName, gameNr, marginX, marginY) {
-  enemyObject.x += enemyObject.dx * enemyObject.speed;
-  enemyObject.y += enemyObject.dy * enemyObject.speed;
+  enemyObject.x += enemyObject.dx * (enemyObject.speed * enemySpeedUp);
+  enemyObject.y += enemyObject.dy * (enemyObject.speed * enemySpeedUp);
 
   if (enemyObject.x > canvasName.width + 200 || enemyObject.x < -20) {
     returnAlienEnemy(enemyObject, canvasName, gameNr, marginX, marginY);
@@ -1131,11 +1129,6 @@ function moveAlienEnemy2(enemyObject, canvasName, gameNr, marginX, marginY) {
 }
 
 //GAME FUNCTIONS
-let gameNr;
-let gameScore;
-let speedingSubject;
-let accelerationX;
-let accelerationY;
 
 function scorePoints(gameNr) {
   switch (gameNr) {
@@ -1554,7 +1547,7 @@ const luke3 = {
   w: 60,
   h: 4,
   size: 4.5,
-  speed: 5,
+  speed: 4,
   dx: 0,
   dy: 0,
 };
@@ -1651,6 +1644,8 @@ function resetGame3() {
   resetAlienEnemy(alienEnemy3, canvas3, 3, 15, 0.85, 1.1);
   resetScore(3);
   cancelAnimationFrame(requestIdGame3);
+  enemySpeedUp = 1;
+  lukeSpeedUp = 1;
 }
 
 //FOOTER

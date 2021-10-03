@@ -103,7 +103,7 @@ document
   .getElementById("closeLogin")
   .addEventListener("click", openCloseLoginForm);
 
-//SHOW PASSWORD
+//SHOW PASSWORD FUNCTIE SAMENVOEGEN
 function showPassword() {
   const type =
     loginPassword.getAttribute("type") === "password" ? "text" : "password";
@@ -316,7 +316,7 @@ async function showInitialEvents() {
       events.item(x).classList.remove("hide-event");
     });
   }
-  console.log(events);
+  //console.log(events);
 }
 
 showInitialEvents();
@@ -883,6 +883,23 @@ function drawComet(gameCanvas, drawingSubject) {
   );
 }
 
+function drawStar(gameCanvas, drawingSubject) {
+  gameCanvas.save();
+  gameCanvas.beginPath();
+  gameCanvas.translate(drawingSubject.x, drawingSubject.y);
+  gameCanvas.moveTo(0, 0 - drawingSubject.r);
+  for (let x = 0; x < drawingSubject.n; x++) {
+    gameCanvas.rotate(Math.PI / drawingSubject.n);
+    gameCanvas.lineTo(0, 0 - drawingSubject.r * drawingSubject.inset);
+    gameCanvas.rotate(Math.PI / drawingSubject.n);
+    gameCanvas.lineTo(0, 0 - drawingSubject.r);
+  }
+  gameCanvas.closePath();
+  gameCanvas.fillStyle = "#FFD700";
+  gameCanvas.fill();
+  gameCanvas.restore();
+}
+
 function drawScore(gameCanvas, canvasName, gameScore) {
   gameCanvas.fillStyle = "#FF0000";
   gameCanvas.fillText(`Score: ${gameScore}`, canvasName.width - 55, 10);
@@ -893,8 +910,7 @@ function emptyCanvas(gameCanvas, canvasName) {
 }
 
 //GAME CONTROLS
-let enemySpeedUp = 1;
-let lukeSpeedUp = 1;
+let objectSpeedUp = 1;
 let movement = "passive";
 
 function setControlledObject() {
@@ -917,22 +933,26 @@ function keyDown(e) {
   if (e.key === "Right" || e.key === "ArrowRight") {
     controlledObject.dx = controlledObject.speed;
     if (gamePlayed == "game3") {
-      enemySpeedUp = 1.2;
-      lukeSpeedUp = 1.2;
+      objectSpeedUp = 1.2;
     }
   } else if (e.key === "Left" || e.key === "ArrowLeft") {
     controlledObject.dx = -controlledObject.speed;
     if (gamePlayed == "game3") {
-      enemySpeedUp = 0.5;
-      lukeSpeedUp = 0.5;
+      objectSpeedUp = 0.5;
     }
   }
 
   if (e.key === "Up" || e.key === "ArrowUp") {
     controlledObject.dy = -2;
+    if (gamePlayed == "game2") {
+      objectSpeedUp = 1.5;
+    }
   }
   if (e.key === "Down" || e.key === "ArrowDown") {
     controlledObject.dy = 2;
+    if (gamePlayed == "game2") {
+      objectSpeedUp = 0.5;
+    }
   }
   if (e.key === "f" && gamePlayed == "game2") {
     lukeShootBullet();
@@ -949,10 +969,7 @@ function keyUp(e) {
     e.key === "ArrowLeft"
   ) {
     controlledObject.dx = 0;
-    if (gamePlayed == "game3") {
-      enemySpeedUp = 1;
-      lukeSpeedUp = 1;
-    }
+    objectSpeedUp = 1;
   }
   if (
     e.key === "Up" ||
@@ -961,10 +978,7 @@ function keyUp(e) {
     e.key === "ArrowDown"
   ) {
     controlledObject.dy = 0;
-    if (gamePlayed == "game3") {
-      enemySpeedUp = 1;
-      lukeSpeedUp = 1;
-    }
+    objectSpeedUp = 1;
   }
 }
 
@@ -973,16 +987,16 @@ document.addEventListener("keyup", keyUp);
 
 //GAME OBJECT FUNCTIONS
 
-function moveLuke(lukeNr, canvasName, maxHeight, minHeight) {
-  lukeNr.x += lukeNr.dx * lukeSpeedUp;
-  lukeNr.y += lukeNr.dy * lukeSpeedUp;
+function moveLuke(lukeNr, maxHeight, minHeight, maxWidth, minWidth) {
+  lukeNr.x += lukeNr.dx * objectSpeedUp;
+  lukeNr.y += lukeNr.dy * objectSpeedUp;
 
-  if (lukeNr.x + 22 > canvasName.width) {
-    lukeNr.x = canvasName.width - 22;
+  if (lukeNr.x > maxWidth) {
+    lukeNr.x = maxWidth;
   }
 
-  if (lukeNr.x - 22 < 0) {
-    lukeNr.x = 0 + 22;
+  if (lukeNr.x < minWidth) {
+    lukeNr.x = minWidth;
   }
   if (lukeNr.y > maxHeight) {
     lukeNr.y = maxHeight;
@@ -1009,8 +1023,8 @@ function lukeMoveBullet(
     actionObject.y += -actionObject.speed;
     actionObject.x += actionObject.dx;
   } else if (movement == "passive") {
-    actionObject.y += actionSubject.dy;
-    actionObject.x += actionSubject.dx;
+    actionObject.y += actionSubject.dy * objectSpeedUp;
+    actionObject.x += actionSubject.dx * objectSpeedUp;
   }
 
   if (actionObject.x + 22 > canvasName.width) {
@@ -1072,12 +1086,48 @@ function moveBullet(
 }
 
 function moveComet(enemyObject, canvasName, gameNr, marginX, marginY) {
-  enemyObject.x += enemyObject.dx * (enemyObject.speed * enemySpeedUp);
-  enemyObject.y += enemyObject.dy * (enemyObject.speed * enemySpeedUp);
+  enemyObject.x += enemyObject.dx * (enemyObject.speed * objectSpeedUp);
+  enemyObject.y += enemyObject.dy * (enemyObject.speed * objectSpeedUp);
 
   if (enemyObject.x > canvasName.width + 200 || enemyObject.x < -20) {
     returnComet(enemyObject, canvasName, marginX, marginY);
     scorePoints(gameNr);
+  }
+}
+
+function moveStar(
+  actionObject,
+  lukeNr,
+  canvasName,
+  gameNr,
+  marginX,
+  marginY,
+  gameScore,
+  speedingSubject,
+  accelerationX,
+  accelerationY
+) {
+  actionObject.x += actionObject.dx * (actionObject.speed * objectSpeedUp);
+  actionObject.y += actionObject.dy * (actionObject.speed * objectSpeedUp);
+
+  if (gamePlayed == "game2") {
+    if (actionObject.y < -100 || actionObject.y > canvasName.height) {
+      returnStar(actionObject, canvasName, gameNr, marginX, marginY);
+    }
+  } else if (gamePlayed == "game3") {
+    if (actionObject.x > canvasName.width + 200 || actionObject.x < -20) {
+      returnStar(actionObject, canvasName, gameNr, marginX, marginY);
+    }
+  }
+  if (
+    actionObject.x - actionObject.size > lukeNr.x - 20 &&
+    actionObject.x + actionObject.size < lukeNr.x + 20 &&
+    actionObject.y > lukeNr.y - 16 &&
+    actionObject.y < lukeNr.y + 10
+  ) {
+    returnStar(actionObject, canvasName, gameNr, marginX, marginY);
+    scorePoints(gameNr);
+    speedUp(gameScore, speedingSubject, accelerationX, accelerationY);
   }
 }
 
@@ -1093,8 +1143,8 @@ function moveAlienEnemy(
   marginY,
   direction
 ) {
-  enemyObject.x += enemyObject.dx * enemyObject.speed;
-  enemyObject.y += enemyObject.dy * enemyObject.speed;
+  enemyObject.x += enemyObject.dx * (enemyObject.speed * objectSpeedUp);
+  enemyObject.y += enemyObject.dy * (enemyObject.speed * objectSpeedUp);
 
   if (enemyObject.x + 10 > canvasName.width || enemyObject.x - 10 < 0) {
     enemyObject.dx *= -1;
@@ -1113,8 +1163,8 @@ function moveAlienEnemy(
 }
 
 function moveAlienEnemy2(enemyObject, canvasName, gameNr, marginX, marginY) {
-  enemyObject.x += enemyObject.dx * (enemyObject.speed * enemySpeedUp);
-  enemyObject.y += enemyObject.dy * (enemyObject.speed * enemySpeedUp);
+  enemyObject.x += enemyObject.dx * (enemyObject.speed * objectSpeedUp);
+  enemyObject.y += enemyObject.dy * (enemyObject.speed * objectSpeedUp);
 
   if (enemyObject.x > canvasName.width + 200 || enemyObject.x < -20) {
     returnAlienEnemy(enemyObject, canvasName, gameNr, marginX, marginY);
@@ -1181,31 +1231,39 @@ function killEnemy(
   canvasName,
   marginX,
   marginY,
-  direction
+  direction,
+  gameScore,
+  speedingSubject,
+  accelerationX,
+  accelerationY
 ) {
-  if (
-    actionObject.x - actionObject.size > enemyObject.x - 5 &&
-    actionObject.x + actionObject.size < enemyObject.x + 5 &&
-    actionObject.y + actionObject.size > enemyObject.y - 2 &&
-    actionObject.y - actionObject.size < enemyObject.y + 2 + enemyObject.h * 2
-  ) {
-    returnAlienEnemy(
-      enemyObject,
-      canvasName,
-      gameNr,
-      marginX,
-      marginY,
-      direction
-    );
+  if (movement == "active") {
+    if (
+      actionObject.x > enemyObject.x - 20 &&
+      actionObject.x < enemyObject.x + 20 &&
+      actionObject.y > enemyObject.y - 3 &&
+      actionObject.y < enemyObject.y + 6
+    ) {
+      returnAlienEnemy(
+        enemyObject,
+        canvasName,
+        gameNr,
+        marginX,
+        marginY,
+        direction
+      );
+      scorePoints(gameNr);
+      speedUp(gameScore, speedingSubject, accelerationX, accelerationY);
+    }
   }
 }
 
 function gameOver(enemyObject, lukeNr, gameNr) {
   if (
-    enemyObject.x - enemyObject.size > lukeNr.x - 10 &&
-    enemyObject.x + enemyObject.size < lukeNr.x + 18 &&
-    enemyObject.y + enemyObject.size > lukeNr.y - 3 &&
-    enemyObject.y - enemyObject.size < lukeNr.y + 3 + lukeNr.h * 2
+    enemyObject.x - enemyObject.size > lukeNr.x - 20 &&
+    enemyObject.x + enemyObject.size < lukeNr.x + 20 &&
+    enemyObject.y > lukeNr.y - 16 &&
+    enemyObject.y < lukeNr.y + 10
   ) {
     resetGame(gameNr);
   }
@@ -1271,6 +1329,31 @@ function resetBullet(
     (actionObject.dx = directionX),
     (actionObject.dy = directionY);
   movement = "passive";
+}
+
+function resetStar(actionObject, canvasName, gameNr, marginX, marginY) {
+  if (gameNr == 2) {
+    (actionObject.x = canvasName.width * marginX), (actionObject.y = marginY);
+    actionObject.dx = 0;
+    actionObject.dy = 1;
+    actionObject.speed = 1;
+  } else if (gameNr == 3) {
+    (actionObject.x = canvasName.width + marginX),
+      (actionObject.y = canvasName.height * marginY);
+    actionObject.dx = -2;
+    actionObject.dy = 0;
+    actionObject.speed = 1;
+  }
+}
+
+function returnStar(actionObject, canvasName, gameNr, marginX, marginY) {
+  if (gameNr == 2) {
+    (actionObject.x = canvasName.width * marginX), (actionObject.y = -10);
+    (actionObject.dx = 0), (actionObject.dy = 1);
+  } else if (gameNr == 3) {
+    (actionObject.x = canvasName.width + marginX),
+      (actionObject.y = canvasName.height * marginY);
+  }
 }
 
 function resetComet(enemyObject, canvasName, marginX, marginY) {
@@ -1409,7 +1492,7 @@ function drawGameElements1() {
 
 function game1Action() {
   drawGameElements1();
-  moveLuke(luke1, canvas1, 100, 10);
+  moveLuke(luke1, 100, 10, 280, 20);
   moveCowboyEnemy(cowboy1, canvas1);
   moveBullet(bullet1, cowboy1, canvas1, 1, score1, 1.4, 1.4, -1, 0, 0);
   gameOver(bullet1, luke1, 1);
@@ -1446,7 +1529,7 @@ const bullet2 = {
   x: luke2.x,
   y: luke2.y,
   size: 2,
-  speed: 2,
+  speed: 5,
   dx: 0,
   dy: 0,
 };
@@ -1473,10 +1556,23 @@ const evilAlien2 = {
   dy: 1,
 };
 
+const star1 = {
+  x: canvas2.width * (Math.random() * 0.8 + 0.1),
+  y: -15,
+  r: 6,
+  n: 5,
+  inset: -1,
+  size: 3,
+  speed: 1,
+  dx: 0,
+  dy: 2,
+};
+
 function drawGame2Elements() {
   emptyCanvas(ctx2, canvas2);
   drawBullets(ctx2, bullet2);
   drawLuke(ctx2, luke2);
+  drawStar(ctx2, star1);
   drawAlienEnemy(ctx2, evilAlien1);
   drawAlienEnemy(ctx2, evilAlien2);
   drawScore(ctx2, canvas2, score2);
@@ -1484,8 +1580,20 @@ function drawGame2Elements() {
 
 function game2Action() {
   drawGame2Elements();
-  moveLuke(luke2, canvas2, 140, 10);
+  moveLuke(luke2, 140, 40, 280, 20);
   lukeMoveBullet(bullet2, luke2, canvas2, 0, 0, 10);
+  moveStar(
+    star1,
+    luke2,
+    canvas2,
+    2,
+    Math.random() * 0.8 + 0.1,
+    -10,
+    score2,
+    star1,
+    1,
+    1.2
+  );
   moveAlienEnemy(
     evilAlien1,
     canvas2,
@@ -1510,8 +1618,32 @@ function game2Action() {
     0,
     1
   );
-  killEnemy(bullet2, evilAlien1, 2, canvas2, Math.random() * 0.3 + 0.2, 0, -1);
-  killEnemy(bullet2, evilAlien2, 2, canvas2, Math.random() * 0.3 + 0.5, 0, 1);
+  killEnemy(
+    bullet2,
+    evilAlien1,
+    2,
+    canvas2,
+    Math.random() * 0.3 + 0.2,
+    0,
+    -1,
+    score2,
+    evilAlien1,
+    1.2,
+    1.2
+  );
+  killEnemy(
+    bullet2,
+    evilAlien2,
+    2,
+    canvas2,
+    Math.random() * 0.3 + 0.5,
+    0,
+    1,
+    score2,
+    evilAlien2,
+    1.2,
+    1.2
+  );
   gameOver(evilAlien1, luke2, 2);
   gameOver(evilAlien2, luke2, 2);
   requestIdGame2 = requestAnimationFrame(game2Action);
@@ -1531,8 +1663,10 @@ function resetGame2() {
   resetAlienEnemy(evilAlien2, canvas2, 2, Math.random() * 0.3 + 0.5, -75, 0, 1);
   resetLuke(luke2, canvas2, 0, -35);
   resetBullet(bullet2, luke2, 0, 0, 0, 10);
+  resetStar(star1, canvas2, 2, Math.random() * 0.8 + 0.1, -10);
   resetScore(2);
   cancelAnimationFrame(requestIdGame2);
+  objectSpeedUp = 1;
 }
 
 //GAME 3
@@ -1549,6 +1683,18 @@ const luke3 = {
   size: 4.5,
   speed: 4,
   dx: 0,
+  dy: 0,
+};
+
+const star2 = {
+  x: canvas3.width + 10,
+  y: canvas3.height * (Math.random() * 0.8 + 0.1),
+  r: 6,
+  n: 5,
+  inset: -1,
+  size: 3,
+  speed: 1,
+  dx: -2,
   dy: 0,
 };
 
@@ -1610,6 +1756,7 @@ const comet2 = {
 function drawGame3Elements() {
   emptyCanvas(ctx3, canvas3);
   drawLuke(ctx3, luke3);
+  drawStar(ctx3, star2);
   drawComet(ctx3, comet1);
   drawComet(ctx3, comet2);
   drawAlienEnemy(ctx3, alienEnemy1);
@@ -1620,7 +1767,19 @@ function drawGame3Elements() {
 
 function game3Action() {
   drawGame3Elements();
-  moveLuke(luke3, canvas3, 140, 10);
+  moveLuke(luke3, 140, 10, 200, 20);
+  moveStar(
+    star2,
+    luke3,
+    canvas3,
+    3,
+    -10,
+    Math.random() * 0.8 + 0.1,
+    score3,
+    star2,
+    1.2,
+    1
+  );
   moveComet(comet1, canvas3, 3, 15, Math.random() * 0.4 + 0.1);
   moveComet(comet2, canvas3, 3, 15, Math.random() * 0.4 + 0.5);
   moveAlienEnemy2(alienEnemy1, canvas3, 3, 15, 0.15);
@@ -1637,6 +1796,7 @@ function game3Action() {
 function resetGame3() {
   emptyCanvas(ctx3, canvas3);
   resetLuke(luke3, canvas3, 50, 0);
+  resetStar(star2, canvas3, 3, -35, Math.random() * 0.8 + 0.1);
   resetComet(comet1, canvas3, 15, 0.4);
   resetComet(comet2, canvas3, 185, 0.7);
   resetAlienEnemy(alienEnemy1, canvas3, 3, 65, 0.15, 1.1);
@@ -1644,8 +1804,7 @@ function resetGame3() {
   resetAlienEnemy(alienEnemy3, canvas3, 3, 15, 0.85, 1.1);
   resetScore(3);
   cancelAnimationFrame(requestIdGame3);
-  enemySpeedUp = 1;
-  lukeSpeedUp = 1;
+  objectSpeedUp = 1;
 }
 
 //FOOTER

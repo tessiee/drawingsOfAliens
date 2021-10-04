@@ -29,6 +29,9 @@ const menuLinks = document
 const drawingsBox = document.getElementById("drawingsBox");
 const closeDrawings = document.getElementById("closeDrawings");
 const drawingsContainer = document.getElementById("drawingsContainer");
+let otherDrawing =
+  (document.getElementById("nextDrawing"),
+  document.getElementById("previousDrawing"));
 let subjectDrawing;
 let subjectDrawing2;
 
@@ -37,7 +40,8 @@ function hideDrawings() {
   for (x = 0; x < drawingsArr.length; x++) {
     drawingsArr[x].classList.add("hideDrawings");
   }
-  closeDrawings.classList.add("hideCloseBtn");
+  closeDrawings.classList.add("hideBtn");
+  otherDrawing.classList.add("hideBtn");
   drawingsContainer.classList.remove("drawingsContainer");
   drawingsBox.classList.add("hide-box");
 }
@@ -49,7 +53,8 @@ function showDrawings() {
   subjectDrawing = event.target.parentElement.id;
   const drawingsShown = document.getElementById(`${subjectDrawing}Drawings`);
   drawingsShown.classList.remove("hideDrawings");
-  closeDrawings.classList.remove("hideCloseBtn");
+  closeDrawings.classList.remove("hideBtn");
+  otherDrawing.classList.remove("hideBtn");
 }
 
 function closeDrawingsSidebar() {
@@ -271,7 +276,7 @@ function getEvents() {
       data.forEach((event) => {
         const eventEl = document.createElement("div");
         eventEl.classList.add("event");
-        eventEl.classList.add("hide-event");
+        //eventEl.classList.add("hide-event");
         eventEl.innerHTML = `
         <div class="date">${event.date}</div>
         <div class="event-body">
@@ -929,9 +934,26 @@ function drawStar(gameCanvas, drawingSubject) {
     gameCanvas.rotate(Math.PI / drawingSubject.n);
     gameCanvas.lineTo(0, 0 - drawingSubject.r);
   }
-  gameCanvas.closePath();
   gameCanvas.fillStyle = "#FFD700";
   gameCanvas.fill();
+  gameCanvas.closePath();
+  gameCanvas.restore();
+}
+
+function drawHeart(gameCanvas, drawingSubject) {
+  gameCanvas.save();
+  gameCanvas.beginPath();
+  gameCanvas.translate(drawingSubject.x, drawingSubject.y);
+  gameCanvas.moveTo(7, 6);
+  gameCanvas.bezierCurveTo(7, 3, 7, 2, 5, 2);
+  gameCanvas.bezierCurveTo(2, 2, 2, 6, 2, 6);
+  gameCanvas.bezierCurveTo(2, 8, 4, 10, 7, 12);
+  gameCanvas.bezierCurveTo(11, 10, 13, 8, 13, 6);
+  gameCanvas.bezierCurveTo(13, 6, 13, 2, 10, 2);
+  gameCanvas.bezierCurveTo(8, 2, 7, 3, 7, 4);
+  gameCanvas.fillStyle = "#FF0000";
+  gameCanvas.fill();
+  gameCanvas.closePath();
   gameCanvas.restore();
 }
 
@@ -1177,6 +1199,23 @@ function moveStar(
   }
 }
 
+function moveHeart(actionObject, lukeNr, canvasName, marginX, marginY) {
+  actionObject.x += actionObject.dx * (actionObject.speed * objectSpeedUp);
+  actionObject.y += actionObject.dy * (actionObject.speed * objectSpeedUp);
+
+  if (actionObject.y < -100 || actionObject.y > canvasName.height) {
+    returnHeart(actionObject, canvasName);
+  }
+  if (
+    actionObject.x > lukeNr.x - 20 &&
+    actionObject.x < lukeNr.x + 20 &&
+    actionObject.y > lukeNr.y - 16 &&
+    actionObject.y < lukeNr.y + 10
+  ) {
+    resetHeart(actionObject, marginX, marginY);
+  }
+}
+
 function moveAlienEnemy(
   enemyObject,
   canvasName,
@@ -1285,6 +1324,10 @@ function speedUp(gameScore, speedingSubject, accelerationX, accelerationY) {
   if (x == 5 || x == 15 || x == 25 || x == 35 || x == 45 || x == 55) {
     speedingSubject.dx = speedingSubject.dx * accelerationX;
     speedingSubject.dy = speedingSubject.dy * accelerationY;
+
+    if ((gamePlayed == "game2") & (heartNr != undefined)) {
+      heartNr.dy = 1;
+    }
   }
 }
 
@@ -1331,10 +1374,61 @@ function gameOver(enemyObject, lukeNr, gameNr) {
   ) {
     resetGame(gameNr);
 
+    if (gamePlayed == "game2") {
+      randomX3 = Math.random() * 0.8 + 0.1;
+      heartNr = undefined;
+      console.log(heartNr);
+    }
+
     if (gamePlayed == "game3") {
       randomY1 = Math.random() * 0.2 + 0.2;
       randomY2 = Math.random() * 0.2 + 0.4;
       randomY3 = Math.random() * 0.2 + 0.6;
+    }
+  }
+}
+
+function loseHeart(
+  enemyObject,
+  lukeNr,
+  canvasName,
+  gameNr,
+  marginX,
+  direction,
+  randomY
+) {
+  if (
+    enemyObject.x - enemyObject.size > lukeNr.x - 20 &&
+    enemyObject.x + enemyObject.size < lukeNr.x + 20 &&
+    enemyObject.y > lukeNr.y - 16 &&
+    enemyObject.y < lukeNr.y + 10
+  ) {
+    if (heartNr == undefined) {
+      heartNr = heart1;
+      randomX3 = Math.random() * 0.8 + 0.1;
+      returnHeart(heartNr, canvasName);
+      returnAlienEnemy(
+        enemyObject,
+        canvasName,
+        gameNr,
+        marginX,
+        direction,
+        randomY
+      );
+    } else if (heartNr == heart1) {
+      heartNr = heart2;
+      randomX3 = Math.random() * 0.8 + 0.1;
+      returnHeart(heartNr, canvasName);
+      returnAlienEnemy(
+        enemyObject,
+        canvasName,
+        gameNr,
+        marginX,
+        direction,
+        randomY
+      );
+    } else if (heartNr == heart2) {
+      gameOver(enemyObject, lukeNr, gameNr);
     }
   }
 }
@@ -1424,6 +1518,26 @@ function returnStar(actionObject, canvasName, gameNr, marginX, marginY) {
     (actionObject.x = canvasName.width + marginX),
       (actionObject.y = canvasName.height * marginY);
   }
+}
+
+function resetHeart(actionObject, marginX, marginY) {
+  (actionObject.x = marginX), (actionObject.y = marginY);
+  actionObject.dx = 0;
+  actionObject.dy = 0;
+  actionObject.speed = 1;
+
+  if (heartNr == heart2) {
+    heartNr = heart1;
+  } else if (heartNr == heart1) {
+    heartNr = undefined;
+  }
+}
+
+function returnHeart(actionObject, canvasName) {
+  (actionObject.x = canvasName.width * randomX3), (actionObject.y = -15);
+  actionObject.dx = 0;
+  actionObject.dy = 0;
+  actionObject.speed = 1;
 }
 
 function resetComet(enemyObject, canvasName, marginX, marginY) {
@@ -1564,6 +1678,8 @@ let score2 = 0;
 let requestIdGame2;
 let randomX1 = Math.random() * 0.3 + 0.2;
 let randomX2 = Math.random() * 0.3 + 0.5;
+let randomX3 = Math.random() * 0.8 + 0.1;
+let heartNr;
 
 const luke2 = {
   x: canvas2.width / 2,
@@ -1619,12 +1735,42 @@ const star1 = {
   dy: 2,
 };
 
+const heart1 = {
+  x: canvas2.width - 60,
+  y: 10,
+  d: Math.min(9, 9),
+  k: 8,
+  dx: 0,
+  dy: 0,
+};
+
+const heart2 = {
+  x: canvas2.width - 45,
+  y: 10,
+  d: Math.min(9, 9),
+  k: 8,
+  dx: 0,
+  dy: 0,
+};
+
+const heart3 = {
+  x: canvas2.width - 30,
+  y: 10,
+  d: Math.min(9, 9),
+  k: 8,
+  dx: 0,
+  dy: 0,
+};
+
 function drawGame2Elements() {
   emptyCanvas(ctx2, canvas2);
   drawBackgroundStars(ctx2);
   drawBullets(ctx2, bullet2);
   drawLuke(ctx2, luke2);
   drawStar(ctx2, star1);
+  drawHeart(ctx2, heart1);
+  drawHeart(ctx2, heart2);
+  drawHeart(ctx2, heart3);
   drawAlienEnemy(ctx2, evilAlien1);
   drawAlienEnemy(ctx2, evilAlien2);
   drawScore(ctx2, canvas2, score2);
@@ -1632,8 +1778,10 @@ function drawGame2Elements() {
 
 function game2Action() {
   drawGame2Elements();
-  moveLuke(luke2, 140, 40, 280, 20);
-  lukeMoveBullet(bullet2, luke2, canvas2, 0, 0, 10, 280, 20, 150, 50);
+  moveLuke(luke2, 140, 60, 280, 20);
+  lukeMoveBullet(bullet2, luke2, canvas2, 0, 0, 10, 280, 20, 150, 70);
+  moveHeart(heart1, luke2, canvas2, 240, 10);
+  moveHeart(heart2, luke2, canvas2, 255, 10);
   moveStar(
     star1,
     luke2,
@@ -1696,8 +1844,8 @@ function game2Action() {
     1.2,
     1.2
   );
-  gameOver(evilAlien1, luke2, 2);
-  gameOver(evilAlien2, luke2, 2);
+  loseHeart(evilAlien1, luke2, canvas2, 2, randomX1, -1, 0);
+  loseHeart(evilAlien2, luke2, canvas2, 2, randomX2, -1, 0);
   requestIdGame2 = requestAnimationFrame(game2Action);
 }
 
@@ -1707,6 +1855,8 @@ function resetGame2() {
   resetAlienEnemy(evilAlien2, canvas2, 2, randomX2, -75, 1, -1, 0);
   resetLuke(luke2, canvas2, 0, -35);
   resetBullet(bullet2, luke2, 0, 0, 0, 10);
+  resetHeart(heart1, 240, 10);
+  resetHeart(heart2, 255, 10);
   resetStar(star1, canvas2, 2, Math.random() * 0.8 + 0.1, -10);
   resetScore(2);
   cancelAnimationFrame(requestIdGame2);
@@ -1817,7 +1967,7 @@ function drawGame3Elements() {
 
 function game3Action() {
   drawGame3Elements();
-  moveLuke(luke3, 140, 10, 200, 20);
+  moveLuke(luke3, 140, 10, 160, 20);
   moveStar(
     star2,
     luke3,
@@ -1906,3 +2056,15 @@ closeViaFooter();
 document
   .getElementById("openReg3")
   .addEventListener("click", openCloseRegistrationForm);
+
+const hr2 = document.getElementById("hr2");
+
+window.addEventListener("scroll", () => {
+  const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+
+  if (scrollTop + clientHeight >= scrollHeight - 5) {
+    hr2.classList.remove("hide-ruler");
+  } else {
+    hr2.classList.add("hide-ruler");
+  }
+});

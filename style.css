@@ -37,7 +37,13 @@ hr.hr-1 {
 
 hr.hr-2 {
   border: 1px solid red;
-  margin-bottom: 10px;
+  position: fixed;
+  width: 3000px;
+  bottom: 10px;
+}
+
+hr.hr-2.hide-ruler {
+  display: none;
 }
 
 .stop-scrolling {
@@ -153,14 +159,14 @@ hr.hr-2 {
 }
 
 .drawingsBox {
-  position: absolute;
+  position: relative;
   transform: translateX(-50%) translateY(5%);
   top: 5%;
   left: 50%;
   width: 600px;
   height: 500px;
   background-color: black;
-  border: 2px solid var(--alien-colour);
+  border: 3px double var(--alien-colour);
   border-radius: 15px;
   z-index: 2;
 }
@@ -173,7 +179,7 @@ hr.hr-2 {
   position: absolute;
   transform: translateX(-50%);
   left: 50%;
-  width: 550px;
+  width: 500px;
   height: 495px;
   border: none;
   z-index: 2;
@@ -187,29 +193,61 @@ hr.hr-2 {
   text-align: center;
 }
 
-.hideDrawings {
+.drawings.hideDrawings {
   display: none;
 }
 
 .closeDrawings {
-  position: fixed;
-  top: 4px;
-  right: -17px;
+  position: absolute;
+  top: 1%;
+  right: 1%;
   background-color: black;
   border: 3px double var(--alien-colour);
-  border-radius: 30%;
-  font-size: 80%;
+  border-radius: 50%;
+  font-size: 85%;
   color: var(--alien-colour);
   z-index: 3;
   cursor: pointer;
 }
 
 .closeDrawings:hover {
-  border-style: solid;
+  border: 3px solid var(--alien-colour);
+  color: var(--alien-colour);
   text-shadow: 0 2px 10px var(--alien-colour);
 }
 
 .hideCloseBtn {
+  display: none;
+}
+
+.otherDrawing {
+  background-color: transparent;
+  border: none;
+  font-size: 300%;
+  color: rgb(0, 167, 0);
+  z-index: 3;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.otherDrawing.previous {
+  position: absolute;
+  top: 50%;
+  left: -13%;
+}
+
+.otherDrawing.next {
+  position: absolute;
+  top: 50%;
+  right: -13%;
+}
+
+.otherDrawing:hover {
+  color: var(--alien-colour);
+  text-shadow: 0 2px 10px var(--alien-colour);
+}
+
+.hideBtn {
   display: none;
 }
 
@@ -770,8 +808,8 @@ header h1 {
   position: relative;
   left: 50%;
   transform: translateX(-50%);
-  margin-block: 20px;
-  height: 1350px;
+  margin-top: 20px;
+  height: 1100px;
   width: 650px;
 }
 
@@ -895,6 +933,7 @@ header h1 {
   font-family: HarlowSolid;
   text-align: right;
   z-index: 0;
+  background-color: transparent;
 }
 
 .footer-textbox {

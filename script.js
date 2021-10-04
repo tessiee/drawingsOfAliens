@@ -1325,6 +1325,14 @@ function speedUp(gameScore, speedingSubject, accelerationX, accelerationY) {
     speedingSubject.dx = speedingSubject.dx * accelerationX;
     speedingSubject.dy = speedingSubject.dy * accelerationY;
 
+    if ((gamePlayed == "game1") & (x == 15)) {
+      console.log(cowboy2.dx);
+      cowboy2.x = cowboy1.x;
+      cowboy2.dx = cowboy1.dx * -1.2;
+      bullet2.dx = bullet1.dx * -1;
+      bullet2.dy = -2.5;
+    }
+
     if ((gamePlayed == "game2") & (heartNr != undefined)) {
       heartNr.dy = 1;
     }
@@ -1461,10 +1469,10 @@ function resetGame(gameNr) {
   }
 }
 
-function resetCowboyEnemy(enemyObject, canvasName) {
-  (enemyObject.x = canvasName.width / 2),
+function resetCowboyEnemy(enemyObject, canvasName, objectX, direction) {
+  (enemyObject.x = objectX),
     (enemyObject.y = canvasName.height - 5),
-    (enemyObject.dx = 2);
+    (enemyObject.dx = 2 * direction);
 }
 
 function returnBullet(
@@ -1628,8 +1636,17 @@ const bullet1 = {
   y: canvas1.height,
   size: 2,
   speed: 2,
-  dx: 3,
-  dy: -2,
+  dx: 1.5,
+  dy: -2.5,
+};
+
+const bullet2 = {
+  x: canvas1.width / 2,
+  y: canvas1.height,
+  size: 2,
+  speed: 2,
+  dx: 1.5,
+  dy: -2.5,
 };
 
 const cowboy1 = {
@@ -1637,6 +1654,13 @@ const cowboy1 = {
   y: canvas1.height,
   size: 6,
   dx: 2,
+};
+
+const cowboy2 = {
+  x: canvas1.width,
+  y: canvas1.height,
+  size: 6,
+  dx: -2,
 };
 
 function drawEarth() {
@@ -1648,8 +1672,10 @@ function drawGameElements1() {
   drawBackgroundStars(ctx1);
   drawEarth();
   drawCowboyEnemy(ctx1, cowboy1);
+  drawCowboyEnemy(ctx1, cowboy2);
   drawLuke(ctx1, luke1);
   drawBullets(ctx1, bullet1);
+  drawBullets(ctx1, bullet2);
   drawScore(ctx1, canvas1, score1);
 }
 
@@ -1657,15 +1683,20 @@ function game1Action() {
   drawGameElements1();
   moveLuke(luke1, 100, 10, 280, 20);
   moveCowboyEnemy(cowboy1, canvas1);
-  moveBullet(bullet1, cowboy1, canvas1, 1, score1, 1.4, 1.4, -1, 0, 0);
+  moveCowboyEnemy(cowboy2, canvas1);
+  moveBullet(bullet1, cowboy1, canvas1, 1, score1, 1, 1, -1, 0, 0);
+  moveBullet(bullet2, cowboy2, canvas1, 1, score1, 1, 1, -1, 0, 0);
   gameOver(bullet1, luke1, 1);
+  gameOver(bullet2, luke1, 1);
   requestIdGame1 = requestAnimationFrame(game1Action);
 }
 
 function resetGame1() {
   emptyCanvas(ctx1, canvas1);
-  resetBullet(bullet1, cowboy1, 1.5, -1.5, 0, 0);
-  resetCowboyEnemy(cowboy1, canvas1);
+  resetCowboyEnemy(cowboy1, canvas1, 150, 1);
+  resetCowboyEnemy(cowboy2, canvas1, -15, -1);
+  resetBullet(bullet1, cowboy1, 1.5, -2.5, 0, 0);
+  resetBullet(bullet2, cowboy2, 0, 0, 0, 0);
   resetLuke(luke1, canvas1, 0, 50);
   resetScore(1);
   cancelAnimationFrame(requestIdGame1);
@@ -1692,7 +1723,7 @@ const luke2 = {
   dy: 0,
 };
 
-const bullet2 = {
+const bulletLuke = {
   x: luke2.x,
   y: luke2.y,
   size: 2,
@@ -1765,7 +1796,7 @@ const heart3 = {
 function drawGame2Elements() {
   emptyCanvas(ctx2, canvas2);
   drawBackgroundStars(ctx2);
-  drawBullets(ctx2, bullet2);
+  drawBullets(ctx2, bulletLuke);
   drawLuke(ctx2, luke2);
   drawStar(ctx2, star1);
   drawHeart(ctx2, heart1);
@@ -1779,7 +1810,7 @@ function drawGame2Elements() {
 function game2Action() {
   drawGame2Elements();
   moveLuke(luke2, 140, 60, 280, 20);
-  lukeMoveBullet(bullet2, luke2, canvas2, 0, 0, 10, 280, 20, 150, 70);
+  lukeMoveBullet(bulletLuke, luke2, canvas2, 0, 0, 10, 280, 20, 150, 70);
   moveHeart(heart1, luke2, canvas2, 240, 10);
   moveHeart(heart2, luke2, canvas2, 255, 10);
   moveStar(
@@ -1819,7 +1850,7 @@ function game2Action() {
     -1
   );
   killEnemy(
-    bullet2,
+    bulletLuke,
     evilAlien1,
     2,
     canvas2,
@@ -1832,7 +1863,7 @@ function game2Action() {
     1.2
   );
   killEnemy(
-    bullet2,
+    bulletLuke,
     evilAlien2,
     2,
     canvas2,
@@ -1854,7 +1885,7 @@ function resetGame2() {
   resetAlienEnemy(evilAlien1, canvas2, 2, randomX1, -10, 1, -1, 0);
   resetAlienEnemy(evilAlien2, canvas2, 2, randomX2, -75, 1, -1, 0);
   resetLuke(luke2, canvas2, 0, -35);
-  resetBullet(bullet2, luke2, 0, 0, 0, 10);
+  resetBullet(bulletLuke, luke2, 0, 0, 0, 10);
   resetHeart(heart1, 240, 10);
   resetHeart(heart2, 255, 10);
   resetStar(star1, canvas2, 2, Math.random() * 0.8 + 0.1, -10);

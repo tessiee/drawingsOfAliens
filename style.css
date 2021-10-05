@@ -704,7 +704,7 @@ header h1 {
 }
 
 .event.hide-event {
-  visibility: hidden;
+  display: none;
 }
 
 .event {

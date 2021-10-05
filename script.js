@@ -283,10 +283,10 @@ fetch("events.json")
         <div class="event-body">
         <h2 class="event-title">${event.title}</h2>
         <p class="event-description">${event.description}</p>
-        </div>
+        <div class="extra-info hide-info">
         <button class="open-info">&#128712;</button>
-        <div class="extra-info">
-        <p class="event-info hide-info">${event.info}</p>
+        <p class="event-info">${event.info}</p>
+        </div>
         </div>
         `;
       eventsList.appendChild(eventEl);
@@ -300,8 +300,13 @@ function filterEvents(e) {
   events.forEach((event) => {
     const title = event.querySelector(".event-title").innerText.toUpperCase();
     const body = event.querySelector(".event-body").innerText.toUpperCase();
+    const info = event.querySelector(".event-info").innerText.toUpperCase();
 
-    if (title.indexOf(searchEvent) > -1 || body.indexOf(searchEvent) > -1) {
+    if (
+      title.indexOf(searchEvent) > -1 ||
+      body.indexOf(searchEvent) > -1 ||
+      info.indexOf(searchEvent) > -1
+    ) {
       event.style.display = "flex";
     } else {
       event.style.display = "none";
@@ -342,7 +347,11 @@ function showLoading() {
     eventsLoader.classList.remove("show");
 
     setTimeout(() => {
-      maxEvents += 4;
+      if (maxEvents < eventsList.childElementCount - 8) {
+        maxEvents += 8;
+      } else {
+        maxEvents = eventsList.childElementCount;
+      }
       showEvents();
     }, 100);
   }, 1000);
@@ -354,9 +363,48 @@ eventsBox.addEventListener("scroll", () => {
   let clientHeight = eventsBox.clientHeight;
 
   if (scrollTop + clientHeight >= scrollHeight) {
-    showLoading();
+    if (maxEvents < eventsList.childElementCount) {
+      showLoading();
+    }
   }
 });
+
+let eventsInfoButtonsArr = [];
+let eventsInfoArr = [];
+
+async function clickEventInfoButton() {
+  let res = await fetch("events.json");
+  await res.json();
+  let eventsInfoButtons = document.querySelectorAll(".open-info");
+  for (x = 0; x < eventsList.childElementCount; x++) {
+    eventsInfoButtons.forEach(() => {
+      eventsInfoButtons.item(x).addEventListener("click", showEventsInfo);
+      eventsInfoButtonsArr[x] = eventsInfoButtons.item(x);
+    });
+  }
+}
+clickEventInfoButton();
+
+async function getEventsInfo() {
+  let res = await fetch("events.json");
+  await res.json();
+  let eventsInfo = document.querySelectorAll(".event-info");
+  for (x = 0; x < eventsList.childElementCount; x++) {
+    eventsInfo.forEach(() => {
+      eventsInfoArr[x] = eventsInfo.item(x);
+    });
+  }
+}
+getEventsInfo();
+
+function showEventsInfo() {
+  let eventInfo = event.target.parentElement;
+  if (eventInfo.classList.contains("hide-info")) {
+    eventInfo.classList.remove("hide-info");
+  } else {
+    eventInfo.classList.add("hide-info");
+  }
+}
 
 //GAMES GENERAL
 let gamePlayed;
@@ -365,6 +413,18 @@ let gameButtons = new Array(3);
 let games = new Array(3);
 let infoGames = new Array(3);
 let gameBoxes = new Array(3);
+let gameControls = new Array(3);
+let showGameControls = new Array(3);
+let gameover1 = document.getElementById("game-over1");
+let gameover2 = document.getElementById("game-over2");
+let gameover3 = document.getElementById("game-over3");
+let gameOverArr = new Array(
+  document.getElementById("game-over1"),
+  document.getElementById("game-over2"),
+  document.getElementById("game-over3")
+);
+let gameAgainYes = new Array(3);
+let gameAgainNo = new Array(3);
 
 function fillGameArrays() {
   for (x = 0; x < gameButtons.length; x++) {
@@ -372,15 +432,102 @@ function fillGameArrays() {
     games[x] = document.getElementById(`theGame${x + 1}`);
     infoGames[x] = document.getElementById(`game${x + 1}info`);
     gameBoxes[x] = document.getElementById(`game${x + 1}`);
+    gameControls[x] = document.getElementById(`controls${x + 1}`);
+    showGameControls[x] = document.getElementById(`show-controls${x + 1}`);
   }
 }
 fillGameArrays();
+console.log(showGameControls);
+
+function addControlsBtnEventListeners() {
+  for (x = 0; x < showGameControls.length; x++) {
+    showGameControls[x].addEventListener("mouseenter", showTheGameControls);
+    showGameControls[x].addEventListener("mouseleave", showTheGameControls);
+  }
+}
+addControlsBtnEventListeners();
+
+function hideControlsBtn() {
+  for (x = 0; x < gameControls.length; x++) {
+    showGameControls[x].classList.add("hide-btn");
+  }
+}
+
+function showControlsBtn(x) {
+  showGameControls[x].classList.remove("hide-btn");
+}
+
+function showTheGameControls() {
+  let x;
+  switch (gamePlayed) {
+    case "game1":
+      x = 0;
+      break;
+    case "game2":
+      x = 1;
+      break;
+    case "game3":
+      x = 2;
+      break;
+  }
+  gameControls[x].classList.contains("hide-controls")
+    ? gameControls[x].classList.remove("hide-controls")
+    : gameControls[x].classList.add("hide-controls");
+}
+
+function gameOverClose() {
+  for (x = 0; x < gameOverArr.length; x++) {
+    gameOverArr[x].classList.add("hide-screen");
+  }
+}
+
+function gameOverAgain() {
+  let gameOverScreen = event.target.parentElement;
+  let gameOverGame = gameOverScreen.parentElement.id;
+
+  gameOverScreen.classList.add("hide-screen");
+  resetAllGames();
+
+  switch (gameOverGame) {
+    case "game1":
+      game1Action();
+      break;
+    case "game2":
+      game2Action();
+      break;
+    case "game3":
+      game3Action();
+      break;
+  }
+}
+
+function getGameAgainButtons() {
+  let againYes = document.querySelectorAll(".play-yes");
+  let againNo = document.querySelectorAll(".play-no");
+  for (x = 0; x < gameAgainYes.length; x++) {
+    againYes.forEach(() => {
+      gameAgainYes[x] = againYes.item(x);
+      againYes.item(x).addEventListener("click", gameOverAgain);
+    });
+  }
+  for (x = 0; x < gameAgainNo.length; x++) {
+    againNo.forEach(() => {
+      gameAgainNo[x] = againNo.item(x);
+      againNo.item(x).addEventListener("click", closeGames);
+      againNo.item(x).addEventListener("click", gameOverClose);
+      againNo.item(x).addEventListener("click", gameLightOff);
+    });
+  }
+}
+getGameAgainButtons();
 
 function closeGames() {
   for (x = 0; x < games.length; x++) {
     games[x].classList.add("hide-game");
   }
+  gameOverClose();
   startBtn();
+  hideControlsBtn();
   resetAllGames();
   enableScrolling();
 }
@@ -404,12 +551,15 @@ function startGame() {
   switch (gamePlayed) {
     case "game1":
       game1Action();
+      showControlsBtn(0);
       break;
     case "game2":
       game2Action();
+      showControlsBtn(1);
       break;
     case "game3":
       game3Action();
+      showControlsBtn(2);
       break;
   }
 }
@@ -1233,8 +1383,8 @@ function moveAlienEnemy(
     enemyObject.dx *= -1;
   }
   if (enemyObject.y < -100 || enemyObject.y > canvasName.height) {
-    randomX1 = Math.random() * 0.3 + 0.2;
-    randomX2 = Math.random() * 0.3 + 0.5;
+    randomX1 = Math.random() * 0.7 + 0.2;
+    randomX2 = Math.random() * 0.7 + 0.2;
     returnAlienEnemy(
       enemyObject,
       canvasName,
@@ -1281,6 +1431,36 @@ function moveAlienEnemy2(
 
 //GAME FUNCTIONS
 
+function pauseGame(gamePlayed) {
+  if (gamePlayed == "game1") {
+    cowboy1.dx = 0;
+    cowboy2.dx = 0;
+    bullet1.dx = 0;
+    bullet1.dy = 0;
+    bullet2.dx = 0;
+    bullet2.dy = 0;
+  }
+  if (gamePlayed == "game2") {
+    star1.dy = 0;
+    heartNr.dy = 0;
+    evilAlien1.dx = 0;
+    evilAlien1.dy = 0;
+    evilAlien2.dx = 0;
+    evilAlien2.dy = 0;
+  }
+  if (gamePlayed == "game3") {
+    comet1.dx = 0;
+    comet2.dx = 0;
+    star2.dx = 0;
+    alienEnemy1.dx = 0;
+    alienEnemy1.dy = 0;
+    alienEnemy2.dx = 0;
+    alienEnemy2.dy = 0;
+    alienEnemy3.dx = 0;
+    alienEnemy3.dy = 0;
+  }
+}
+
 function scorePoints(gameNr) {
   switch (gameNr) {
     case 1:
@@ -1324,7 +1504,6 @@ function speedUp(gameScore, speedingSubject, accelerationX, accelerationY) {
     speedingSubject.dy = speedingSubject.dy * accelerationY;
 
     if ((gamePlayed == "game1") & (x == 15)) {
-      console.log(cowboy2.dx);
       cowboy2.x = cowboy1.x;
       cowboy2.dx = cowboy1.dx * -1.2;
       bullet2.dx = bullet1.dx * -1;
@@ -1378,18 +1557,23 @@ function gameOver(enemyObject, lukeNr, gameNr) {
     enemyObject.y > lukeNr.y - 16 &&
     enemyObject.y < lukeNr.y + 10
   ) {
-    resetGame(gameNr);
+    pauseGame(gamePlayed);
+
+    if (gamePlayed == "game1") {
+      gameover1.classList.remove("hide-screen");
+    }
 
     if (gamePlayed == "game2") {
       randomX3 = Math.random() * 0.8 + 0.1;
       heartNr = undefined;
-      console.log(heartNr);
+      gameover2.classList.remove("hide-screen");
     }
 
     if (gamePlayed == "game3") {
       randomY1 = Math.random() * 0.2 + 0.2;
       randomY2 = Math.random() * 0.2 + 0.4;
       randomY3 = Math.random() * 0.2 + 0.6;
+      gameover3.classList.remove("hide-screen");
     }
   }
 }
@@ -1434,6 +1618,8 @@ function loseHeart(
         randomY
       );
     } else if (heartNr == heart2) {
+      heartNr = heart3;
+      returnHeart(heartNr, canvasName);
       gameOver(enemyObject, lukeNr, gameNr);
     }
   }
@@ -1705,8 +1891,8 @@ const canvas2 = document.getElementById("theGame2");
 const ctx2 = canvas2.getContext("2d");
 let score2 = 0;
 let requestIdGame2;
-let randomX1 = Math.random() * 0.3 + 0.2;
-let randomX2 = Math.random() * 0.3 + 0.5;
+let randomX1 = Math.random() * 0.7 + 0.2;
+let randomX2 = Math.random() * 0.7 + 0.2;
 let randomX3 = Math.random() * 0.8 + 0.1;
 let heartNr;
 
@@ -1886,6 +2072,7 @@ function resetGame2() {
   resetBullet(bulletLuke, luke2, 0, 0, 0, 10);
   resetHeart(heart1, 240, 10);
   resetHeart(heart2, 255, 10);
+  resetHeart(heart3, 270, 10);
   resetStar(star1, canvas2, 2, Math.random() * 0.8 + 0.1, -10);
   resetScore(2);
   cancelAnimationFrame(requestIdGame2);

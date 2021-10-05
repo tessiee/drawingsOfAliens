@@ -269,15 +269,16 @@ const eventsList = document.getElementById("events-list");
 const eventsLoader = document.getElementById("events-loader");
 let maxEvents = 8;
 
-function getEvents() {
-  fetch("events.json")
-    .then((res) => res.json())
-    .then((data) =>
-      data.forEach((event) => {
-        const eventEl = document.createElement("div");
-        eventEl.classList.add("event");
-        //eventEl.classList.add("hide-event");
-        eventEl.innerHTML = `
+fetch("events.json")
+  .then((res) => {
+    return res.json();
+  })
+  .then((data) => {
+    data.forEach((event) => {
+      const eventEl = document.createElement("div");
+      eventEl.classList.add("event");
+      eventEl.classList.add("hide-event");
+      eventEl.innerHTML = `
         <div class="date">${event.date}</div>
         <div class="event-body">
         <h2 class="event-title">${event.title}</h2>
@@ -288,10 +289,9 @@ function getEvents() {
         <p class="event-info hide-info">${event.info}</p>
         </div>
         `;
-        eventsList.appendChild(eventEl);
-      })
-    );
-}
+      eventsList.appendChild(eventEl);
+    });
+  });
 
 function filterEvents(e) {
   const events = document.querySelectorAll(".event");
@@ -314,14 +314,14 @@ eventsFilter.addEventListener("input", filterEvents);
 // // SCROLL AND FETCH
 
 async function showInitialEvents() {
-  await getEvents();
+  let res = await fetch("events.json");
+  await res.json();
   let events = document.querySelectorAll(".event");
   for (x = 0; x < maxEvents; x++) {
     events.forEach(() => {
       events.item(x).classList.remove("hide-event");
     });
   }
-  //console.log(events);
 }
 
 showInitialEvents();

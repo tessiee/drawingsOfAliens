@@ -333,7 +333,6 @@ function showEvents() {
       events.item(x).classList.remove("hide-event");
     });
   }
-  console.log(events);
 }
 
 function showLoading() {
@@ -344,7 +343,6 @@ function showLoading() {
 
     setTimeout(() => {
       maxEvents += 4;
-      console.log(maxEvents);
       showEvents();
     }, 100);
   }, 1000);

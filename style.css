@@ -202,18 +202,19 @@ hr.hr-2.hide-ruler {
   top: 1%;
   right: 1%;
   background-color: black;
-  border: 3px double var(--alien-colour);
+  border: 3px solid var(--light-alien);
   border-radius: 50%;
   font-size: 85%;
-  color: var(--alien-colour);
+  font-weight: bold;
+  color: var(--light-alien);
   z-index: 3;
   cursor: pointer;
 }
 
 .closeDrawings:hover {
-  border: 3px solid var(--alien-colour);
-  color: var(--alien-colour);
-  text-shadow: 0 2px 10px var(--alien-colour);
+  border: 3px solid red;
+  color: red;
+  text-shadow: 0 2px 10px red;
 }
 
 .hideCloseBtn {
@@ -700,7 +701,8 @@ header h1 {
 }
 
 .events-list {
-  margin-top: 10px;
+  margin-top: 12px;
+  margin-bottom: 20px;
 }
 
 .event.hide-event {
@@ -708,6 +710,7 @@ header h1 {
 }
 
 .event {
+  display: inline-flex;
   position: relative;
   margin: 8px 6px;
   border: 2px solid red;
@@ -720,12 +723,18 @@ header h1 {
 }
 
 .event .date {
-  width: 120px;
+  min-width: 120px;
+  align-self: flex-start;
+  font-weight: bold;
+  padding-top: 10px;
 }
 
 .event h2 {
-  text-align: left;
-  padding-left: 10px;
+  min-width: 120px;
+  text-align: start;
+  font-weight: bold;
+  padding-top: 8px;
+  padding-left: 5px;
 }
 
 .event .event-body {
@@ -733,14 +742,12 @@ header h1 {
   height: fit-content;
 }
 
-.event-info.hide-info {
+.extra-info.hide-info .event-info {
   display: none;
 }
 
-.event .event-info {
-  position: absolute;
-  left: 120px;
-  top: 50px;
+.extra-info .event-info {
+  margin-block: 15px;
 }
 
 .event .open-info {
@@ -750,13 +757,13 @@ header h1 {
   border-style: hidden;
   cursor: pointer;
   position: absolute;
-  right: 2%;
-  top: 0.5%;
+  top: 10px;
+  right: 8px;
 }
 
 .event p {
   text-align: left;
-  padding-left: 10px;
+  padding-left: 5px;
   color: red;
 }
 
@@ -918,6 +925,140 @@ header h1 {
 }
 
 .hide-game {
+  display: none;
+}
+
+.controls {
+  background-color: transparent;
+  border: 1px solid var(--alien-colour);
+  border-radius: 20%;
+  height: 20px;
+  width: 20px;
+  font-size: 90%;
+  color: var(--alien-colour);
+  z-index: 1;
+}
+
+.controls p {
+  color: var(--light-alien);
+  font-size: 13px;
+  margin-top: 2px;
+}
+
+.left-control {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+}
+
+.right-control {
+  position: absolute;
+  top: 15px;
+  left: 40px;
+}
+
+.up-control {
+  position: absolute;
+  top: 15px;
+  left: 70px;
+}
+
+.down-control {
+  position: absolute;
+  top: 15px;
+  left: 95px;
+}
+
+.f-control {
+  position: absolute;
+  top: 16px;
+  left: 130px;
+}
+
+.show-controls {
+  background-color: transparent;
+  border: none;
+  height: 60px;
+  width: 200px;
+  font-size: 80%;
+  text-align: start;
+  padding-left: 15px;
+  z-index: 1;
+  color: var(--light-alien);
+  margin-top: 2px;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}
+
+.show-controls.hide-btn {
+  display: none;
+}
+
+.show-controls:hover {
+  display: none;
+}
+
+.hide-controls .controls {
+  display: none;
+}
+
+.game-over {
+  z-index: 3;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  background-color: black;
+  margin-top: 20px;
+  width: 605px;
+  height: 200px;
+  border: 2px solid red;
+}
+
+.game-over p {
+  margin-top: 30px;
+  font-size: 25px;
+  font-weight: bolder;
+}
+
+.play-yes {
+  padding: 4px;
+  padding-top: 2px;
+  margin-top: 15px;
+  background-color: black;
+  border-radius: 7px;
+  border: 3px double var(--alien-colour);
+  color: var(--alien-colour);
+  font-weight: bold;
+}
+
+.play-yes:hover {
+  border-style: solid;
+  cursor: pointer;
+  box-shadow: 0 1px 4px var(--alien-colour);
+  font-weight: bolder;
+}
+
+.play-no {
+  padding: 4px;
+  padding-top: 2px;
+  margin-top: 15px;
+  background-color: black;
+  border-radius: 7px;
+  border: 3px double red;
+  color: red;
+  font-weight: bold;
+}
+
+.play-no:hover {
+  border-style: solid;
+  cursor: pointer;
+  box-shadow: 0 1px 4px red;
+  font-weight: bolder;
+}
+
+.hide-screen {
   display: none;
 }
 

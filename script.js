@@ -425,6 +425,8 @@ let gameOverArr = new Array(
 );
 let gameAgainYes = new Array(3);
 let gameAgainNo = new Array(3);
+let startGameScreens = new Array(3);
+let startGameBtns = new Array(3);
 
 function fillGameArrays() {
   for (x = 0; x < gameButtons.length; x++) {
@@ -434,15 +436,53 @@ function fillGameArrays() {
     gameBoxes[x] = document.getElementById(`game${x + 1}`);
     gameControls[x] = document.getElementById(`controls${x + 1}`);
     showGameControls[x] = document.getElementById(`show-controls${x + 1}`);
+    startGameScreens[x] = document.getElementById(`start-game${x + 1}`);
+    startGameBtns[x] = document.getElementById(`start-btn${x + 1}`);
   }
 }
 fillGameArrays();
-console.log(showGameControls);
+
+function showStartGameScreen(x) {
+  startGameScreens[x].classList.remove("hide-screen");
+}
+
+function hideStartGameScreen() {
+  for (x = 0; x < startGameScreens.length; x++) {
+    startGameScreens[x].classList.add("hide-screen");
+  }
+}
+
+function clickStartGameBtn() {
+  let startGameScreen = event.target.parentElement;
+  let gameStartGameScreen = startGameScreen.parentElement.id;
+
+  startGameScreen.classList.add("hide-screen");
+  resetAllGames();
+
+  switch (gameStartGameScreen) {
+    case "game1":
+      game1Action();
+      break;
+    case "game2":
+      game2Action();
+      break;
+    case "game3":
+      game3Action();
+      break;
+  }
+}
+
+function addStartGameBtnEventListeners() {
+  for (x = 0; x < startGameBtns.length; x++) {
+    startGameBtns[x].addEventListener("click", clickStartGameBtn);
+  }
+}
+addStartGameBtnEventListeners();
 
 function addControlsBtnEventListeners() {
   for (x = 0; x < showGameControls.length; x++) {
     showGameControls[x].addEventListener("mouseenter", showTheGameControls);
-    showGameControls[x].addEventListener("mouseleave", showTheGameControls);
+    gameControls[x].addEventListener("mouseleave", showTheGameControls);
   }
 }
 addControlsBtnEventListeners();
@@ -479,6 +519,7 @@ function gameOverClose() {
   for (x = 0; x < gameOverArr.length; x++) {
     gameOverArr[x].classList.add("hide-screen");
   }
+  hideStartGameScreen();
 }
 
 function gameOverAgain() {
@@ -552,14 +593,17 @@ function startGame() {
     case "game1":
       game1Action();
       showControlsBtn(0);
+      showStartGameScreen(0);
       break;
     case "game2":
       game2Action();
       showControlsBtn(1);
+      showStartGameScreen(1);
       break;
     case "game3":
       game3Action();
       showControlsBtn(2);
+      showStartGameScreen(2);
       break;
   }
 }
@@ -1193,8 +1237,8 @@ document.addEventListener("keyup", keyUp);
 //GAME OBJECT FUNCTIONS
 
 function moveLuke(lukeNr, maxHeight, minHeight, maxWidth, minWidth) {
-  lukeNr.x += lukeNr.dx * objectSpeedUp;
-  lukeNr.y += lukeNr.dy * objectSpeedUp;
+  lukeNr.x += lukeNr.dx * lukeNr.speed;
+  lukeNr.y += lukeNr.dy * (lukeNr.speed / 2);
 
   if (lukeNr.x > maxWidth) {
     lukeNr.x = maxWidth;
@@ -1239,8 +1283,8 @@ function lukeMoveBullet(
       returnBullet(actionObject, actionSubject, direction, marginX, marginY);
     }
   } else if (movement == "passive") {
-    actionObject.y += actionSubject.dy * objectSpeedUp;
-    actionObject.x += actionSubject.dx * objectSpeedUp;
+    actionObject.y += actionSubject.dy * (actionSubject.speed / 2);
+    actionObject.x += actionSubject.dx * actionSubject.speed;
 
     if (actionObject.x > maxWidth) {
       actionObject.x = maxWidth;
@@ -1335,15 +1379,18 @@ function moveStar(
       returnStar(actionObject, canvasName, gameNr, marginX, marginY);
     }
   }
-  if (
-    actionObject.x - actionObject.size > lukeNr.x - 20 &&
-    actionObject.x + actionObject.size < lukeNr.x + 20 &&
-    actionObject.y > lukeNr.y - 16 &&
-    actionObject.y < lukeNr.y + 10
-  ) {
-    returnStar(actionObject, canvasName, gameNr, marginX, marginY);
-    scorePoints(gameNr);
-    speedUp(gameScore, speedingSubject, accelerationX, accelerationY);
+  let waitForStart = gamePlayed.slice(4) - 1;
+  if (startGameScreens[waitForStart].classList.contains("hide-screen")) {
+    if (
+      actionObject.x - actionObject.size > lukeNr.x - 20 &&
+      actionObject.x + actionObject.size < lukeNr.x + 20 &&
+      actionObject.y > lukeNr.y - 16 &&
+      actionObject.y < lukeNr.y + 10
+    ) {
+      returnStar(actionObject, canvasName, gameNr, marginX, marginY);
+      scorePoints(gameNr);
+      speedUp(gameScore, speedingSubject, accelerationX, accelerationY);
+    }
   }
 }
 
@@ -1433,12 +1480,13 @@ function moveAlienEnemy2(
 
 function pauseGame(gamePlayed) {
   if (gamePlayed == "game1") {
-    cowboy1.dx = 0;
-    cowboy2.dx = 0;
     bullet1.dx = 0;
     bullet1.dy = 0;
     bullet2.dx = 0;
     bullet2.dy = 0;
+    cowboy1.dx = 0;
+    cowboy2.dx = 0;
+    luke1.speed = 0;
   }
   if (gamePlayed == "game2") {
     star1.dy = 0;
@@ -1447,6 +1495,7 @@ function pauseGame(gamePlayed) {
     evilAlien1.dy = 0;
     evilAlien2.dx = 0;
     evilAlien2.dy = 0;
+    luke2.speed = 0;
   }
   if (gamePlayed == "game3") {
     comet1.dx = 0;
@@ -1458,61 +1507,52 @@ function pauseGame(gamePlayed) {
     alienEnemy2.dy = 0;
     alienEnemy3.dx = 0;
     alienEnemy3.dy = 0;
+    luke3.speed = 0;
   }
 }
 
 function scorePoints(gameNr) {
-  switch (gameNr) {
-    case 1:
-      score1++;
-      break;
-    case 2:
-      score2++;
-      break;
-    case 3:
-      score3++;
-      break;
+  let waitForStart = gamePlayed.slice(4) - 1;
+  if (startGameScreens[waitForStart].classList.contains("hide-screen")) {
+    switch (gameNr) {
+      case 1:
+        score1++;
+        break;
+      case 2:
+        score2++;
+        break;
+      case 3:
+        score3++;
+        break;
+    }
   }
 }
 
 function speedUp(gameScore, speedingSubject, accelerationX, accelerationY) {
-  let x = 0;
-
-  switch (gameScore) {
-    case 5:
-      x = 5;
-      break;
-    case 15:
-      x = 15;
-      break;
-    case 25:
-      x = 25;
-      break;
-    case 35:
-      x = 35;
-      break;
-    case 45:
-      x = 45;
-      break;
-    case 55:
-      x = 55;
-      break;
+  var testScore = /^[1-9]{1}[5]{1,2}$/;
+  let x;
+  if (gameScore == 10) {
+    x = "enemy";
+  } else if (testScore.test(gameScore)) {
+    x = "speed";
+  } else {
+    x = "none";
   }
 
-  if (x == 5 || x == 15 || x == 25 || x == 35 || x == 45 || x == 55) {
+  if (x == "speed") {
     speedingSubject.dx = speedingSubject.dx * accelerationX;
     speedingSubject.dy = speedingSubject.dy * accelerationY;
-
-    if ((gamePlayed == "game1") & (x == 15)) {
-      cowboy2.x = cowboy1.x;
-      cowboy2.dx = cowboy1.dx * -1.2;
-      bullet2.dx = bullet1.dx * -1;
-      bullet2.dy = -2.5;
-    }
 
     if ((gamePlayed == "game2") & (heartNr != undefined)) {
       heartNr.dy = 1;
     }
+  }
+
+  if ((gamePlayed == "game1") & (x == "enemy")) {
+    cowboy2.x = cowboy1.x;
+    cowboy2.dx = cowboy1.dx * -1.2;
+    bullet2.dx = bullet1.dx * -1;
+    bullet2.dy = -2.5;
   }
 }
 
@@ -1551,29 +1591,32 @@ function killEnemy(
 }
 
 function gameOver(enemyObject, lukeNr, gameNr) {
-  if (
-    enemyObject.x - enemyObject.size > lukeNr.x - 20 &&
-    enemyObject.x + enemyObject.size < lukeNr.x + 20 &&
-    enemyObject.y > lukeNr.y - 16 &&
-    enemyObject.y < lukeNr.y + 10
-  ) {
-    pauseGame(gamePlayed);
+  let waitForStart = gamePlayed.slice(4) - 1;
+  if (startGameScreens[waitForStart].classList.contains("hide-screen")) {
+    if (
+      enemyObject.x - enemyObject.size > lukeNr.x - 20 &&
+      enemyObject.x + enemyObject.size < lukeNr.x + 20 &&
+      enemyObject.y > lukeNr.y - 16 &&
+      enemyObject.y < lukeNr.y + 10
+    ) {
+      pauseGame(gamePlayed);
 
-    if (gamePlayed == "game1") {
-      gameover1.classList.remove("hide-screen");
-    }
+      if (gamePlayed == "game1") {
+        gameover1.classList.remove("hide-screen");
+      }
 
-    if (gamePlayed == "game2") {
-      randomX3 = Math.random() * 0.8 + 0.1;
-      heartNr = undefined;
-      gameover2.classList.remove("hide-screen");
-    }
+      if (gamePlayed == "game2") {
+        randomX3 = Math.random() * 0.8 + 0.1;
+        heartNr = undefined;
+        gameover2.classList.remove("hide-screen");
+      }
 
-    if (gamePlayed == "game3") {
-      randomY1 = Math.random() * 0.2 + 0.2;
-      randomY2 = Math.random() * 0.2 + 0.4;
-      randomY3 = Math.random() * 0.2 + 0.6;
-      gameover3.classList.remove("hide-screen");
+      if (gamePlayed == "game3") {
+        randomY1 = Math.random() * 0.2 + 0.2;
+        randomY2 = Math.random() * 0.2 + 0.4;
+        randomY3 = Math.random() * 0.2 + 0.6;
+        gameover3.classList.remove("hide-screen");
+      }
     }
   }
 }
@@ -1587,40 +1630,43 @@ function loseHeart(
   direction,
   randomY
 ) {
-  if (
-    enemyObject.x - enemyObject.size > lukeNr.x - 20 &&
-    enemyObject.x + enemyObject.size < lukeNr.x + 20 &&
-    enemyObject.y > lukeNr.y - 16 &&
-    enemyObject.y < lukeNr.y + 10
-  ) {
-    if (heartNr == undefined) {
-      heartNr = heart1;
-      randomX3 = Math.random() * 0.8 + 0.1;
-      returnHeart(heartNr, canvasName);
-      returnAlienEnemy(
-        enemyObject,
-        canvasName,
-        gameNr,
-        marginX,
-        direction,
-        randomY
-      );
-    } else if (heartNr == heart1) {
-      heartNr = heart2;
-      randomX3 = Math.random() * 0.8 + 0.1;
-      returnHeart(heartNr, canvasName);
-      returnAlienEnemy(
-        enemyObject,
-        canvasName,
-        gameNr,
-        marginX,
-        direction,
-        randomY
-      );
-    } else if (heartNr == heart2) {
-      heartNr = heart3;
-      returnHeart(heartNr, canvasName);
-      gameOver(enemyObject, lukeNr, gameNr);
+  let waitForStart = gamePlayed.slice(4) - 1;
+  if (startGameScreens[waitForStart].classList.contains("hide-screen")) {
+    if (
+      enemyObject.x - enemyObject.size > lukeNr.x - 20 &&
+      enemyObject.x + enemyObject.size < lukeNr.x + 20 &&
+      enemyObject.y > lukeNr.y - 16 &&
+      enemyObject.y < lukeNr.y + 10
+    ) {
+      if (heartNr == undefined) {
+        heartNr = heart1;
+        randomX3 = Math.random() * 0.8 + 0.1;
+        returnHeart(heartNr, canvasName);
+        returnAlienEnemy(
+          enemyObject,
+          canvasName,
+          gameNr,
+          marginX,
+          direction,
+          randomY
+        );
+      } else if (heartNr == heart1) {
+        heartNr = heart2;
+        randomX3 = Math.random() * 0.8 + 0.1;
+        returnHeart(heartNr, canvasName);
+        returnAlienEnemy(
+          enemyObject,
+          canvasName,
+          gameNr,
+          marginX,
+          direction,
+          randomY
+        );
+      } else if (heartNr == heart2) {
+        heartNr = heart3;
+        returnHeart(heartNr, canvasName);
+        gameOver(enemyObject, lukeNr, gameNr);
+      }
     }
   }
 }
@@ -1747,7 +1793,7 @@ function returnComet(enemyObject, canvasName, marginX, marginY) {
 function resetLuke(lukeNr, canvasName, marginX, marginY) {
   (lukeNr.x = canvasName.width / 2 - marginX),
     (lukeNr.y = canvasName.height / 2 - marginY),
-    (lukeNr.dx = 0);
+    (lukeNr.speed = 2);
 }
 
 function resetAlienEnemy(
@@ -1810,7 +1856,7 @@ const luke1 = {
   w: 60,
   h: 4,
   size: 4.5,
-  speed: 5,
+  speed: 2,
   dx: 0,
   dy: 0,
 };
@@ -1869,7 +1915,7 @@ function game1Action() {
   moveCowboyEnemy(cowboy1, canvas1);
   moveCowboyEnemy(cowboy2, canvas1);
   moveBullet(bullet1, cowboy1, canvas1, 1, score1, 1, 1, -1, 0, 0);
-  moveBullet(bullet2, cowboy2, canvas1, 1, score1, 1, 1, -1, 0, 0);
+  moveBullet(bullet2, cowboy2, canvas1, 1, score1, 1, 1, 1, 0, 0);
   gameOver(bullet1, luke1, 1);
   gameOver(bullet2, luke1, 1);
   requestIdGame1 = requestAnimationFrame(game1Action);
@@ -1902,7 +1948,7 @@ const luke2 = {
   w: 60,
   h: 4,
   size: 4.5,
-  speed: 4,
+  speed: 2,
   dx: 0,
   dy: 0,
 };
@@ -2096,7 +2142,7 @@ const luke3 = {
   w: 60,
   h: 4,
   size: 4.5,
-  speed: 4,
+  speed: 2,
   dx: 0,
   dy: 0,
 };

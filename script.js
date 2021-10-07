@@ -140,11 +140,20 @@ const regContainer = document.getElementById("reg-container");
 function openCloseRegistrationForm() {
   closeLoginForm();
   const position = event.target.id == "openReg" ? "button" : "text";
-  registrationBox.classList.contains("hideReg")
-    ? (registrationBox.classList.add(`position-${position}`),
-      registrationBox.classList.remove("hideReg"),
-      regContainer.classList.add("reg-container"))
-    : closeRegistrationForm();
+
+  if (registrationBox.classList.contains("hideReg")) {
+    registrationBox.classList.add(`position-${position}`);
+    registrationBox.classList.remove("hideReg");
+    regContainer.classList.add("reg-container");
+  } else if (
+    position == "button" &&
+    registrationBox.classList.contains("position-text")
+  ) {
+    registrationBox.classList.remove("position-text");
+    registrationBox.classList.add("position-button");
+  } else {
+    closeRegistrationForm();
+  }
 }
 
 function closeRegistrationForm() {
@@ -452,6 +461,13 @@ function hideStartGameScreen() {
   }
 }
 
+function addStartGameBtnEventListeners() {
+  for (x = 0; x < startGameBtns.length; x++) {
+    startGameBtns[x].addEventListener("click", clickStartGameBtn);
+  }
+}
+addStartGameBtnEventListeners();
+
 function clickStartGameBtn() {
   let startGameScreen = event.target.parentElement;
   let gameStartGameScreen = startGameScreen.parentElement.id;
@@ -471,13 +487,6 @@ function clickStartGameBtn() {
       break;
   }
 }
-
-function addStartGameBtnEventListeners() {
-  for (x = 0; x < startGameBtns.length; x++) {
-    startGameBtns[x].addEventListener("click", clickStartGameBtn);
-  }
-}
-addStartGameBtnEventListeners();
 
 function addControlsBtnEventListeners() {
   for (x = 0; x < showGameControls.length; x++) {
@@ -1205,6 +1214,7 @@ function keyDown(e) {
   }
   if (e.key === "f" && gamePlayed == "game2") {
     lukeShootBullet();
+    // lukeMoveBulletsArray();
   }
 }
 
@@ -1256,8 +1266,10 @@ function moveLuke(lukeNr, maxHeight, minHeight, maxWidth, minWidth) {
   }
 }
 
-function lukeShootBullet() {
-  movement = "active";
+function resetLuke(lukeNr, canvasName, marginX, marginY) {
+  (lukeNr.x = canvasName.width / 2 - marginX),
+    (lukeNr.y = canvasName.height / 2 - marginY),
+    (lukeNr.speed = 2);
 }
 
 function lukeMoveBullet(
@@ -1304,15 +1316,36 @@ function lukeMoveBullet(
   }
 }
 
-function moveCowboyEnemy(enemyObject, canvasName) {
-  enemyObject.x += enemyObject.dx;
+function lukeShootBullet() {
+  movement = "active";
+}
 
-  if (
-    enemyObject.x + enemyObject.size > canvasName.width ||
-    enemyObject.x - enemyObject.size < 0
-  ) {
-    enemyObject.dx *= -1;
-  }
+function returnBullet(
+  actionObject,
+  actionSubject,
+  direction,
+  marginX,
+  marginY
+) {
+  (actionObject.x = actionSubject.x + marginX),
+    (actionObject.y = actionSubject.y + marginY),
+    actionObject.dx * direction;
+  movement = "passive";
+}
+
+function resetBullet(
+  actionObject,
+  actionSubject,
+  directionX,
+  directionY,
+  marginX,
+  marginY
+) {
+  (actionObject.x = actionSubject.x + marginX),
+    (actionObject.y = actionSubject.y + marginY),
+    (actionObject.dx = directionX),
+    (actionObject.dy = directionY);
+  movement = "passive";
 }
 
 function moveBullet(
@@ -1346,13 +1379,21 @@ function moveBullet(
   }
 }
 
-function moveComet(enemyObject, canvasName, marginX, marginY) {
-  enemyObject.x += enemyObject.dx * (enemyObject.speed * objectSpeedUp);
-  enemyObject.y += enemyObject.dy * (enemyObject.speed * objectSpeedUp);
+function moveCowboyEnemy(enemyObject, canvasName) {
+  enemyObject.x += enemyObject.dx;
 
-  if (enemyObject.x > canvasName.width + 200 || enemyObject.x < -20) {
-    returnComet(enemyObject, canvasName, marginX, marginY);
+  if (
+    enemyObject.x + enemyObject.size > canvasName.width ||
+    enemyObject.x - enemyObject.size < 0
+  ) {
+    enemyObject.dx *= -1;
   }
+}
+
+function resetCowboyEnemy(enemyObject, canvasName, objectX, direction) {
+  (enemyObject.x = objectX),
+    (enemyObject.y = canvasName.height - 5),
+    (enemyObject.dx = 2 * direction);
 }
 
 function moveStar(
@@ -1394,6 +1435,31 @@ function moveStar(
   }
 }
 
+function resetStar(actionObject, canvasName, gameNr, marginX, marginY) {
+  if (gameNr == 2) {
+    (actionObject.x = canvasName.width * marginX), (actionObject.y = marginY);
+    actionObject.dx = 0;
+    actionObject.dy = 1;
+    actionObject.speed = 1;
+  } else if (gameNr == 3) {
+    (actionObject.x = canvasName.width + marginX),
+      (actionObject.y = canvasName.height * marginY);
+    actionObject.dx = -2;
+    actionObject.dy = 0;
+    actionObject.speed = 1;
+  }
+}
+
+function returnStar(actionObject, canvasName, gameNr, marginX, marginY) {
+  if (gameNr == 2) {
+    (actionObject.x = canvasName.width * marginX), (actionObject.y = -10);
+    (actionObject.dx = 0), (actionObject.dy = 1);
+  } else if (gameNr == 3) {
+    (actionObject.x = canvasName.width + marginX),
+      (actionObject.y = canvasName.height * marginY);
+  }
+}
+
 function moveHeart(actionObject, lukeNr, canvasName, marginX, marginY) {
   actionObject.x += actionObject.dx * (actionObject.speed * objectSpeedUp);
   actionObject.y += actionObject.dy * (actionObject.speed * objectSpeedUp);
@@ -1408,216 +1474,6 @@ function moveHeart(actionObject, lukeNr, canvasName, marginX, marginY) {
     actionObject.y < lukeNr.y + 10
   ) {
     resetHeart(actionObject, marginX, marginY);
-  }
-}
-
-function moveAlienEnemy(
-  enemyObject,
-  canvasName,
-  gameNr,
-  gameScore,
-  speedingSubject,
-  accelerationX,
-  accelerationY,
-  marginX,
-  randomY,
-  direction
-) {
-  enemyObject.x += enemyObject.dx * (enemyObject.speed * objectSpeedUp);
-  enemyObject.y += enemyObject.dy * (enemyObject.speed * objectSpeedUp);
-
-  if (enemyObject.x + 10 > canvasName.width || enemyObject.x - 10 < 0) {
-    enemyObject.dx *= -1;
-  }
-  if (enemyObject.y < -100 || enemyObject.y > canvasName.height) {
-    randomX1 = Math.random() * 0.7 + 0.2;
-    randomX2 = Math.random() * 0.7 + 0.2;
-    returnAlienEnemy(
-      enemyObject,
-      canvasName,
-      gameNr,
-      marginX,
-      direction,
-      randomY
-    );
-    speedUp(gameScore, speedingSubject, accelerationX, accelerationY);
-  }
-}
-
-function moveAlienEnemy2(
-  enemyObject,
-  canvasName,
-  gameNr,
-  marginX,
-  direction,
-  randomY
-) {
-  enemyObject.x += enemyObject.dx * (enemyObject.speed * objectSpeedUp);
-  enemyObject.y += enemyObject.dy * (enemyObject.speed * objectSpeedUp);
-
-  if (enemyObject.x > canvasName.width + 200 || enemyObject.x < -20) {
-    randomY1 = Math.random() * 0.2 + 0.2;
-    randomY2 = Math.random() * 0.2 + 0.4;
-    randomY3 = Math.random() * 0.2 + 0.6;
-    returnAlienEnemy(
-      enemyObject,
-      canvasName,
-      gameNr,
-      marginX,
-      direction,
-      randomY
-    );
-  }
-  if (
-    enemyObject.y < canvasName.height * randomY - 20 ||
-    enemyObject.y > canvasName.height * randomY + 20
-  ) {
-    enemyObject.dy *= -1;
-  }
-}
-
-//GAME FUNCTIONS
-
-function pauseGame(gamePlayed) {
-  if (gamePlayed == "game1") {
-    bullet1.dx = 0;
-    bullet1.dy = 0;
-    bullet2.dx = 0;
-    bullet2.dy = 0;
-    cowboy1.dx = 0;
-    cowboy2.dx = 0;
-    luke1.speed = 0;
-  }
-  if (gamePlayed == "game2") {
-    star1.dy = 0;
-    heartNr.dy = 0;
-    evilAlien1.dx = 0;
-    evilAlien1.dy = 0;
-    evilAlien2.dx = 0;
-    evilAlien2.dy = 0;
-    luke2.speed = 0;
-  }
-  if (gamePlayed == "game3") {
-    comet1.dx = 0;
-    comet2.dx = 0;
-    star2.dx = 0;
-    alienEnemy1.dx = 0;
-    alienEnemy1.dy = 0;
-    alienEnemy2.dx = 0;
-    alienEnemy2.dy = 0;
-    alienEnemy3.dx = 0;
-    alienEnemy3.dy = 0;
-    luke3.speed = 0;
-  }
-}
-
-function scorePoints(gameNr) {
-  let waitForStart = gamePlayed.slice(4) - 1;
-  if (startGameScreens[waitForStart].classList.contains("hide-screen")) {
-    switch (gameNr) {
-      case 1:
-        score1++;
-        break;
-      case 2:
-        score2++;
-        break;
-      case 3:
-        score3++;
-        break;
-    }
-  }
-}
-
-function speedUp(gameScore, speedingSubject, accelerationX, accelerationY) {
-  var testScore = /^[1-9]{1}[5]{1,2}$/;
-  let x;
-  if (gameScore == 10) {
-    x = "enemy";
-  } else if (testScore.test(gameScore)) {
-    x = "speed";
-  } else {
-    x = "none";
-  }
-
-  if (x == "speed") {
-    speedingSubject.dx = speedingSubject.dx * accelerationX;
-    speedingSubject.dy = speedingSubject.dy * accelerationY;
-
-    if ((gamePlayed == "game2") & (heartNr != undefined)) {
-      heartNr.dy = 1;
-    }
-  }
-
-  if ((gamePlayed == "game1") & (x == "enemy")) {
-    cowboy2.x = cowboy1.x;
-    cowboy2.dx = cowboy1.dx * -1.2;
-    bullet2.dx = bullet1.dx * -1;
-    bullet2.dy = -2.5;
-  }
-}
-
-function killEnemy(
-  actionObject,
-  enemyObject,
-  gameNr,
-  canvasName,
-  marginX,
-  randomY,
-  direction,
-  gameScore,
-  speedingSubject,
-  accelerationX,
-  accelerationY
-) {
-  if (movement == "active") {
-    if (
-      actionObject.x > enemyObject.x - 20 &&
-      actionObject.x < enemyObject.x + 20 &&
-      actionObject.y > enemyObject.y - 3 &&
-      actionObject.y < enemyObject.y + 6
-    ) {
-      returnAlienEnemy(
-        enemyObject,
-        canvasName,
-        gameNr,
-        marginX,
-        direction,
-        randomY
-      );
-      scorePoints(gameNr);
-      speedUp(gameScore, speedingSubject, accelerationX, accelerationY);
-    }
-  }
-}
-
-function gameOver(enemyObject, lukeNr, gameNr) {
-  let waitForStart = gamePlayed.slice(4) - 1;
-  if (startGameScreens[waitForStart].classList.contains("hide-screen")) {
-    if (
-      enemyObject.x - enemyObject.size > lukeNr.x - 20 &&
-      enemyObject.x + enemyObject.size < lukeNr.x + 20 &&
-      enemyObject.y > lukeNr.y - 16 &&
-      enemyObject.y < lukeNr.y + 10
-    ) {
-      pauseGame(gamePlayed);
-
-      if (gamePlayed == "game1") {
-        gameover1.classList.remove("hide-screen");
-      }
-
-      if (gamePlayed == "game2") {
-        randomX3 = Math.random() * 0.8 + 0.1;
-        heartNr = undefined;
-        gameover2.classList.remove("hide-screen");
-      }
-
-      if (gamePlayed == "game3") {
-        randomY1 = Math.random() * 0.2 + 0.2;
-        randomY2 = Math.random() * 0.2 + 0.4;
-        randomY3 = Math.random() * 0.2 + 0.6;
-        gameover3.classList.remove("hide-screen");
-      }
-    }
   }
 }
 
@@ -1671,93 +1527,6 @@ function loseHeart(
   }
 }
 
-function resetScore(gameNr) {
-  switch (gameNr) {
-    case 1:
-      score1 = 0;
-      break;
-    case 2:
-      score2 = 0;
-      break;
-    case 3:
-      score3 = 0;
-      break;
-  }
-}
-
-function resetGame(gameNr) {
-  switch (gameNr) {
-    case 1:
-      resetGame1();
-      break;
-    case 2:
-      resetGame2();
-      break;
-    case 3:
-      resetGame3();
-      break;
-  }
-}
-
-function resetCowboyEnemy(enemyObject, canvasName, objectX, direction) {
-  (enemyObject.x = objectX),
-    (enemyObject.y = canvasName.height - 5),
-    (enemyObject.dx = 2 * direction);
-}
-
-function returnBullet(
-  actionObject,
-  actionSubject,
-  direction,
-  marginX,
-  marginY
-) {
-  (actionObject.x = actionSubject.x + marginX),
-    (actionObject.y = actionSubject.y + marginY),
-    actionObject.dx * direction;
-  movement = "passive";
-}
-
-function resetBullet(
-  actionObject,
-  actionSubject,
-  directionX,
-  directionY,
-  marginX,
-  marginY
-) {
-  (actionObject.x = actionSubject.x + marginX),
-    (actionObject.y = actionSubject.y + marginY),
-    (actionObject.dx = directionX),
-    (actionObject.dy = directionY);
-  movement = "passive";
-}
-
-function resetStar(actionObject, canvasName, gameNr, marginX, marginY) {
-  if (gameNr == 2) {
-    (actionObject.x = canvasName.width * marginX), (actionObject.y = marginY);
-    actionObject.dx = 0;
-    actionObject.dy = 1;
-    actionObject.speed = 1;
-  } else if (gameNr == 3) {
-    (actionObject.x = canvasName.width + marginX),
-      (actionObject.y = canvasName.height * marginY);
-    actionObject.dx = -2;
-    actionObject.dy = 0;
-    actionObject.speed = 1;
-  }
-}
-
-function returnStar(actionObject, canvasName, gameNr, marginX, marginY) {
-  if (gameNr == 2) {
-    (actionObject.x = canvasName.width * marginX), (actionObject.y = -10);
-    (actionObject.dx = 0), (actionObject.dy = 1);
-  } else if (gameNr == 3) {
-    (actionObject.x = canvasName.width + marginX),
-      (actionObject.y = canvasName.height * marginY);
-  }
-}
-
 function resetHeart(actionObject, marginX, marginY) {
   (actionObject.x = marginX), (actionObject.y = marginY);
   actionObject.dx = 0;
@@ -1778,22 +1547,71 @@ function returnHeart(actionObject, canvasName) {
   actionObject.speed = 1;
 }
 
-function resetComet(enemyObject, canvasName, marginX, marginY) {
-  (enemyObject.x = canvasName.width + marginX),
-    (enemyObject.y = canvasName.height * marginY);
-  enemyObject.dx = -2.5;
-  enemyObject.dy = 0;
+function moveAlienEnemy(
+  enemyObject,
+  canvasName,
+  gameNr,
+  gameScore,
+  speedingSubject,
+  accelerationX,
+  accelerationY,
+  marginX,
+  randomY,
+  direction
+) {
+  enemyObject.x += enemyObject.dx * (enemyObject.speed * objectSpeedUp);
+  enemyObject.y += enemyObject.dy * (enemyObject.speed * objectSpeedUp);
+
+  if (enemyObject.x + 10 > canvasName.width || enemyObject.x - 10 < 0) {
+    enemyObject.dx *= -1;
+  }
+  if (enemyObject.y < -100 || enemyObject.y > canvasName.height) {
+    randomX1 = Math.random() * 0.7 + 0.2;
+    randomX2 = Math.random() * 0.7 + 0.2;
+    returnAlienEnemy(
+      enemyObject,
+      canvasName,
+      gameNr,
+      marginX,
+      direction,
+      randomY
+    );
+    speedUp(gameScore, speedingSubject, accelerationX, accelerationY);
+  }
 }
 
-function returnComet(enemyObject, canvasName, marginX, marginY) {
-  (enemyObject.x = canvasName.width + marginX),
-    (enemyObject.y = canvasName.height * marginY);
-}
-
-function resetLuke(lukeNr, canvasName, marginX, marginY) {
-  (lukeNr.x = canvasName.width / 2 - marginX),
-    (lukeNr.y = canvasName.height / 2 - marginY),
-    (lukeNr.speed = 2);
+function killEnemy(
+  actionObject,
+  enemyObject,
+  gameNr,
+  canvasName,
+  marginX,
+  randomY,
+  direction,
+  gameScore,
+  speedingSubject,
+  accelerationX,
+  accelerationY
+) {
+  if (movement == "active") {
+    if (
+      actionObject.x > enemyObject.x - 20 &&
+      actionObject.x < enemyObject.x + 20 &&
+      actionObject.y > enemyObject.y - 3 &&
+      actionObject.y < enemyObject.y + 6
+    ) {
+      returnAlienEnemy(
+        enemyObject,
+        canvasName,
+        gameNr,
+        marginX,
+        direction,
+        randomY
+      );
+      scorePoints(gameNr);
+      speedUp(gameScore, speedingSubject, accelerationX, accelerationY);
+    }
+  }
 }
 
 function resetAlienEnemy(
@@ -1834,6 +1652,204 @@ function returnAlienEnemy(
   } else if (gameNr == 3) {
     (enemyObject.x = canvasName.width + marginX),
       (enemyObject.y = canvasName.height * randomY);
+  }
+}
+
+function moveAlienEnemy2(
+  enemyObject,
+  canvasName,
+  gameNr,
+  marginX,
+  direction,
+  randomY
+) {
+  enemyObject.x += enemyObject.dx * (enemyObject.speed * objectSpeedUp);
+  enemyObject.y += enemyObject.dy * (enemyObject.speed * objectSpeedUp);
+
+  if (enemyObject.x > canvasName.width + 200 || enemyObject.x < -20) {
+    randomY1 = Math.random() * 0.2 + 0.2;
+    randomY2 = Math.random() * 0.2 + 0.4;
+    randomY3 = Math.random() * 0.2 + 0.6;
+    returnAlienEnemy(
+      enemyObject,
+      canvasName,
+      gameNr,
+      marginX,
+      direction,
+      randomY
+    );
+  }
+  if (
+    enemyObject.y < canvasName.height * randomY - 20 ||
+    enemyObject.y > canvasName.height * randomY + 20
+  ) {
+    enemyObject.dy *= -1;
+  }
+}
+
+function moveComet(enemyObject, canvasName, marginX, marginY) {
+  enemyObject.x += enemyObject.dx * (enemyObject.speed * objectSpeedUp);
+  enemyObject.y += enemyObject.dy * (enemyObject.speed * objectSpeedUp);
+
+  if (enemyObject.x > canvasName.width + 200 || enemyObject.x < -20) {
+    returnComet(enemyObject, canvasName, marginX, marginY);
+  }
+}
+
+function resetComet(enemyObject, canvasName, marginX, marginY) {
+  (enemyObject.x = canvasName.width + marginX),
+    (enemyObject.y = canvasName.height * marginY);
+  enemyObject.dx = -2.5;
+  enemyObject.dy = 0;
+}
+
+function returnComet(enemyObject, canvasName, marginX, marginY) {
+  (enemyObject.x = canvasName.width + marginX),
+    (enemyObject.y = canvasName.height * marginY);
+}
+
+//GAME FUNCTIONS
+
+function scorePoints(gameNr) {
+  let waitForStart = gamePlayed.slice(4) - 1;
+  if (startGameScreens[waitForStart].classList.contains("hide-screen")) {
+    switch (gameNr) {
+      case 1:
+        score1++;
+        break;
+      case 2:
+        score2++;
+        break;
+      case 3:
+        score3++;
+        break;
+    }
+  }
+}
+
+function speedUp(gameScore, speedingSubject, accelerationX, accelerationY) {
+  var testScore = /^[1-9]{1}[5]{1,2}$/;
+  let x;
+  if (gameScore == 10) {
+    x = "enemy";
+  } else if (testScore.test(gameScore)) {
+    x = "speed";
+  } else {
+    x = "none";
+  }
+
+  if (x == "speed") {
+    speedingSubject.dx = speedingSubject.dx * accelerationX;
+    speedingSubject.dy = speedingSubject.dy * accelerationY;
+
+    if ((gamePlayed == "game2") & (heartNr != undefined)) {
+      heartNr.dy = 1;
+    }
+  }
+
+  if ((gamePlayed == "game1") & (x == "enemy")) {
+    cowboy2.x = cowboy1.x;
+    cowboy2.dx = cowboy1.dx * -1.2;
+    bullet2.dx = bullet1.dx * -1;
+    bullet2.dy = -2.5;
+  }
+
+  if (x == "none") {
+    if ((gamePlayed == "game2") & (heartNr != undefined)) {
+      heartNr.dy = 0;
+    }
+  }
+}
+
+function gameOver(enemyObject, lukeNr, gameNr) {
+  let waitForStart = gamePlayed.slice(4) - 1;
+  if (startGameScreens[waitForStart].classList.contains("hide-screen")) {
+    if (
+      enemyObject.x - enemyObject.size > lukeNr.x - 20 &&
+      enemyObject.x + enemyObject.size < lukeNr.x + 20 &&
+      enemyObject.y > lukeNr.y - 16 &&
+      enemyObject.y < lukeNr.y + 10
+    ) {
+      pauseGame(gamePlayed);
+
+      if (gamePlayed == "game1") {
+        gameover1.classList.remove("hide-screen");
+      }
+
+      if (gamePlayed == "game2") {
+        randomX3 = Math.random() * 0.8 + 0.1;
+        heartNr = undefined;
+        gameover2.classList.remove("hide-screen");
+      }
+
+      if (gamePlayed == "game3") {
+        randomY1 = Math.random() * 0.2 + 0.2;
+        randomY2 = Math.random() * 0.2 + 0.4;
+        randomY3 = Math.random() * 0.2 + 0.6;
+        gameover3.classList.remove("hide-screen");
+      }
+    }
+  }
+}
+
+function resetScore(gameNr) {
+  switch (gameNr) {
+    case 1:
+      score1 = 0;
+      break;
+    case 2:
+      score2 = 0;
+      break;
+    case 3:
+      score3 = 0;
+      break;
+  }
+}
+
+function resetGame(gameNr) {
+  switch (gameNr) {
+    case 1:
+      resetGame1();
+      break;
+    case 2:
+      resetGame2();
+      break;
+    case 3:
+      resetGame3();
+      break;
+  }
+}
+
+function pauseGame(gamePlayed) {
+  if (gamePlayed == "game1") {
+    bullet1.dx = 0;
+    bullet1.dy = 0;
+    bullet2.dx = 0;
+    bullet2.dy = 0;
+    cowboy1.dx = 0;
+    cowboy2.dx = 0;
+    luke1.speed = 0;
+  }
+  if (gamePlayed == "game2") {
+    star1.dy = 0;
+    heartNr.dy = 0;
+    evilAlien1.dx = 0;
+    evilAlien1.dy = 0;
+    evilAlien2.dx = 0;
+    evilAlien2.dy = 0;
+    luke2.speed = 0;
+  }
+  if (gamePlayed == "game3") {
+    comet1.dx = 0;
+    comet2.dx = 0;
+    star2.dx = 0;
+    alienEnemy1.dx = 0;
+    alienEnemy1.dy = 0;
+    alienEnemy2.dx = 0;
+    alienEnemy2.dy = 0;
+    alienEnemy3.dx = 0;
+    alienEnemy3.dy = 0;
+    luke3.speed = 0;
   }
 }
 
@@ -2023,6 +2039,108 @@ const heart3 = {
   dy: 0,
 };
 
+// function multipleBullets(actionSubject) {
+//   this.x = actionSubject.x;
+//   this.y = actionSubject.y;
+//   this.dx = 0;
+//   this.dy = 0;
+//   this.radius = 2;
+//   this.color = "#808080";
+//   this.speed = 5;
+//   this.size = 2;
+
+//   this.draw = function (gameCanvas) {
+//     gameCanvas.beginPath();
+//     gameCanvas.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
+//     gameCanvas.fillStyle = this.color;
+//     gameCanvas.fill();
+//     gameCanvas.closePath();
+//   };
+// }
+
+// let bulletsArray = [];
+
+// function fillBulletsArray(actionSubject, gameCanvas) {
+//   for (var i = 0; i < 5; i++) {
+//     bulletsArray[i] = new multipleBullets(actionSubject);
+//     bulletsArray[i].draw(gameCanvas);
+//   }
+// }
+
+// function shootBulletsArray() {
+//   movement = "active";
+// }
+
+// function lukeMoveBulletsArray(
+//   actionSubject,
+//   canvasName,
+//   direction,
+//   marginX,
+//   marginY,
+//   maxWidth,
+//   minWidth,
+//   maxHeight,
+//   minHeight
+// ) {
+//   for (var i = 0; i < 5; i++) {
+//     if (movement == "active") {
+//       bulletsArray[i].y += -bulletsArray[i].speed;
+//       bulletsArray[i].x += bulletsArray[i].dx;
+
+//       if (
+//         bulletsArray[i].y + bulletsArray[i].size > canvasName.height ||
+//         bulletsArray[i].y - bulletsArray[i].size < 0
+//       ) {
+//         returnBulletsArray(actionSubject, direction, marginX, marginY);
+//       }
+//     } else if (movement == "passive") {
+//       bulletsArray[i].y += actionSubject.dy * (actionSubject.speed / 2);
+//       bulletsArray[i].x += actionSubject.dx * actionSubject.speed;
+
+//       if (bulletsArray[i].x > maxWidth) {
+//         bulletsArray[i].x = maxWidth;
+//       }
+
+//       if (bulletsArray[i].x < minWidth) {
+//         bulletsArray[i].x = minWidth;
+//       }
+
+//       if (bulletsArray[i].y > maxHeight) {
+//         bulletsArray[i].y = maxHeight;
+//       }
+
+//       if (bulletsArray[i].y < minHeight) {
+//         bulletsArray[i].y = minHeight;
+//       }
+//     }
+//   }
+// }
+
+// function returnBulletsArray(actionSubject, direction, marginX, marginY) {
+//   for (var i = 0; i < 5; i++) {
+//     (bulletsArray[i].x = actionSubject.x + marginX),
+//       (bulletsArray[i].y = actionSubject.y + marginY),
+//       bulletsArray[i].dx * direction;
+//     movement = "passive";
+//   }
+// }
+
+// function resetBulletsArray(
+//   actionSubject,
+//   directionX,
+//   directionY,
+//   marginX,
+//   marginY
+// ) {
+//   for (var i = 0; i < 5; i++) {
+//     (bulletsArray[i].x = actionSubject.x + marginX),
+//       (bulletsArray[i].y = actionSubject.y + marginY),
+//       (bulletsArray[i].dx = directionX),
+//       (bulletsArray[i].dy = directionY);
+//     movement = "passive";
+//   }
+// }
+
 function drawGame2Elements() {
   emptyCanvas(ctx2, canvas2);
   drawBackgroundStars(ctx2);
@@ -2035,10 +2153,12 @@ function drawGame2Elements() {
   drawAlienEnemy(ctx2, evilAlien1);
   drawAlienEnemy(ctx2, evilAlien2);
   drawScore(ctx2, canvas2, score2);
+  // fillBulletsArray(luke2, ctx2);
 }
 
 function game2Action() {
   drawGame2Elements();
+  // lukeMoveBulletsArray(luke2, canvas2, 0, 0, 10, 280, 20, 150, 70);
   moveLuke(luke2, 140, 60, 280, 20);
   lukeMoveBullet(bulletLuke, luke2, canvas2, 0, 0, 10, 280, 20, 150, 70);
   moveHeart(heart1, luke2, canvas2, 240, 10);
@@ -2115,6 +2235,7 @@ function resetGame2() {
   resetAlienEnemy(evilAlien1, canvas2, 2, randomX1, -10, 1, -1, 0);
   resetAlienEnemy(evilAlien2, canvas2, 2, randomX2, -75, 1, -1, 0);
   resetLuke(luke2, canvas2, 0, -35);
+  // resetBulletsArray(luke2, 0, 0, 0, 10);
   resetBullet(bulletLuke, luke2, 0, 0, 0, 10);
   resetHeart(heart1, 240, 10);
   resetHeart(heart2, 255, 10);

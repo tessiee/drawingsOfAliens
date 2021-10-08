@@ -1,3 +1,156 @@
+//INTRO POP-UP
+const introScreen = document.getElementById("intro-screen");
+
+function closeIntroPopUp() {
+  introScreen.classList.add("hide-screen");
+}
+
+document
+  .getElementById("closeIntro")
+  .addEventListener("click", closeIntroPopUp);
+
+//HEADER ANIMATION
+const animationBox = document.getElementById("animation-box");
+let maxXstar = window.innerWidth - 100;
+
+animationBox.innerHTML = `<canvas height="550" width = "${maxXstar}" class="head-animation" id="head-animation">
+</canvas>`;
+
+const headAnimationCanvas = document.getElementById("head-animation");
+const ctxHeadAnimation = headAnimationCanvas.getContext("2d");
+let requestIdHeadAnimation;
+let starsArray = [];
+let maxStars = 150;
+let randomXstar;
+let randomYstar;
+let pause = 65;
+let start = 0;
+let randomYalien1 = Math.random() * 0.4 + 0.1;
+let randomYalien2 = Math.random() * 0.9 + 0.1;
+let randomYalien3 = Math.random() * 0.4 + 0.5;
+
+let alien1 = {
+  x: -10,
+  y: headAnimationCanvas.height * randomYalien1,
+  speed: 1.4,
+  dx: 2.5,
+  dy: 0,
+};
+
+let alien2 = {
+  x: maxXstar + 10,
+  y: headAnimationCanvas.height * randomYalien2,
+  speed: 1.2,
+  dx: -2.5,
+  dy: 0,
+};
+
+let alien3 = {
+  x: -10,
+  y: headAnimationCanvas.height * randomYalien3,
+  speed: 1.2,
+  dx: 2.5,
+  dy: 0,
+};
+
+function moveAlien(enemyObject, canvasName, marginX, direction, randomYalien) {
+  enemyObject.x += enemyObject.dx * enemyObject.speed;
+  enemyObject.y += enemyObject.dy;
+
+  if (enemyObject.x > canvasName.width + 200 || enemyObject.x < -20) {
+    randomYalien1 = Math.random() * 0.4 + 0.1;
+    randomYalien2 = Math.random() * 0.9 + 0.1;
+    randomYalien3 = Math.random() * 0.4 + 0.5;
+    resetAlien(enemyObject, canvasName, marginX, direction, randomYalien);
+  }
+}
+
+function resetAlien(enemyObject, canvasName, marginX, direction, randomYalien) {
+  enemyObject.x = marginX;
+  enemyObject.y = canvasName.height * randomYalien;
+  enemyObject.dx = 2.5 * direction;
+}
+
+function multipleStars() {
+  this.x = randomXstar;
+  this.y = randomYstar;
+  this.radius = 1;
+  this.color = "#624900";
+
+  this.draw = function (gameCanvas) {
+    gameCanvas.beginPath();
+    gameCanvas.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
+    gameCanvas.fillStyle = this.color;
+    gameCanvas.fill();
+    gameCanvas.closePath();
+  };
+}
+
+function fillStarsArray(gameCanvas, maxStars, starsArray) {
+  for (var i = 0; i < 100; i++) {
+    randomXstar = Math.random() * maxXstar - 20 + 20;
+    randomYstar = Math.random() * 250 + 0;
+    starsArray[i] = new multipleStars();
+    starsArray[i].draw(gameCanvas);
+  }
+  for (var i = 100; i < 140; i++) {
+    randomXstar = Math.random() * maxXstar - 20 + 20;
+    randomYstar = Math.random() * 150 + 250;
+    starsArray[i] = new multipleStars();
+    starsArray[i].draw(gameCanvas);
+  }
+  for (var i = 140; i < maxStars; i++) {
+    randomXstar = Math.random() * maxXstar - 20 + 20;
+    randomYstar = Math.random() * 150 + 400;
+    starsArray[i] = new multipleStars();
+    starsArray[i].draw(gameCanvas);
+  }
+}
+
+function drawHeadAnimation() {
+  emptyCanvas(ctxHeadAnimation, headAnimationCanvas);
+  fillStarsArray(ctxHeadAnimation, maxStars, starsArray);
+  drawAlienEnemy(ctxHeadAnimation, alien1);
+  drawAlienEnemy(ctxHeadAnimation, alien2);
+  drawAlienEnemy(ctxHeadAnimation, alien3);
+}
+
+function headAnimationAction(current) {
+  if (start === 0) {
+    start = current;
+  }
+
+  if (current - start >= pause) {
+    drawHeadAnimation();
+    start = current;
+  }
+  moveAlien(alien1, headAnimationCanvas, -10, 1, randomYalien1);
+  moveAlien(
+    alien2,
+    headAnimationCanvas,
+    headAnimationCanvas.width + 10,
+    -1,
+    randomYalien2
+  );
+  moveAlien(alien3, headAnimationCanvas, -10, 1, randomYalien3);
+  requestIdHeadAnimation = requestAnimationFrame(headAnimationAction);
+}
+requestIdHeadAnimation = requestAnimationFrame(headAnimationAction);
+
+function resetHeadAnimation() {
+  emptyCanvas(ctxHeadAnimation, headAnimationCanvas);
+  resetAlien(alien1, headAnimationCanvas, -10, 1, randomYalien1);
+  resetAlien(
+    alien2,
+    headAnimationCanvas,
+    headAnimationCanvas.width + 10,
+    -1,
+    randomYalien2
+  );
+  resetAlien(alien3, headAnimationCanvas, -10, 1, randomYalien3);
+  cancelAnimationFrame(requestIdHeadAnimation);
+}
+
 //SIDEBAR
 const sidebar = document.getElementById("sidebar");
 const openSidebar = document.getElementById("openSidebar");
@@ -261,9 +414,9 @@ showConfirm.addEventListener("mouseleave", showConfirmPassw);
 document
   .getElementById("openReg")
   .addEventListener("click", openCloseRegistrationForm);
-document
-  .getElementById("openReg2")
-  .addEventListener("click", openCloseRegistrationForm);
+// document
+//   .getElementById("openReg2")
+//   .addEventListener("click", openCloseRegistrationForm);
 document
   .getElementById("closeReg")
   .addEventListener("click", openCloseRegistrationForm);
@@ -1837,6 +1990,10 @@ function pauseGame(gamePlayed) {
     evilAlien1.dy = 0;
     evilAlien2.dx = 0;
     evilAlien2.dy = 0;
+    evilAlien3.dx = 0;
+    evilAlien3.dy = 0;
+    evilAlien4.dx = 0;
+    evilAlien4.dy = 0;
     luke2.speed = 0;
   }
   if (gamePlayed == "game3") {
@@ -2000,6 +2157,28 @@ const evilAlien2 = {
   dy: 1,
 };
 
+const evilAlien3 = {
+  x: 200,
+  y: -10,
+  w: 60,
+  h: 4,
+  size: 3,
+  speed: 1,
+  dx: 2,
+  dy: 1,
+};
+
+const evilAlien4 = {
+  x: 100,
+  y: -10,
+  w: 60,
+  h: 4,
+  size: 3,
+  speed: 1,
+  dx: -2,
+  dy: 1,
+};
+
 const star1 = {
   x: canvas2.width * (Math.random() * 0.8 + 0.1),
   y: -15,
@@ -2152,6 +2331,8 @@ function drawGame2Elements() {
   drawHeart(ctx2, heart3);
   drawAlienEnemy(ctx2, evilAlien1);
   drawAlienEnemy(ctx2, evilAlien2);
+  drawAlienEnemy(ctx2, evilAlien3);
+  drawAlienEnemy(ctx2, evilAlien4);
   drawScore(ctx2, canvas2, score2);
   // fillBulletsArray(luke2, ctx2);
 }
@@ -2227,6 +2408,58 @@ function game2Action() {
   );
   loseHeart(evilAlien1, luke2, canvas2, 2, randomX1, -1, 0);
   loseHeart(evilAlien2, luke2, canvas2, 2, randomX2, -1, 0);
+  moveAlienEnemy(
+    evilAlien3,
+    canvas2,
+    2,
+    score2,
+    evilAlien3,
+    1,
+    1,
+    randomX1,
+    0,
+    -1
+  );
+  moveAlienEnemy(
+    evilAlien4,
+    canvas2,
+    2,
+    score2,
+    evilAlien4,
+    1,
+    1,
+    randomX2,
+    0,
+    -1
+  );
+  killEnemy(
+    bulletLuke,
+    evilAlien3,
+    2,
+    canvas2,
+    Math.random() * 0.3 + 0.2,
+    0,
+    -1,
+    score2,
+    evilAlien3,
+    1.2,
+    1.2
+  );
+  killEnemy(
+    bulletLuke,
+    evilAlien4,
+    2,
+    canvas2,
+    Math.random() * 0.3 + 0.5,
+    0,
+    1,
+    score2,
+    evilAlien4,
+    1.2,
+    1.2
+  );
+  loseHeart(evilAlien3, luke2, canvas2, 2, randomX1, -1, 0);
+  loseHeart(evilAlien4, luke2, canvas2, 2, randomX2, -1, 0);
   requestIdGame2 = requestAnimationFrame(game2Action);
 }
 
@@ -2234,6 +2467,8 @@ function resetGame2() {
   emptyCanvas(ctx2, canvas2);
   resetAlienEnemy(evilAlien1, canvas2, 2, randomX1, -10, 1, -1, 0);
   resetAlienEnemy(evilAlien2, canvas2, 2, randomX2, -75, 1, -1, 0);
+  resetAlienEnemy(evilAlien3, canvas2, 2, randomX1, -10, 1, -2, 0);
+  resetAlienEnemy(evilAlien4, canvas2, 2, randomX2, -75, 1, 2, 0);
   resetLuke(luke2, canvas2, 0, -35);
   // resetBulletsArray(luke2, 0, 0, 0, 10);
   resetBullet(bulletLuke, luke2, 0, 0, 0, 10);

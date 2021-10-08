@@ -14,8 +14,38 @@
   
   <body>
 
-    <hr class="hr-1">
-    <!--SIDEBAR OPEN-->
+    <!--INTRO POPUP SCREEN-->
+
+<div id="intro-screen" class="intro-screen">
+  <div id="intro-container" class="intro-container">
+    <div class="intro" id="intro">
+      <img class="startpic" id="startpic" src="Alien-Nightmare.jpg" alt="alien" />
+      <h2>Content warning!</h2> 
+      <p><br>This webpage contains material that may be harmful or traumatizing to some viewers.
+      </p>
+      <button class="closeIntro" id="closeIntro"><strong>I'M A TOUGH GUY</strong></button>
+    </div>
+    </div>
+</div>
+
+
+<!--header + login + registration button + animation-->
+
+<hr class="hr-1">
+    <div class="page-head" id="page-head">
+      <header>
+        <h1>Drawings of Aliens</h1>
+        <p>Exclusive material</p>
+      </header>
+      <button class="openLogin" id="openLogin">Log in</button>
+      <button class="openReg" id="openReg">Register here</button>
+      <br />
+
+      <!--HEADER ANIMATION-->
+<div class="animation-box" id="animation-box">
+</div>
+
+    <!--SIDEBAR OPEN BUTTON-->
 
     <nav class="openSidebar hideSidebarButton" id="openSidebar">
       <div class="open">
@@ -23,7 +53,7 @@
       </div>
     </nav>
 
-    <!--Sidebar menu-->
+    <!--SIDEBAR MENU (DRAWINGS LINKS)-->
     <nav class="sidebar hideSidebar" id="sidebar">
       <div class="logo">
         <img src="alien.png" alt="drawings" />
@@ -38,16 +68,39 @@
       </ul>
     </nav>
 
-    <!--header + login + registration button-->
+    <!--BOXES WITH DRAWINGS-->
 
-    <div class="intro-container" id="intro-container">
-      <header>
-        <h1>Drawings of Aliens</h1>
-        <p>Exclusive material</p>
-      </header>
-      <button class="openLogin" id="openLogin">Log in</button>
-      <button class="openReg" id="openReg">Register here</button>
-      <br />
+    <div id="drawingsContainer">
+      <div class= "drawingsBox hide-box" id="drawingsBox">
+        <button type="button" class="closeDrawings" id="closeDrawings">X</button>
+        <button type="button" class="otherDrawing next" id="nextDrawing">&#129185;</button>
+        <button type="button" class="otherDrawing previous" id="previousDrawing">&#129184;</button>
+        <div class="animals drawings hideDrawings" id="animalsDrawings">
+        <h2>Aliens with animals</h2>
+        <p>CONTENT</p>
+      </div>
+      <div class="plants drawings hideDrawings" id="plantsDrawings">
+        <h2>Aliens with plants</h2>
+        <p>CONTENT</p>
+      </div>
+      <div class="instruments drawings hideDrawings" id="instrumentsDrawings">
+        <h2>Aliens with instruments</h2>
+        <p>CONTENT</p>
+      </div>
+      <div class="food drawings hideDrawings" id="foodDrawings">
+        <h2>Aliens with food</h2>
+        <p>CONTENT</p>
+      </div>
+      <div class="toys drawings hideDrawings" id="toysDrawings">
+        <h2>Aliens with toys</h2>
+        <p>CONTENT</p>
+      </div>
+      <div class="exclusive drawings hideDrawings" id="exclusiveDrawings">
+        <h2>Exclusive drawings</h2>
+        <p>CONTENT</p>
+      </div>
+    </div>
+    </div>
 
       <!--LOGIN FORM-->
 
@@ -110,17 +163,6 @@
         </form>
       </div>
       </div>
-
-      <!--INTRO-->
-
-      <img class="startpic" id="startpic" src="Alien-Nightmare.jpg" alt="alien" />
-      <p class="intro" id="intro">
-        <b>Content warning!</b> <br>This webpage contains material that may be harmful or traumatizing to some viewers. 
-        <br>
-        <a class="openReg2" id="openReg2"><strong>Register</strong></a>
-        for your weekly dosage of alien.
-      </p>
-    </div>
 
     <!---BOX FOR EVENTS-->
 
@@ -236,40 +278,7 @@
       </div>
       </div>
 
-
-    <!--BOXES WITH DRAWINGS-->
-
-    <div id="drawingsContainer">
-      <div class= "drawingsBox hide-box" id="drawingsBox">
-        <button type="button" class="closeDrawings" id="closeDrawings">X</button>
-        <button type="button" class="otherDrawing next" id="nextDrawing">&#129185;</button>
-        <button type="button" class="otherDrawing previous" id="previousDrawing">&#129184;</button>
-        <div class="animals drawings hideDrawings" id="animalsDrawings">
-        <h2>Aliens with animals</h2>
-        <p>CONTENT</p>
-      </div>
-      <div class="plants drawings hideDrawings" id="plantsDrawings">
-        <h2>Aliens with plants</h2>
-        <p>CONTENT</p>
-      </div>
-      <div class="instruments drawings hideDrawings" id="instrumentsDrawings">
-        <h2>Aliens with instruments</h2>
-        <p>CONTENT</p>
-      </div>
-      <div class="food drawings hideDrawings" id="foodDrawings">
-        <h2>Aliens with food</h2>
-        <p>CONTENT</p>
-      </div>
-      <div class="toys drawings hideDrawings" id="toysDrawings">
-        <h2>Aliens with toys</h2>
-        <p>CONTENT</p>
-      </div>
-      <div class="exclusive drawings hideDrawings" id="exclusiveDrawings">
-        <h2>Exclusive drawings</h2>
-        <p>CONTENT</p>
-      </div>
-    </div>
-    </div>
+      <!--FOOTER-->
 
     <div class="footer" id="footer">
       <div class="footer-textbox" id="foot-texts">
@@ -308,8 +317,6 @@
         </div>
       </div>
       </div>
-
-      <!--RULER-->
 
 <hr class="hr-2 hide-ruler" id="hr2">
 

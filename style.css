@@ -6,6 +6,8 @@
   --blood-red: rgb(168, 0, 0);
   --highlighted-blood: rgb(255, 41, 41);
   --dangerous-yellow: rgb(255, 196, 0);
+  --light-blood: rgb(204, 0, 0);
+  --dark-blood: rgb(110, 0, 0);
 }
 
 @font-face {
@@ -31,6 +33,21 @@ body {
   position: relative;
 }
 
+::-webkit-scrollbar {
+  width: 15px;
+  border: hidden;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+  border-radius: 50px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(202, 0, 0);
+  border-radius: 6px;
+}
+
 /* INTRO POP UP SCREEN */
 
 .intro-screen {
@@ -52,7 +69,7 @@ body {
   padding-top: 40px;
   border: 1px solid rgba(255, 196, 0, 0.61);
   border-radius: 10px;
-  top: 20%;
+  top: 10%;
   left: 50%;
   transform: translateX(-50%);
   z-index: 5;
@@ -128,12 +145,17 @@ header h1 {
   position: relative;
   padding-bottom: 80px;
   align-items: center;
-  z-index: 3;
+  z-index: 1;
 }
 
 .head-animation {
   position: relative;
   left: 0%;
+}
+
+.alien-animation {
+  position: absolute;
+  left: 30px;
 }
 
 /*LOG IN BUTTON */
@@ -330,12 +352,11 @@ header h1 {
 
 .closeDrawings {
   position: absolute;
-  top: 1%;
+  top: 0.5%;
   right: 1%;
   background-color: black;
-  border: 3px solid var(--light-alien);
-  border-radius: 50%;
-  font-size: 85%;
+  border: none;
+  font-size: 100%;
   font-weight: bold;
   color: var(--light-alien);
   z-index: 3;
@@ -343,7 +364,6 @@ header h1 {
 }
 
 .closeDrawings:hover {
-  border: 3px solid red;
   color: red;
   text-shadow: 0 2px 10px red;
 }
@@ -446,8 +466,8 @@ header h1 {
 .loginFormField input {
   width: 200px;
   background-color: black;
-  border: 2px solid rgb(90, 0, 0);
-  color: var(--highlighted-blood);
+  border: 2px solid var(--dark-blood);
+  color: var(--light-alien);
   font-weight: bold;
 }
 
@@ -457,11 +477,11 @@ header h1 {
 
 .loginFormField input:focus {
   outline: 0;
-  border-color: var(--blood-red);
+  border-color: var(--alien-colour);
 }
 
 .loginField.error input {
-  border-color: var(--blood-red);
+  border-color: var(--highlighted-alien);
 }
 
 .loginFormField.error small {
@@ -666,17 +686,16 @@ header h1 {
   position: relative;
   align-items: center;
   width: 650px;
-  height: 530px;
+  height: 600px;
   left: 50%;
   transform: translateX(-50%);
-  margin-top: 10px;
   background-color: black;
 }
 
 .events-container h1 {
   color: var(--alien-colour);
   font-size: 30px;
-  margin-bottom: 15px;
+  margin-bottom: 25px;
 }
 
 .events-container h2 {
@@ -689,7 +708,7 @@ header h1 {
   left: 50%;
   transform: translateX(-50%);
   width: 600px;
-  height: 400px;
+  height: 450px;
   margin-top: 20px;
   background-color: black;
   border: 3px double var(--alien-colour);
@@ -1177,7 +1196,7 @@ header h1 {
   font-size: 18px;
   font-family: HarlowSolid;
   text-align: right;
-  z-index: 0;
+  z-index: 1;
   background-color: transparent;
 }
 

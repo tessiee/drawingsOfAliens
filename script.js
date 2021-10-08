@@ -14,20 +14,52 @@ const animationBox = document.getElementById("animation-box");
 let maxXstar = window.innerWidth - 100;
 
 animationBox.innerHTML = `<canvas height="550" width = "${maxXstar}" class="head-animation" id="head-animation">
+</canvas>
+<canvas height="550" width = "${maxXstar}" class="alien-animation" id="alien-animation">
 </canvas>`;
 
 const headAnimationCanvas = document.getElementById("head-animation");
+const alienAnimationCanvas = document.getElementById("alien-animation");
 const ctxHeadAnimation = headAnimationCanvas.getContext("2d");
+const ctxAlienAnimation = alienAnimationCanvas.getContext("2d");
 let requestIdHeadAnimation;
+let requestIdAlienAnimation;
 let starsArray = [];
 let maxStars = 150;
 let randomXstar;
 let randomYstar;
-let pause = 65;
+let pause = 90;
 let start = 0;
-let randomYalien1 = Math.random() * 0.4 + 0.1;
-let randomYalien2 = Math.random() * 0.9 + 0.1;
-let randomYalien3 = Math.random() * 0.4 + 0.5;
+let randomYalien1 = Math.random() * 0.8 + 0.1;
+let randomYalien2 = Math.random() * 0.8 + 0.1;
+let randomYalien3 = Math.random() * 0.8 + 0.1;
+let particles = [];
+
+class Particle {
+  constructor(x, y, radius, dx, dy) {
+    this.x = x;
+    this.y = y;
+    this.radius = radius;
+    this.dx = dx;
+    this.dy = dy;
+    this.alpha = 1;
+  }
+  draw() {
+    ctxAlienAnimation.save();
+    ctxAlienAnimation.globalAlpha = this.alpha;
+    ctxAlienAnimation.fillStyle = "red";
+    ctxAlienAnimation.beginPath();
+    ctxAlienAnimation.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+    ctxAlienAnimation.fill();
+    ctxAlienAnimation.restore();
+  }
+  update() {
+    this.draw();
+    this.alpha -= 0.01;
+    this.x += this.dx;
+    this.y += this.dy;
+  }
+}
 
 let alien1 = {
   x: -10,
@@ -58,11 +90,54 @@ function moveAlien(enemyObject, canvasName, marginX, direction, randomYalien) {
   enemyObject.y += enemyObject.dy;
 
   if (enemyObject.x > canvasName.width + 200 || enemyObject.x < -20) {
-    randomYalien1 = Math.random() * 0.4 + 0.1;
-    randomYalien2 = Math.random() * 0.9 + 0.1;
-    randomYalien3 = Math.random() * 0.4 + 0.5;
+    randomYalien1 = Math.random() * 0.8 + 0.1;
+    randomYalien2 = Math.random() * 0.8 + 0.1;
+    randomYalien3 = Math.random() * 0.8 + 0.1;
     resetAlien(enemyObject, canvasName, marginX, direction, randomYalien);
   }
+}
+
+function alienCollision(
+  alien1,
+  canvasName,
+  marginX1,
+  direction1,
+  randomY1,
+  alien2,
+  marginX2,
+  direction2,
+  randomY2
+) {
+  if (
+    alien1.x > alien2.x - 2 &&
+    alien1.x < alien2.x + 2 &&
+    alien1.y > alien2.y - 10 &&
+    alien1.y < alien2.y + 8
+  ) {
+    setTimeout(() => {
+      for (i = 0; i <= 150; i++) {
+        let dx = (Math.random() - 0.5) * (Math.random() * 2);
+        let dy = (Math.random() - 0.5) * (Math.random() * 2);
+        let radius = Math.random() * 1.5;
+        let particle = new Particle(alien1.x, alien1.y, radius, dx, dy);
+
+        particles.push(particle);
+      }
+      explode();
+      resetAlien(alien1, canvasName, marginX1, direction1, randomY1);
+      resetAlien(alien2, canvasName, marginX2, direction2, randomY2);
+    }, 0);
+  }
+}
+
+function explode() {
+  particles.forEach((particle, i) => {
+    if (particle.alpha <= 0) {
+      particles.splice(i, 1);
+    } else particle.update();
+  });
+
+  requestAnimationFrame(explode);
 }
 
 function resetAlien(enemyObject, canvasName, marginX, direction, randomYalien) {
@@ -110,9 +185,6 @@ function fillStarsArray(gameCanvas, maxStars, starsArray) {
 function drawHeadAnimation() {
   emptyCanvas(ctxHeadAnimation, headAnimationCanvas);
   fillStarsArray(ctxHeadAnimation, maxStars, starsArray);
-  drawAlienEnemy(ctxHeadAnimation, alien1);
-  drawAlienEnemy(ctxHeadAnimation, alien2);
-  drawAlienEnemy(ctxHeadAnimation, alien3);
 }
 
 function headAnimationAction(current) {
@@ -124,32 +196,64 @@ function headAnimationAction(current) {
     drawHeadAnimation();
     start = current;
   }
-  moveAlien(alien1, headAnimationCanvas, -10, 1, randomYalien1);
-  moveAlien(
-    alien2,
-    headAnimationCanvas,
-    headAnimationCanvas.width + 10,
-    -1,
-    randomYalien2
-  );
-  moveAlien(alien3, headAnimationCanvas, -10, 1, randomYalien3);
   requestIdHeadAnimation = requestAnimationFrame(headAnimationAction);
 }
 requestIdHeadAnimation = requestAnimationFrame(headAnimationAction);
 
-function resetHeadAnimation() {
-  emptyCanvas(ctxHeadAnimation, headAnimationCanvas);
-  resetAlien(alien1, headAnimationCanvas, -10, 1, randomYalien1);
-  resetAlien(
+function drawAlienAnimation() {
+  emptyCanvas(ctxAlienAnimation, alienAnimationCanvas);
+  drawAlienEnemy(ctxAlienAnimation, alien1);
+  drawAlienEnemy(ctxAlienAnimation, alien2);
+  drawAlienEnemy(ctxAlienAnimation, alien3);
+}
+
+function headAlienAction() {
+  drawAlienAnimation();
+  moveAlien(alien1, alienAnimationCanvas, -10, 1, randomYalien1);
+  moveAlien(
     alien2,
-    headAnimationCanvas,
-    headAnimationCanvas.width + 10,
+    alienAnimationCanvas,
+    alienAnimationCanvas.width + 10,
     -1,
     randomYalien2
   );
-  resetAlien(alien3, headAnimationCanvas, -10, 1, randomYalien3);
-  cancelAnimationFrame(requestIdHeadAnimation);
+  moveAlien(alien3, alienAnimationCanvas, -10, 1, randomYalien3);
+  alienCollision(
+    alien1,
+    alienAnimationCanvas,
+    -10,
+    1,
+    randomYalien1,
+    alien2,
+    alienAnimationCanvas.width + 10,
+    -1,
+    randomYalien2
+  );
+  alienCollision(
+    alien1,
+    alienAnimationCanvas,
+    -10,
+    1,
+    randomYalien1,
+    alien3,
+    -10,
+    1,
+    randomYalien3
+  );
+  alienCollision(
+    alien3,
+    alienAnimationCanvas,
+    -10,
+    1,
+    randomYalien3,
+    alien2,
+    alienAnimationCanvas.width + 10,
+    -1,
+    randomYalien2
+  );
+  requestIdAlienAnimation = requestAnimationFrame(headAlienAction);
 }
+headAlienAction();
 
 //SIDEBAR
 const sidebar = document.getElementById("sidebar");
@@ -1651,7 +1755,7 @@ function loseHeart(
         heartNr = heart1;
         randomX3 = Math.random() * 0.8 + 0.1;
         returnHeart(heartNr, canvasName);
-        returnAlienEnemy(
+        enemyCollision(
           enemyObject,
           canvasName,
           gameNr,
@@ -1663,7 +1767,7 @@ function loseHeart(
         heartNr = heart2;
         randomX3 = Math.random() * 0.8 + 0.1;
         returnHeart(heartNr, canvasName);
-        returnAlienEnemy(
+        enemyCollision(
           enemyObject,
           canvasName,
           gameNr,
@@ -1674,6 +1778,14 @@ function loseHeart(
       } else if (heartNr == heart2) {
         heartNr = heart3;
         returnHeart(heartNr, canvasName);
+        enemyCollision(
+          enemyObject,
+          canvasName,
+          gameNr,
+          marginX,
+          direction,
+          randomY
+        );
         gameOver(enemyObject, lukeNr, gameNr);
       }
     }
@@ -1698,6 +1810,44 @@ function returnHeart(actionObject, canvasName) {
   actionObject.dx = 0;
   actionObject.dy = 0;
   actionObject.speed = 1;
+}
+
+function enemyCollision(
+  enemyObject,
+  canvasName,
+  gameNr,
+  marginX,
+  direction,
+  randomY
+) {
+  setTimeout(() => {
+    for (i = 0; i <= 150; i++) {
+      let dx = (Math.random() - 0.5) * Math.random();
+      let dy = (Math.random() - 0.5) * Math.random();
+      let radius = Math.random() * 1.5;
+      let piece = new Piece(enemyObject.x, enemyObject.y, radius, dx, dy);
+
+      debris.push(piece);
+    }
+    explosion();
+    returnAlienEnemy(
+      enemyObject,
+      canvasName,
+      gameNr,
+      marginX,
+      direction,
+      randomY
+    );
+  }, 0);
+}
+
+function explosion() {
+  debris.forEach((piece, i) => {
+    if (piece.alpha <= 0) {
+      debris.splice(i, 1);
+    } else piece.update();
+  });
+  requestAnimationFrame(explosion);
 }
 
 function moveAlienEnemy(
@@ -2114,6 +2264,33 @@ let randomX1 = Math.random() * 0.7 + 0.2;
 let randomX2 = Math.random() * 0.7 + 0.2;
 let randomX3 = Math.random() * 0.8 + 0.1;
 let heartNr;
+let debris = [];
+
+class Piece {
+  constructor(x, y, radius, dx, dy) {
+    this.x = x;
+    this.y = y;
+    this.radius = radius;
+    this.dx = dx;
+    this.dy = dy;
+    this.alpha = 1;
+  }
+  draw() {
+    ctx2.save();
+    ctx2.globalAlpha = this.alpha;
+    ctx2.fillStyle = "green";
+    ctx2.beginPath();
+    ctx2.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+    ctx2.fill();
+    ctx2.restore();
+  }
+  update() {
+    this.draw();
+    this.alpha -= 0.01;
+    this.x += this.dx;
+    this.y += this.dy;
+  }
+}
 
 const luke2 = {
   x: canvas2.width / 2,

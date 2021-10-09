@@ -3,6 +3,17 @@ const introScreen = document.getElementById("intro-screen");
 
 function closeIntroPopUp() {
   introScreen.classList.add("hide-screen");
+  enableScrollingIntro();
+}
+
+function disableScrollingIntro() {
+  setTimeout(function () {
+    document.body.style.overflow = "hidden";
+  }, 1000);
+}
+
+function enableScrollingIntro() {
+  document.body.style.overflow = "";
 }
 
 document
@@ -30,9 +41,9 @@ let randomXstar;
 let randomYstar;
 let pause = 90;
 let start = 0;
-let randomYalien1 = Math.random() * 0.8 + 0.1;
-let randomYalien2 = Math.random() * 0.8 + 0.1;
-let randomYalien3 = Math.random() * 0.8 + 0.1;
+let randomYalien1 = Math.random() * 0.4 + 0.1;
+let randomYalien2 = Math.random() * 0.3 + 0.4;
+let randomYalien3 = Math.random() * 0.3 + 0.6;
 let particles = [];
 
 class Particle {
@@ -85,6 +96,12 @@ let alien3 = {
   dy: 0,
 };
 
+function setAnimationWidth() {
+  maxXstar = window.innerWidth - 100;
+  headAnimationCanvas.width = maxXstar;
+  alienAnimationCanvas.width = maxXstar;
+}
+
 function moveAlien(enemyObject, canvasName, marginX, direction, randomYalien) {
   enemyObject.x += enemyObject.dx * enemyObject.speed;
   enemyObject.y += enemyObject.dy;
@@ -109,16 +126,16 @@ function alienCollision(
   randomY2
 ) {
   if (
-    alien1.x > alien2.x - 2 &&
-    alien1.x < alien2.x + 2 &&
+    alien1.x > alien2.x - 10 &&
+    alien1.x < alien2.x + 10 &&
     alien1.y > alien2.y - 10 &&
-    alien1.y < alien2.y + 8
+    alien1.y < alien2.y + 10
   ) {
     setTimeout(() => {
       for (i = 0; i <= 150; i++) {
-        let dx = (Math.random() - 0.5) * (Math.random() * 2);
-        let dy = (Math.random() - 0.5) * (Math.random() * 2);
-        let radius = Math.random() * 1.5;
+        let dx = (Math.random() - 0.5) * Math.random();
+        let dy = (Math.random() - 0.5) * Math.random();
+        let radius = Math.random() * 2;
         let particle = new Particle(alien1.x, alien1.y, radius, dx, dy);
 
         particles.push(particle);
@@ -150,7 +167,7 @@ function multipleStars() {
   this.x = randomXstar;
   this.y = randomYstar;
   this.radius = 1;
-  this.color = "#624900";
+  this.color = "#3b2c00";
 
   this.draw = function (gameCanvas) {
     gameCanvas.beginPath();
@@ -338,11 +355,24 @@ menulinksEventListeners();
 
 closeDrawings.addEventListener("click", closeDrawingsBtn);
 
-//LOGIN FORM
+//HEAD LOGIN FORM/REGISTER FORM
 const loginBox = document.getElementById("loginBox");
 const loginForm = document.getElementById("loginForm");
 const showLoginPass = document.getElementById("showLoginPass");
 const loginContainer = document.getElementById("loginContainer");
+const registrationBox = document.getElementById("registrationBox");
+const registerForm = document.getElementById("registerForm");
+const username = document.getElementById("username");
+const email = document.getElementById("email");
+const password = document.getElementById("password");
+const confirmPassword = document.getElementById("confirmPassword");
+const showPass = document.getElementById("showPass");
+const showConfirm = document.getElementById("showConfirm");
+const regContainer = document.getElementById("reg-container");
+const loginUsername = document.getElementById("loginUsername");
+const loginPassword = document.getElementById("loginPassword");
+const loginUser = document.getElementById("loginUser");
+const helpUser = document.getElementById("helpUser");
 
 function openCloseLoginForm() {
   closeRegistrationForm();
@@ -366,34 +396,16 @@ document
   .addEventListener("click", openCloseLoginForm);
 
 //SHOW PASSWORD FUNCTIE SAMENVOEGEN
-function showPassword() {
+function showPassword(passwordType) {
   const type =
-    loginPassword.getAttribute("type") === "password" ? "text" : "password";
-  loginPassword.setAttribute("type", type);
+    passwordType.getAttribute("type") === "password" ? "text" : "password";
+  passwordType.setAttribute("type", type);
 }
 
-showLoginPass.addEventListener("mouseenter", showPassword);
-showLoginPass.addEventListener("mouseleave", showPassword);
-
-//CHECK VALID LOGIN
-const loginUsername = document.getElementById("loginUsername");
-const loginPassword = document.getElementById("loginPassword");
-const loginUser = document.getElementById("loginUser");
-
-//HELP USER LOGIN
-const helpUser = document.getElementById("helpUser");
+showLoginPass.addEventListener("mouseenter", showPassword(loginPassword));
+showLoginPass.addEventListener("mouseleave", showPassword(loginPassword));
 
 //REGISTRATION FORM
-const registrationBox = document.getElementById("registrationBox");
-const registerForm = document.getElementById("registerForm");
-const username = document.getElementById("username");
-const email = document.getElementById("email");
-const password = document.getElementById("password");
-const confirmPassword = document.getElementById("confirmPassword");
-const showPass = document.getElementById("showPass");
-const showConfirm = document.getElementById("showConfirm");
-const regContainer = document.getElementById("reg-container");
-
 function openCloseRegistrationForm() {
   closeLoginForm();
   const position = event.target.id == "openReg" ? "button" : "text";
@@ -487,18 +499,6 @@ function getFieldName(input) {
   return input.id.charAt(0).toUpperCase() + input.id.slice(1);
 }
 
-function showPassw() {
-  const type =
-    password.getAttribute("type") === "password" ? "text" : "password";
-  password.setAttribute("type", type);
-}
-
-function showConfirmPassw() {
-  const type =
-    confirmPassword.getAttribute("type") === "password" ? "text" : "password";
-  confirmPassword.setAttribute("type", type);
-}
-
 registerForm.addEventListener("submit", function (registration) {
   registration.preventDefault();
 
@@ -510,17 +510,14 @@ registerForm.addEventListener("submit", function (registration) {
   }
 });
 
-showPass.addEventListener("mouseover", showPassw);
-showPass.addEventListener("mouseleave", showPassw);
-showConfirm.addEventListener("mouseover", showConfirmPassw);
-showConfirm.addEventListener("mouseleave", showConfirmPassw);
+showPass.addEventListener("mouseover", showPassword(password));
+showPass.addEventListener("mouseleave", showPassword(password));
+showConfirm.addEventListener("mouseover", showPassword(confirmPassword));
+showConfirm.addEventListener("mouseleave", showPassword(confirmPassword));
 
 document
   .getElementById("openReg")
   .addEventListener("click", openCloseRegistrationForm);
-// document
-//   .getElementById("openReg2")
-//   .addEventListener("click", openCloseRegistrationForm);
 document
   .getElementById("closeReg")
   .addEventListener("click", openCloseRegistrationForm);
@@ -534,6 +531,8 @@ const filterContainer = document.getElementById("filter-container");
 const eventsList = document.getElementById("events-list");
 const eventsLoader = document.getElementById("events-loader");
 let maxEvents = 8;
+let eventsInfoButtonsArr = [];
+let eventsInfoArr = [];
 
 fetch("events.json")
   .then((res) => {
@@ -634,9 +633,6 @@ eventsBox.addEventListener("scroll", () => {
     }
   }
 });
-
-let eventsInfoButtonsArr = [];
-let eventsInfoArr = [];
 
 async function clickEventInfoButton() {
   let res = await fetch("events.json");
@@ -853,7 +849,7 @@ function startGame() {
   const game = document.getElementById(pick);
   game.classList.remove("hide-game");
   gameLightOff();
-  disableScrolling();
+  disableScrollingInGame();
 
   switch (gamePlayed) {
     case "game1":
@@ -886,7 +882,7 @@ const topGame1 = getOffset(game1).top;
 const topGame2 = getOffset(game2).top;
 const topGame3 = getOffset(game3).top;
 
-function disableScrolling() {
+function disableScrollingInGame() {
   let x = window.scrollX;
   let y;
   let margin;
@@ -2810,43 +2806,43 @@ const footLinks = document
 let subjectFooter;
 let subjectFooter2;
 
-function openCloseFootText() {
-  closeFootText();
+function openFootText() {
+  closeFootTexts();
   event.target.classList.add("highlight");
   subjectFooter = event.target.id;
   const textShown = document.getElementById(`${subjectFooter}-text`);
   textShown.classList.remove("hide-text");
 }
 
-function closeFootText() {
+function closeFootTexts() {
   for (x = 0; x < textsArr.length; x++) {
     textsArr[x].classList.add("hide-text");
     footLinks[x].classList.remove("highlight");
   }
 }
 
-function getLinks() {
+function addFooterOpeningEventListeners() {
   for (x = 0; x < footLinks.length; x++) {
-    footLinks[x].addEventListener("click", openCloseFootText);
+    footLinks[x].addEventListener("click", openFootText);
   }
 }
-getLinks();
+addFooterOpeningEventListeners();
 
-function closeTextFooter() {
+function closeViaFooter() {
   if (subjectFooter == subjectFooter2) {
-    closeFootText();
+    closeFootTexts();
     subjectFooter2 = undefined;
   } else {
     subjectFooter2 = event.target.id;
   }
 }
 
-function closeViaFooter() {
+function addFooterClosingEventListeners() {
   for (x = 0; x < footLinks.length; x++) {
-    footLinks[x].addEventListener("click", closeTextFooter);
+    footLinks[x].addEventListener("click", closeViaFooter);
   }
 }
-closeViaFooter();
+addFooterClosingEventListeners();
 
 document
   .getElementById("openReg3")

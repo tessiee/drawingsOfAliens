@@ -21,7 +21,16 @@
   box-sizing: border-box;
 }
 
+html {
+  width: 100%;
+  height: 100%;
+}
+
 body {
+  min-width: 100%;
+  min-height: 100%;
+  max-width: 100%;
+  max-height: 100%;
   background-color: black;
   color: red;
   font-family: "Courier New", Courier, monospace;
@@ -31,6 +40,7 @@ body {
   justify-content: center;
   margin-top: 20px;
   position: relative;
+  overflow-x: hidden;
 }
 
 ::-webkit-scrollbar {
@@ -46,6 +56,10 @@ body {
 ::-webkit-scrollbar-thumb {
   background: rgb(202, 0, 0);
   border-radius: 6px;
+}
+
+::-webkit-scrollbar-corner {
+  background-color: transparent;
 }
 
 /* INTRO POP UP SCREEN */
@@ -155,7 +169,7 @@ header h1 {
 
 .alien-animation {
   position: absolute;
-  left: 30px;
+  left: 2%;
 }
 
 /*LOG IN BUTTON */
@@ -344,6 +358,12 @@ header h1 {
 
 .drawings p {
   text-align: center;
+}
+
+.drawings img {
+  height: 100px;
+  width: 100px;
+  margin: 50px;
 }
 
 .drawings.hideDrawings {

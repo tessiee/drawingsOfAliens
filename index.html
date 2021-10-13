@@ -13,7 +13,8 @@
   </head>
   
   <body onpageshow="disableScrollingIntro()"
-  onresize="setAnimationWidth()">
+  onresize="setAnimationWidth()"
+>
 
     <!--INTRO POPUP SCREEN-->
 
@@ -63,9 +64,9 @@
         <li><a href="#/" id="animals"><b>Aliens with animals</b></a></li>
         <li><a href="#/" id="plants"><b>Aliens with plants</b></a></li>
         <li><a href="#/" id="instruments"><b>Aliens with instruments</b></a></li>
-        <li><a href="#/" id="food"><b>Aliens with food</b></a></li>
+        <li><a href="#/" id="foods"><b>Aliens with food</b></a></li>
         <li><a href="#/" id="toys"><b>Aliens with toys</b></a></li>
-        <li><a href="#/" class="exclusive" id="exclusive"><b>Exclusive</b></a></li>
+        <li><a href="#/" class="exclusive" id="exclusives"><b>Exclusive</b></a></li>
       </ul>
     </nav>
 
@@ -73,32 +74,41 @@
 
     <div id="drawingsContainer">
       <div class= "drawingsBox hide-box" id="drawingsBox">
-        <button type="button" class="closeDrawings" id="closeDrawings">✖</button>
+        <button type="button" class="closeDrawings" id="closeDrawings">✖
+        </button>
         <button type="button" class="otherDrawing next" id="nextDrawing">&#129185;</button>
         <button type="button" class="otherDrawing previous" id="previousDrawing">&#129184;</button>
         <div class="animals drawings hideDrawings" id="animalsDrawings">
         <h2>Aliens with animals</h2>
-        <img src="alien.png" alt="Aliens with animals" />
+        <img height="300px" width="350px" id="animalDrawing1" class="hide-drawing" src="/drawings/aliencat.png" alt="Aliens with animals" />
+        <img id="animalDrawing2" class="hide-drawing" src="/drawings/aliendinosaur.png" alt="Aliens with animals" />
       </div>
       <div class="plants drawings hideDrawings" id="plantsDrawings">
         <h2>Aliens with plants</h2>
-        <img src="alien.png" alt="Aliens with plants" />
+        <img height="380px" width="450px" id="plantDrawing1" class="hide-drawing" src="/drawings/alienplant.png" alt="Aliens with plants" />
+        <img id="plantDrawing2" class="hide-drawing" src="/drawings/alienpalm.png" alt="Aliens with plants" />
       </div>
       <div class="instruments drawings hideDrawings" id="instrumentsDrawings">
         <h2>Aliens with instruments</h2>
-        <img src="alien.png" alt="Aliens with instruments" />
+        <img height="350px" id="instrumentDrawing1" class="hide-drawing" src="/drawings/alienflute.png" alt="Aliens with instruments" />
+        <img height="380px" width="250px" id="instrumentDrawing2" class="hide-drawing" src="/drawings/aliendrums.png" alt="Aliens with instruments" />
       </div>
-      <div class="food drawings hideDrawings" id="foodDrawings">
+      <div class="foods drawings hideDrawings" id="foodsDrawings">
         <h2>Aliens with food</h2>
-        <img src="alien.png" alt="Aliens with food" />
+        <img id="foodDrawing1" class="hide-drawing" src="/drawings/alienfood.png" alt="Aliens with food" />
+        <img height="300px" id="foodDrawing2" class="hide-drawing" src="/drawings/alienbanana2.png" alt="Aliens with food" />
       </div>
       <div class="toys drawings hideDrawings" id="toysDrawings">
         <h2>Aliens with toys</h2>
-        <img src="alien.png" alt="Aliens with toys" />
+        <img id="toyDrawing1" class="hide-drawing" src="/drawings/alienteddy.png" alt="Aliens with toys" />
+        <img height="300px" id="toyDrawing2" class="hide-drawing" src="/drawings/alienblock.png" alt="Aliens with toys" />
       </div>
-      <div class="exclusive drawings hideDrawings" id="exclusiveDrawings">
+      <div class="exclusives drawings hideDrawings" id="exclusivesDrawings">
         <h2>Exclusive drawings</h2>
-        <img src="alien.png" alt="Exclusive drawings" />
+        <img height="350px" width="300px" id="exclusiveDrawing1" class="hide-drawing" src="/drawings/alienladyginger.png" alt="Exclusive drawings" />
+        <img height="350px" width="300px" id="exclusiveDrawing2" class="hide-drawing" src="/drawings/alienladycowboy.png" alt="Exclusive drawings" />
+        <img height="350px" width="300px" id="exclusiveDrawing3" class="hide-drawing" src="/drawings/aliencleaninglady.png" alt="Exclusive drawings" />
+        <img height="350px" width="300px" id="exclusiveDrawing4" class="hide-drawing" src="/drawings/alienladygingernurse.png" alt="Exclusive drawings" />
       </div>
     </div>
     </div>

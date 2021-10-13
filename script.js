@@ -1,5 +1,6 @@
-//INTRO POP-UP
+// INTRO POP-UP
 const introScreen = document.getElementById("intro-screen");
+const introButton = document.getElementById("closeIntro");
 
 function closeIntroPopUp() {
   introScreen.classList.add("hide-screen");
@@ -7,20 +8,16 @@ function closeIntroPopUp() {
 }
 
 function disableScrollingIntro() {
-  setTimeout(function () {
-    document.body.style.overflow = "hidden";
-  }, 1000);
+  document.body.style.overflow = "hidden";
 }
 
 function enableScrollingIntro() {
   document.body.style.overflow = "";
 }
 
-document
-  .getElementById("closeIntro")
-  .addEventListener("click", closeIntroPopUp);
+introButton.addEventListener("click", closeIntroPopUp);
 
-//HEADER ANIMATION
+// HEADER ANIMATION
 const animationBox = document.getElementById("animation-box");
 let maxXstar = window.innerWidth - 100;
 
@@ -35,16 +32,18 @@ const ctxHeadAnimation = headAnimationCanvas.getContext("2d");
 const ctxAlienAnimation = alienAnimationCanvas.getContext("2d");
 let requestIdHeadAnimation;
 let requestIdAlienAnimation;
-let starsArray = [];
+let animationStarsArray = [];
+let aliensArray3 = [];
+let particles = [];
 let maxStars = 150;
-let randomXstar;
-let randomYstar;
 let pause = 90;
 let start = 0;
-let randomYalien1 = Math.random() * 0.4 + 0.1;
-let randomYalien2 = Math.random() * 0.3 + 0.4;
-let randomYalien3 = Math.random() * 0.3 + 0.6;
-let particles = [];
+let randomXstar;
+let randomYstar;
+let side = 0;
+let marginX = -10;
+let directionA = 1;
+let AC;
 
 class Particle {
   constructor(x, y, radius, dx, dy) {
@@ -72,78 +71,220 @@ class Particle {
   }
 }
 
-let alien1 = {
-  x: -10,
-  y: headAnimationCanvas.height * randomYalien1,
-  speed: 1.4,
-  dx: 2.5,
-  dy: 0,
-};
-
-let alien2 = {
-  x: maxXstar + 10,
-  y: headAnimationCanvas.height * randomYalien2,
-  speed: 1.2,
-  dx: -2.5,
-  dy: 0,
-};
-
-let alien3 = {
-  x: -10,
-  y: headAnimationCanvas.height * randomYalien3,
-  speed: 1.2,
-  dx: 2.5,
-  dy: 0,
-};
-
 function setAnimationWidth() {
   maxXstar = window.innerWidth - 100;
   headAnimationCanvas.width = maxXstar;
   alienAnimationCanvas.width = maxXstar;
 }
 
-function moveAlien(enemyObject, canvasName, marginX, direction, randomYalien) {
-  enemyObject.x += enemyObject.dx * enemyObject.speed;
-  enemyObject.y += enemyObject.dy;
+function multipleAliens3(canvasName) {
+  this.x = maxXstar * side + marginX;
+  this.y = canvasName.height * (Math.random() * 0.8 + 0.1);
+  this.dx = 2.5 * directionA * (Math.random() * 1.6 + 1.0);
+  this.dy = 0;
+  this.size = 3;
 
-  if (enemyObject.x > canvasName.width + 200 || enemyObject.x < -20) {
-    randomYalien1 = Math.random() * 0.8 + 0.1;
-    randomYalien2 = Math.random() * 0.8 + 0.1;
-    randomYalien3 = Math.random() * 0.8 + 0.1;
-    resetAlien(enemyObject, canvasName, marginX, direction, randomYalien);
+  this.draw = function (gameCanvas) {
+    drawRoundObject(
+      gameCanvas,
+      "#05db05",
+      this.x,
+      this.y,
+      this.size,
+      -100,
+      Math.PI - 0.5,
+      true
+    );
+    drawRoundObject(
+      gameCanvas,
+      "#FF0000",
+      this.x - 1.5,
+      this.y,
+      1,
+      -100,
+      Math.PI - 0.5,
+      true
+    );
+    drawRoundObject(
+      gameCanvas,
+      "#FF0000",
+      this.x + 1.5,
+      this.y,
+      1,
+      -100,
+      Math.PI - 0.5,
+      true
+    );
+    drawEllipseObject(
+      gameCanvas,
+      "#FF0000",
+      this.x,
+      this.y + 4,
+      10,
+      2,
+      0,
+      0,
+      Math.PI * 2,
+      true
+    );
+    drawRoundObject(
+      gameCanvas,
+      "#05db05",
+      this.x - 3,
+      this.y + 4.2,
+      1,
+      -100,
+      Math.PI - 0.5,
+      true
+    );
+    drawRoundObject(
+      gameCanvas,
+      "#05db05",
+      this.x + 3,
+      this.y + 4.2,
+      1,
+      -100,
+      Math.PI - 0.5,
+      true
+    );
+    drawRoundObject(
+      gameCanvas,
+      "#05db05",
+      this.x - 7,
+      this.y + 4.2,
+      1,
+      -100,
+      Math.PI - 0.5,
+      true
+    );
+    drawRoundObject(
+      gameCanvas,
+      "#05db05",
+      this.x + 7,
+      this.y + 4.2,
+      1,
+      -100,
+      Math.PI - 0.5,
+      true
+    );
+    drawRoundObject(
+      gameCanvas,
+      "#05db05",
+      this.x - 11,
+      this.y + 4.2,
+      1,
+      -100,
+      Math.PI - 0.5,
+      true
+    );
+    drawRoundObject(
+      gameCanvas,
+      "#05db05",
+      this.x + 11,
+      this.y + 4.2,
+      1,
+      -100,
+      Math.PI - 0.5,
+      true
+    );
+  };
+
+  this.reset = function (canvasName) {
+    this.x = maxXstar * side + marginX;
+    this.y = canvasName.height * (Math.random() * 0.8 + 0.1);
+    this.dx = 2.5 * directionA * (Math.random() * 1.6 + 1.0);
+  };
+}
+
+function fillAliensArray3(canvasName) {
+  for (var i = 0; i < 3; i++) {
+    aliensArray3[i] = new multipleAliens3(canvasName);
+    if (side == 0) {
+      side = 1;
+      marginX = 10;
+      directionA = -1;
+    } else {
+      side = 0;
+      marginX = -10;
+      directionA = 1;
+    }
+  }
+}
+fillAliensArray3(alienAnimationCanvas);
+
+function drawAliensArray3(gameCanvas) {
+  for (var i = 0; i < aliensArray3.length; i++) {
+    aliensArray3[i].draw(gameCanvas);
   }
 }
 
-function alienCollision(
-  alien1,
-  canvasName,
-  marginX1,
-  direction1,
-  randomY1,
-  alien2,
-  marginX2,
-  direction2,
-  randomY2
-) {
-  if (
-    alien1.x > alien2.x - 10 &&
-    alien1.x < alien2.x + 10 &&
-    alien1.y > alien2.y - 10 &&
-    alien1.y < alien2.y + 10
-  ) {
-    setTimeout(() => {
-      for (i = 0; i <= 150; i++) {
-        let dx = (Math.random() - 0.5) * Math.random();
-        let dy = (Math.random() - 0.5) * Math.random();
-        let radius = Math.random() * 2;
-        let particle = new Particle(alien1.x, alien1.y, radius, dx, dy);
+function moveAliensArray3(canvasName) {
+  for (var i = 0; i < aliensArray3.length; i++) {
+    aliensArray3[i].y += aliensArray3[i].dy;
+    aliensArray3[i].x += aliensArray3[i].dx;
 
-        particles.push(particle);
+    if (aliensArray3[i].x > canvasName.width + 20 || aliensArray3[i].x < -20) {
+      if (side == 0) {
+        side = 1;
+        marginX = 10;
+        directionA = -1;
+      } else {
+        side = 0;
+        marginX = -10;
+        directionA = 1;
       }
-      explode();
-      resetAlien(alien1, canvasName, marginX1, direction1, randomY1);
-      resetAlien(alien2, canvasName, marginX2, direction2, randomY2);
-    }, 0);
+      aliensArray3[i].reset(canvasName);
+    }
+  }
+}
+
+function resetAliensArray3(canvasName) {
+  for (var i = 0; i < aliensArray3.length; i++) {
+    if (side == 0) {
+      side = 1;
+      marginX = 10;
+      directionA = -1;
+    } else {
+      side = 0;
+      marginX = -10;
+      directionA = 1;
+    }
+    aliensArray3[i].reset(canvasName);
+  }
+}
+
+function alienCollision(AC, canvasName) {
+  for (let AI = 0; AI < aliensArray3.length; AI++) {
+    if (AC !== AI) {
+      if (
+        aliensArray3[AC].x > aliensArray3[AI].x - 10 &&
+        aliensArray3[AC].x < aliensArray3[AI].x + 10 &&
+        aliensArray3[AC].y > aliensArray3[AI].y - 10 &&
+        aliensArray3[AC].y < aliensArray3[AI].y + 10
+      ) {
+        for (i = 0; i <= 150; i++) {
+          let dx = (Math.random() - 0.5) * Math.random();
+          let dy = (Math.random() - 0.5) * Math.random();
+          let radius = Math.random() * 2;
+          let particle = new Particle(
+            aliensArray3[AC].x,
+            aliensArray3[AC].y,
+            radius,
+            dx,
+            dy
+          );
+
+          particles.push(particle);
+        }
+        aliensArray3[AI].dx = 0;
+        aliensArray3[AC].dx = 0;
+        explode();
+        setTimeout(() => {
+          aliensArray3[AC].reset(canvasName);
+          aliensArray3[AI].reset(canvasName);
+        }, 500);
+      }
+    }
   }
 }
 
@@ -157,13 +298,7 @@ function explode() {
   requestAnimationFrame(explode);
 }
 
-function resetAlien(enemyObject, canvasName, marginX, direction, randomYalien) {
-  enemyObject.x = marginX;
-  enemyObject.y = canvasName.height * randomYalien;
-  enemyObject.dx = 2.5 * direction;
-}
-
-function multipleStars() {
+function animationStars() {
   this.x = randomXstar;
   this.y = randomYstar;
   this.radius = 1;
@@ -178,30 +313,30 @@ function multipleStars() {
   };
 }
 
-function fillStarsArray(gameCanvas, maxStars, starsArray) {
+function fillAnimationStarsArray(gameCanvas, maxStars) {
   for (var i = 0; i < 100; i++) {
     randomXstar = Math.random() * maxXstar - 20 + 20;
     randomYstar = Math.random() * 250 + 0;
-    starsArray[i] = new multipleStars();
-    starsArray[i].draw(gameCanvas);
+    animationStarsArray[i] = new animationStars();
+    animationStarsArray[i].draw(gameCanvas);
   }
   for (var i = 100; i < 140; i++) {
     randomXstar = Math.random() * maxXstar - 20 + 20;
     randomYstar = Math.random() * 150 + 250;
-    starsArray[i] = new multipleStars();
-    starsArray[i].draw(gameCanvas);
+    animationStarsArray[i] = new animationStars();
+    animationStarsArray[i].draw(gameCanvas);
   }
   for (var i = 140; i < maxStars; i++) {
     randomXstar = Math.random() * maxXstar - 20 + 20;
     randomYstar = Math.random() * 150 + 400;
-    starsArray[i] = new multipleStars();
-    starsArray[i].draw(gameCanvas);
+    animationStarsArray[i] = new animationStars();
+    animationStarsArray[i].draw(gameCanvas);
   }
 }
 
 function drawHeadAnimation() {
   emptyCanvas(ctxHeadAnimation, headAnimationCanvas);
-  fillStarsArray(ctxHeadAnimation, maxStars, starsArray);
+  fillAnimationStarsArray(ctxHeadAnimation, maxStars, animationStarsArray);
 }
 
 function headAnimationAction(current) {
@@ -219,55 +354,15 @@ requestIdHeadAnimation = requestAnimationFrame(headAnimationAction);
 
 function drawAlienAnimation() {
   emptyCanvas(ctxAlienAnimation, alienAnimationCanvas);
-  drawAlienEnemy(ctxAlienAnimation, alien1);
-  drawAlienEnemy(ctxAlienAnimation, alien2);
-  drawAlienEnemy(ctxAlienAnimation, alien3);
+  drawAliensArray3(ctxAlienAnimation, alienAnimationCanvas);
 }
 
 function headAlienAction() {
   drawAlienAnimation();
-  moveAlien(alien1, alienAnimationCanvas, -10, 1, randomYalien1);
-  moveAlien(
-    alien2,
-    alienAnimationCanvas,
-    alienAnimationCanvas.width + 10,
-    -1,
-    randomYalien2
-  );
-  moveAlien(alien3, alienAnimationCanvas, -10, 1, randomYalien3);
-  alienCollision(
-    alien1,
-    alienAnimationCanvas,
-    -10,
-    1,
-    randomYalien1,
-    alien2,
-    alienAnimationCanvas.width + 10,
-    -1,
-    randomYalien2
-  );
-  alienCollision(
-    alien1,
-    alienAnimationCanvas,
-    -10,
-    1,
-    randomYalien1,
-    alien3,
-    -10,
-    1,
-    randomYalien3
-  );
-  alienCollision(
-    alien3,
-    alienAnimationCanvas,
-    -10,
-    1,
-    randomYalien3,
-    alien2,
-    alienAnimationCanvas.width + 10,
-    -1,
-    randomYalien2
-  );
+  moveAliensArray3(alienAnimationCanvas);
+  alienCollision(0, alienAnimationCanvas);
+  alienCollision(1, alienAnimationCanvas);
+  alienCollision(2, alienAnimationCanvas);
   requestIdAlienAnimation = requestAnimationFrame(headAlienAction);
 }
 headAlienAction();
@@ -306,8 +401,101 @@ const drawingsContainer = document.getElementById("drawingsContainer");
 let otherDrawing =
   (document.getElementById("nextDrawing"),
   document.getElementById("previousDrawing"));
+const nextDrawing = document.getElementById("nextDrawing");
+const previousDrawing = document.getElementById("previousDrawing");
 let subjectDrawing;
 let subjectDrawing2;
+let animalDrawings = new Array(
+  document.getElementById("animalsDrawings").childElementCount - 1
+);
+let plantDrawings = new Array(
+  document.getElementById("plantsDrawings").childElementCount - 1
+);
+let instrumentDrawings = new Array(
+  document.getElementById("instrumentsDrawings").childElementCount - 1
+);
+let foodDrawings = new Array(
+  document.getElementById("foodsDrawings").childElementCount - 1
+);
+let toyDrawings = new Array(
+  document.getElementById("toysDrawings").childElementCount - 1
+);
+let exclusiveDrawings = new Array(
+  document.getElementById("exclusivesDrawings").childElementCount - 1
+);
+let DX;
+let DS;
+
+function fillDrawingsArrays() {
+  for (x = 0; x < animalDrawings.length; x++) {
+    animalDrawings[x] = document.getElementById(`animalDrawing${x + 1}`);
+  }
+  for (x = 0; x < plantDrawings.length; x++) {
+    plantDrawings[x] = document.getElementById(`plantDrawing${x + 1}`);
+  }
+  for (x = 0; x < instrumentDrawings.length; x++) {
+    instrumentDrawings[x] = document.getElementById(
+      `instrumentDrawing${x + 1}`
+    );
+  }
+  for (x = 0; x < foodDrawings.length; x++) {
+    foodDrawings[x] = document.getElementById(`foodDrawing${x + 1}`);
+  }
+  for (x = 0; x < toyDrawings.length; x++) {
+    toyDrawings[x] = document.getElementById(`toyDrawing${x + 1}`);
+  }
+  for (x = 0; x < exclusiveDrawings.length; x++) {
+    exclusiveDrawings[x] = document.getElementById(`exclusiveDrawing${x + 1}`);
+  }
+}
+fillDrawingsArrays();
+
+function showFirstDrawing() {
+  let drawingsSubject = event.target.parentElement.id.slice(0, -1);
+  switch (drawingsSubject) {
+    case "animal":
+      DS = animalDrawings;
+      break;
+    case "plant":
+      DS = plantDrawings;
+      break;
+    case "instrument":
+      DS = instrumentDrawings;
+      break;
+    case "food":
+      DS = foodDrawings;
+      break;
+    case "toy":
+      DS = toyDrawings;
+      break;
+    case "exclusive":
+      DS = exclusiveDrawings;
+      break;
+  }
+  for (x = 0; x < DS.length; x++) DS[x].classList.add("hide-drawing");
+  DX = 0;
+  DS[DX].classList.remove("hide-drawing");
+}
+
+function showNextDrawing() {
+  DS[DX].classList.add("hide-drawing");
+  if (DX == DS.length - 1) {
+    DX = 0;
+  } else {
+    DX++;
+  }
+  DS[DX].classList.remove("hide-drawing");
+}
+
+function showPreviousDrawing() {
+  DS[DX].classList.add("hide-drawing");
+  if (DX == 0) {
+    DX = DS.length - 1;
+  } else {
+    DX--;
+  }
+  DS[DX].classList.remove("hide-drawing");
+}
 
 function hideDrawings() {
   const drawingsArr = drawingsBox.children;
@@ -326,6 +514,7 @@ function showDrawings() {
   drawingsBox.classList.remove("hide-box");
   subjectDrawing = event.target.parentElement.id;
   const drawingsShown = document.getElementById(`${subjectDrawing}Drawings`);
+  showFirstDrawing();
   drawingsShown.classList.remove("hideDrawings");
   closeDrawings.classList.remove("hideBtn");
   otherDrawing.classList.remove("hideBtn");
@@ -353,6 +542,8 @@ function menulinksEventListeners() {
 }
 menulinksEventListeners();
 
+nextDrawing.addEventListener("click", showNextDrawing);
+previousDrawing.addEventListener("click", showPreviousDrawing);
 closeDrawings.addEventListener("click", closeDrawingsBtn);
 
 //HEAD LOGIN FORM/REGISTER FORM
@@ -395,7 +586,6 @@ document
   .getElementById("closeLogin")
   .addEventListener("click", openCloseLoginForm);
 
-//SHOW PASSWORD FUNCTIE SAMENVOEGEN
 function showPassword(passwordType) {
   const type =
     passwordType.getAttribute("type") === "password" ? "text" : "password";
@@ -781,7 +971,6 @@ function gameOverClose() {
   for (x = 0; x < gameOverArr.length; x++) {
     gameOverArr[x].classList.add("hide-screen");
   }
-  hideStartGameScreen();
 }
 
 function gameOverAgain() {
@@ -817,8 +1006,9 @@ function getGameAgainButtons() {
     againNo.forEach(() => {
       gameAgainNo[x] = againNo.item(x);
       againNo.item(x).addEventListener("click", closeGames);
-      againNo.item(x).addEventListener("click", gameOverClose);
       againNo.item(x).addEventListener("click", gameLightOff);
+      againNo.item(x).addEventListener("click", gameOverClose);
+      againNo.item(x).addEventListener("click", closePlayedGame);
     });
   }
 }
@@ -828,6 +1018,7 @@ function closeGames() {
   for (x = 0; x < games.length; x++) {
     games[x].classList.add("hide-game");
   }
+  hideStartGameScreen();
   gameOverClose();
   startBtn();
   hideControlsBtn();
@@ -1046,369 +1237,14 @@ function drawRectObject(
   gameCanvas.closePath();
 }
 
-function drawBackgroundStar(gameCanvas, objectX, objectY) {
-  drawRoundObject(
-    gameCanvas,
-    "#DAA520",
-    objectX,
-    objectY,
-    1,
-    -100,
-    Math.PI - 0.5,
-    true
-  );
-}
-
-function drawBackgroundStars(gameCanvas) {
-  drawBackgroundStar(gameCanvas, 75, 62);
-  drawBackgroundStar(gameCanvas, 35, 112);
-  drawBackgroundStar(gameCanvas, 224, 59);
-  drawBackgroundStar(gameCanvas, 285, 21);
-  drawBackgroundStar(gameCanvas, 154, 39);
-  drawBackgroundStar(gameCanvas, 80, 42);
-  drawBackgroundStar(gameCanvas, 142, 14);
-  drawBackgroundStar(gameCanvas, 250, 61);
-  drawBackgroundStar(gameCanvas, 110, 90);
-  drawBackgroundStar(gameCanvas, 28, 17);
-  drawBackgroundStar(gameCanvas, 125, 46);
-  drawBackgroundStar(gameCanvas, 180, 124);
-  drawBackgroundStar(gameCanvas, 290, 76);
-  drawBackgroundStar(gameCanvas, 155, 17);
-  drawBackgroundStar(gameCanvas, 90, 75);
-  drawBackgroundStar(gameCanvas, 142, 114);
-  drawBackgroundStar(gameCanvas, 250, 99);
-  drawBackgroundStar(gameCanvas, 180, 94);
-  drawBackgroundStar(gameCanvas, 65, 94);
-}
-
-function drawLuke(gameCanvas, drawingSubject) {
-  drawRoundObject(
-    gameCanvas,
-    "#05db05",
-    drawingSubject.x,
-    drawingSubject.y,
-    drawingSubject.size,
-    -100,
-    Math.PI - 0.5,
-    true
-  );
-  drawRoundObject(
-    gameCanvas,
-    "#000000",
-    drawingSubject.x - 2,
-    drawingSubject.y - 1,
-    1,
-    -100,
-    Math.PI - 0.5,
-    true
-  );
-  drawRoundObject(
-    gameCanvas,
-    "#000000",
-    drawingSubject.x + 2,
-    drawingSubject.y - 1,
-    1,
-    -100,
-    Math.PI - 0.5,
-    true
-  );
-  drawEllipseObject(
-    gameCanvas,
-    "#808080",
-    drawingSubject.x,
-    drawingSubject.y + 5,
-    20,
-    2,
-    0,
-    0,
-    Math.PI * 2,
-    true
-  );
-  drawRoundObject(
-    gameCanvas,
-    "#05db05",
-    drawingSubject.x - 4,
-    drawingSubject.y + 5.2,
-    1,
-    -100,
-    Math.PI - 0.5,
-    true
-  );
-  drawRoundObject(
-    gameCanvas,
-    "#05db05",
-    drawingSubject.x + 4,
-    drawingSubject.y + 5.2,
-    1,
-    -100,
-    Math.PI - 0.5,
-    true
-  );
-  drawRoundObject(
-    gameCanvas,
-    "#05db05",
-    drawingSubject.x - 11,
-    drawingSubject.y + 5.2,
-    1,
-    -100,
-    Math.PI - 0.5,
-    true
-  );
-  drawRoundObject(
-    gameCanvas,
-    "#05db05",
-    drawingSubject.x + 11,
-    drawingSubject.y + 5.2,
-    1,
-    -100,
-    Math.PI - 0.5,
-    true
-  );
-  drawRoundObject(
-    gameCanvas,
-    "#05db05",
-    drawingSubject.x - 18,
-    drawingSubject.y + 5.2,
-    1,
-    -100,
-    Math.PI - 0.5,
-    true
-  );
-  drawRoundObject(
-    gameCanvas,
-    "#05db05",
-    drawingSubject.x + 18,
-    drawingSubject.y + 5.2,
-    1,
-    -100,
-    Math.PI - 0.5,
-    true
-  );
-}
-
-function drawAlienEnemy(gameCanvas, drawingSubject) {
-  drawRoundObject(
-    gameCanvas,
-    "#05db05",
-    drawingSubject.x,
-    drawingSubject.y,
-    drawingSubject.size,
-    -100,
-    Math.PI - 0.5,
-    true
-  );
-  drawRoundObject(
-    gameCanvas,
-    "#FF0000",
-    drawingSubject.x - 1.5,
-    drawingSubject.y,
-    1,
-    -100,
-    Math.PI - 0.5,
-    true
-  );
-  drawRoundObject(
-    gameCanvas,
-    "#FF0000",
-    drawingSubject.x + 1.5,
-    drawingSubject.y,
-    1,
-    -100,
-    Math.PI - 0.5,
-    true
-  );
-  drawEllipseObject(
-    gameCanvas,
-    "#FF0000",
-    drawingSubject.x,
-    drawingSubject.y + 4,
-    10,
-    2,
-    0,
-    0,
-    Math.PI * 2,
-    true
-  );
-  drawRoundObject(
-    gameCanvas,
-    "#05db05",
-    drawingSubject.x - 3,
-    drawingSubject.y + 4.2,
-    1,
-    -100,
-    Math.PI - 0.5,
-    true
-  );
-  drawRoundObject(
-    gameCanvas,
-    "#05db05",
-    drawingSubject.x + 3,
-    drawingSubject.y + 4.2,
-    1,
-    -100,
-    Math.PI - 0.5,
-    true
-  );
-  drawRoundObject(
-    gameCanvas,
-    "#05db05",
-    drawingSubject.x - 7,
-    drawingSubject.y + 4.2,
-    1,
-    -100,
-    Math.PI - 0.5,
-    true
-  );
-  drawRoundObject(
-    gameCanvas,
-    "#05db05",
-    drawingSubject.x + 7,
-    drawingSubject.y + 4.2,
-    1,
-    -100,
-    Math.PI - 0.5,
-    true
-  );
-  drawRoundObject(
-    gameCanvas,
-    "#05db05",
-    drawingSubject.x - 11,
-    drawingSubject.y + 4.2,
-    1,
-    -100,
-    Math.PI - 0.5,
-    true
-  );
-  drawRoundObject(
-    gameCanvas,
-    "#05db05",
-    drawingSubject.x + 11,
-    drawingSubject.y + 4.2,
-    1,
-    -100,
-    Math.PI - 0.5,
-    true
-  );
-}
-
-function drawCowboyEnemy(gameCanvas, drawingSubject) {
-  drawRoundObject(
-    gameCanvas,
-    "#DAA520",
-    drawingSubject.x,
-    drawingSubject.y - 10,
-    5,
-    -100,
-    Math.PI - 0.5,
-    true
-  );
-  drawRoundObject(
-    gameCanvas,
-    "#DEB887",
-    drawingSubject.x,
-    drawingSubject.y - 4,
-    drawingSubject.size,
-    -100,
-    Math.PI - 0.5,
-    true
-  );
-  drawEllipseObject(
-    gameCanvas,
-    "#DAA520",
-    drawingSubject.x,
-    drawingSubject.y - 10,
-    15,
-    1,
-    0,
-    0,
-    Math.PI * 2,
-    true
-  );
-}
-
-function drawBullets(gameCanvas, actionObject) {
-  drawRoundObject(
-    gameCanvas,
-    "#808080",
-    actionObject.x,
-    actionObject.y - 10,
-    actionObject.size,
-    0,
-    Math.PI * 2
-  );
-}
-
-function drawComet(gameCanvas, drawingSubject) {
-  drawRoundObject(
-    gameCanvas,
-    "#D2691E",
-    drawingSubject.x,
-    drawingSubject.y,
-    drawingSubject.size,
-    0,
-    Math.PI * 2
-  );
-  drawRoundObject(
-    gameCanvas,
-    "#8B4513",
-    drawingSubject.x - 4,
-    drawingSubject.y - 4,
-    drawingSubject.size * 0.2,
-    0,
-    Math.PI * 2
-  );
-  drawRoundObject(
-    gameCanvas,
-    "#8B4513",
-    drawingSubject.x + 3,
-    drawingSubject.y + 3,
-    drawingSubject.size * 0.3,
-    0,
-    Math.PI * 2
-  );
-  drawRoundObject(
-    gameCanvas,
-    "#8B4513",
-    drawingSubject.x - 2,
-    drawingSubject.y - 2,
-    drawingSubject.size * 0.2,
-    0,
-    Math.PI * 2
-  );
-}
-
-function drawStar(gameCanvas, drawingSubject) {
-  gameCanvas.save();
-  gameCanvas.beginPath();
-  gameCanvas.translate(drawingSubject.x, drawingSubject.y);
-  gameCanvas.moveTo(0, 0 - drawingSubject.r);
-  for (let x = 0; x < drawingSubject.n; x++) {
-    gameCanvas.rotate(Math.PI / drawingSubject.n);
-    gameCanvas.lineTo(0, 0 - drawingSubject.r * drawingSubject.inset);
-    gameCanvas.rotate(Math.PI / drawingSubject.n);
-    gameCanvas.lineTo(0, 0 - drawingSubject.r);
-  }
-  gameCanvas.fillStyle = "#FFD700";
-  gameCanvas.fill();
-  gameCanvas.closePath();
-  gameCanvas.restore();
-}
-
-function drawHeart(gameCanvas, drawingSubject) {
-  gameCanvas.save();
-  gameCanvas.beginPath();
-  gameCanvas.translate(drawingSubject.x, drawingSubject.y);
-  gameCanvas.moveTo(7, 6);
-  gameCanvas.bezierCurveTo(7, 3, 7, 2, 5, 2);
-  gameCanvas.bezierCurveTo(2, 2, 2, 6, 2, 6);
-  gameCanvas.bezierCurveTo(2, 8, 4, 10, 7, 12);
-  gameCanvas.bezierCurveTo(11, 10, 13, 8, 13, 6);
-  gameCanvas.bezierCurveTo(13, 6, 13, 2, 10, 2);
-  gameCanvas.bezierCurveTo(8, 2, 7, 3, 7, 4);
-  gameCanvas.fillStyle = "#FF0000";
-  gameCanvas.fill();
-  gameCanvas.closePath();
-  gameCanvas.restore();
+function drawEarth(canvasName, gameCanvas) {
+  const earth = {
+    x: 0,
+    y: canvasName.height - 5,
+    w: canvasName.width,
+    h: 5,
+  };
+  drawRectObject(gameCanvas, "#003b00", earth.x, earth.y, earth.w, earth.h);
 }
 
 function drawScore(gameCanvas, canvasName, gameScore) {
@@ -1422,18 +1258,21 @@ function emptyCanvas(gameCanvas, canvasName) {
 
 //GAME CONTROLS
 let objectSpeedUp = 1;
-let movement = "passive";
+let controlledBackground;
 
 function setControlledObject() {
   switch (gamePlayed) {
     case "game1":
-      controlledObject = luke1;
+      controlledObject = lukesArray1[0];
+      controlledBackground = backgroundStarsArray1;
       break;
     case "game2":
-      controlledObject = luke2;
+      controlledObject = lukesArray2[0];
+      controlledBackground = backgroundStarsArray2;
       break;
     case "game3":
-      controlledObject = luke3;
+      controlledObject = lukesArray3[0];
+      controlledBackground = backgroundStarsArray3;
       break;
   }
 }
@@ -1446,10 +1285,20 @@ function keyDown(e) {
     if (gamePlayed == "game3") {
       objectSpeedUp = 1.2;
     }
+    if (gamePlayed == "game3" || gamePlayed == "game1") {
+      for (i = 0; i < controlledBackground.length; i++) {
+        controlledBackground[i].right();
+      }
+    }
   } else if (e.key === "Left" || e.key === "ArrowLeft") {
     controlledObject.dx = -controlledObject.speed;
     if (gamePlayed == "game3") {
       objectSpeedUp = 0.5;
+    }
+    if (gamePlayed == "game3" || gamePlayed == "game1") {
+      for (i = 0; i < controlledBackground.length; i++) {
+        controlledBackground[i].left();
+      }
     }
   }
 
@@ -1457,17 +1306,22 @@ function keyDown(e) {
     controlledObject.dy = -2;
     if (gamePlayed == "game2") {
       objectSpeedUp = 1.4;
+      for (i = 0; i < controlledBackground.length; i++) {
+        controlledBackground[i].up();
+      }
     }
   }
   if (e.key === "Down" || e.key === "ArrowDown") {
     controlledObject.dy = 2;
     if (gamePlayed == "game2") {
       objectSpeedUp = 0.5;
+      for (i = 0; i < controlledBackground.length; i++) {
+        controlledBackground[i].down();
+      }
     }
   }
   if (e.key === "f" && gamePlayed == "game2") {
-    lukeShootBullet();
-    // lukeMoveBulletsArray();
+    shootBulletsArray(lukesArray2[0]);
   }
 }
 
@@ -1482,6 +1336,11 @@ function keyUp(e) {
   ) {
     controlledObject.dx = 0;
     objectSpeedUp = 1;
+    if (gamePlayed == "game3" || gamePlayed == "game1") {
+      for (i = 0; i < controlledBackground.length; i++) {
+        controlledBackground[i].steady();
+      }
+    }
   }
   if (
     e.key === "Up" ||
@@ -1491,545 +1350,47 @@ function keyUp(e) {
   ) {
     controlledObject.dy = 0;
     objectSpeedUp = 1;
+    if (gamePlayed == "game2") {
+      for (i = 0; i < controlledBackground.length; i++) {
+        controlledBackground[i].steady();
+      }
+    }
   }
 }
 
 document.addEventListener("keydown", keyDown);
 document.addEventListener("keyup", keyUp);
 
-//GAME OBJECT FUNCTIONS
-
-function moveLuke(lukeNr, maxHeight, minHeight, maxWidth, minWidth) {
-  lukeNr.x += lukeNr.dx * lukeNr.speed;
-  lukeNr.y += lukeNr.dy * (lukeNr.speed / 2);
-
-  if (lukeNr.x > maxWidth) {
-    lukeNr.x = maxWidth;
-  }
-
-  if (lukeNr.x < minWidth) {
-    lukeNr.x = minWidth;
-  }
-  if (lukeNr.y > maxHeight) {
-    lukeNr.y = maxHeight;
-  }
-
-  if (lukeNr.y < minHeight) {
-    lukeNr.y = minHeight;
-  }
-}
-
-function resetLuke(lukeNr, canvasName, marginX, marginY) {
-  (lukeNr.x = canvasName.width / 2 - marginX),
-    (lukeNr.y = canvasName.height / 2 - marginY),
-    (lukeNr.speed = 2);
-}
-
-function lukeMoveBullet(
-  actionObject,
-  actionSubject,
-  canvasName,
-  direction,
-  marginX,
-  marginY,
-  maxWidth,
-  minWidth,
-  maxHeight,
-  minHeight
-) {
-  if (movement == "active") {
-    actionObject.y += -actionObject.speed;
-    actionObject.x += actionObject.dx;
-
-    if (
-      actionObject.y + actionObject.size > canvasName.height ||
-      actionObject.y - actionObject.size < 0
-    ) {
-      returnBullet(actionObject, actionSubject, direction, marginX, marginY);
-    }
-  } else if (movement == "passive") {
-    actionObject.y += actionSubject.dy * (actionSubject.speed / 2);
-    actionObject.x += actionSubject.dx * actionSubject.speed;
-
-    if (actionObject.x > maxWidth) {
-      actionObject.x = maxWidth;
-    }
-
-    if (actionObject.x < minWidth) {
-      actionObject.x = minWidth;
-    }
-
-    if (actionObject.y > maxHeight) {
-      actionObject.y = maxHeight;
-    }
-
-    if (actionObject.y < minHeight) {
-      actionObject.y = minHeight;
-    }
-  }
-}
-
-function lukeShootBullet() {
-  movement = "active";
-}
-
-function returnBullet(
-  actionObject,
-  actionSubject,
-  direction,
-  marginX,
-  marginY
-) {
-  (actionObject.x = actionSubject.x + marginX),
-    (actionObject.y = actionSubject.y + marginY),
-    actionObject.dx * direction;
-  movement = "passive";
-}
-
-function resetBullet(
-  actionObject,
-  actionSubject,
-  directionX,
-  directionY,
-  marginX,
-  marginY
-) {
-  (actionObject.x = actionSubject.x + marginX),
-    (actionObject.y = actionSubject.y + marginY),
-    (actionObject.dx = directionX),
-    (actionObject.dy = directionY);
-  movement = "passive";
-}
-
-function moveBullet(
-  actionObject,
-  actionSubject,
-  canvasName,
-  gameNr,
-  gameScore,
-  accelerationX,
-  accelerationY,
-  direction,
-  marginX,
-  marginY
-) {
-  actionObject.x += actionObject.dx;
-  actionObject.y += actionObject.dy;
-
-  if (
-    actionObject.x + actionObject.size > canvasName.width ||
-    actionObject.x - actionObject.size < 0
-  ) {
-    actionObject.dx *= -1;
-  }
-  if (
-    actionObject.y + actionObject.size > canvasName.height ||
-    actionObject.y - actionObject.size < 0
-  ) {
-    returnBullet(actionObject, actionSubject, direction, marginX, marginY);
-    scorePoints(gameNr);
-    speedUp(gameScore, actionObject, accelerationX, accelerationY);
-  }
-}
-
-function moveCowboyEnemy(enemyObject, canvasName) {
-  enemyObject.x += enemyObject.dx;
-
-  if (
-    enemyObject.x + enemyObject.size > canvasName.width ||
-    enemyObject.x - enemyObject.size < 0
-  ) {
-    enemyObject.dx *= -1;
-  }
-}
-
-function resetCowboyEnemy(enemyObject, canvasName, objectX, direction) {
-  (enemyObject.x = objectX),
-    (enemyObject.y = canvasName.height - 5),
-    (enemyObject.dx = 2 * direction);
-}
-
-function moveStar(
-  actionObject,
-  lukeNr,
-  canvasName,
-  gameNr,
-  marginX,
-  marginY,
-  gameScore,
-  speedingSubject,
-  accelerationX,
-  accelerationY
-) {
-  actionObject.x += actionObject.dx * (actionObject.speed * objectSpeedUp);
-  actionObject.y += actionObject.dy * (actionObject.speed * objectSpeedUp);
-
-  if (gamePlayed == "game2") {
-    if (actionObject.y < -100 || actionObject.y > canvasName.height) {
-      returnStar(actionObject, canvasName, gameNr, marginX, marginY);
-    }
-  } else if (gamePlayed == "game3") {
-    if (actionObject.x > canvasName.width + 200 || actionObject.x < -20) {
-      returnStar(actionObject, canvasName, gameNr, marginX, marginY);
-    }
-  }
-  let waitForStart = gamePlayed.slice(4) - 1;
-  if (startGameScreens[waitForStart].classList.contains("hide-screen")) {
-    if (
-      actionObject.x - actionObject.size > lukeNr.x - 20 &&
-      actionObject.x + actionObject.size < lukeNr.x + 20 &&
-      actionObject.y > lukeNr.y - 16 &&
-      actionObject.y < lukeNr.y + 10
-    ) {
-      returnStar(actionObject, canvasName, gameNr, marginX, marginY);
-      scorePoints(gameNr);
-      speedUp(gameScore, speedingSubject, accelerationX, accelerationY);
-    }
-  }
-}
-
-function resetStar(actionObject, canvasName, gameNr, marginX, marginY) {
-  if (gameNr == 2) {
-    (actionObject.x = canvasName.width * marginX), (actionObject.y = marginY);
-    actionObject.dx = 0;
-    actionObject.dy = 1;
-    actionObject.speed = 1;
-  } else if (gameNr == 3) {
-    (actionObject.x = canvasName.width + marginX),
-      (actionObject.y = canvasName.height * marginY);
-    actionObject.dx = -2;
-    actionObject.dy = 0;
-    actionObject.speed = 1;
-  }
-}
-
-function returnStar(actionObject, canvasName, gameNr, marginX, marginY) {
-  if (gameNr == 2) {
-    (actionObject.x = canvasName.width * marginX), (actionObject.y = -10);
-    (actionObject.dx = 0), (actionObject.dy = 1);
-  } else if (gameNr == 3) {
-    (actionObject.x = canvasName.width + marginX),
-      (actionObject.y = canvasName.height * marginY);
-  }
-}
-
-function moveHeart(actionObject, lukeNr, canvasName, marginX, marginY) {
-  actionObject.x += actionObject.dx * (actionObject.speed * objectSpeedUp);
-  actionObject.y += actionObject.dy * (actionObject.speed * objectSpeedUp);
-
-  if (actionObject.y < -100 || actionObject.y > canvasName.height) {
-    returnHeart(actionObject, canvasName);
-  }
-  if (
-    actionObject.x > lukeNr.x - 20 &&
-    actionObject.x < lukeNr.x + 20 &&
-    actionObject.y > lukeNr.y - 16 &&
-    actionObject.y < lukeNr.y + 10
-  ) {
-    resetHeart(actionObject, marginX, marginY);
-  }
-}
-
-function loseHeart(
-  enemyObject,
-  lukeNr,
-  canvasName,
-  gameNr,
-  marginX,
-  direction,
-  randomY
-) {
-  let waitForStart = gamePlayed.slice(4) - 1;
-  if (startGameScreens[waitForStart].classList.contains("hide-screen")) {
-    if (
-      enemyObject.x - enemyObject.size > lukeNr.x - 20 &&
-      enemyObject.x + enemyObject.size < lukeNr.x + 20 &&
-      enemyObject.y > lukeNr.y - 16 &&
-      enemyObject.y < lukeNr.y + 10
-    ) {
-      if (heartNr == undefined) {
-        heartNr = heart1;
-        randomX3 = Math.random() * 0.8 + 0.1;
-        returnHeart(heartNr, canvasName);
-        enemyCollision(
-          enemyObject,
-          canvasName,
-          gameNr,
-          marginX,
-          direction,
-          randomY
-        );
-      } else if (heartNr == heart1) {
-        heartNr = heart2;
-        randomX3 = Math.random() * 0.8 + 0.1;
-        returnHeart(heartNr, canvasName);
-        enemyCollision(
-          enemyObject,
-          canvasName,
-          gameNr,
-          marginX,
-          direction,
-          randomY
-        );
-      } else if (heartNr == heart2) {
-        heartNr = heart3;
-        returnHeart(heartNr, canvasName);
-        enemyCollision(
-          enemyObject,
-          canvasName,
-          gameNr,
-          marginX,
-          direction,
-          randomY
-        );
-        gameOver(enemyObject, lukeNr, gameNr);
-      }
-    }
-  }
-}
-
-function resetHeart(actionObject, marginX, marginY) {
-  (actionObject.x = marginX), (actionObject.y = marginY);
-  actionObject.dx = 0;
-  actionObject.dy = 0;
-  actionObject.speed = 1;
-
-  if (heartNr == heart2) {
-    heartNr = heart1;
-  } else if (heartNr == heart1) {
-    heartNr = undefined;
-  }
-}
-
-function returnHeart(actionObject, canvasName) {
-  (actionObject.x = canvasName.width * randomX3), (actionObject.y = -15);
-  actionObject.dx = 0;
-  actionObject.dy = 0;
-  actionObject.speed = 1;
-}
-
-function enemyCollision(
-  enemyObject,
-  canvasName,
-  gameNr,
-  marginX,
-  direction,
-  randomY
-) {
-  setTimeout(() => {
-    for (i = 0; i <= 150; i++) {
-      let dx = (Math.random() - 0.5) * Math.random();
-      let dy = (Math.random() - 0.5) * Math.random();
-      let radius = Math.random() * 1.5;
-      let piece = new Piece(enemyObject.x, enemyObject.y, radius, dx, dy);
-
-      debris.push(piece);
-    }
-    explosion();
-    returnAlienEnemy(
-      enemyObject,
-      canvasName,
-      gameNr,
-      marginX,
-      direction,
-      randomY
-    );
-  }, 0);
-}
-
-function explosion() {
-  debris.forEach((piece, i) => {
-    if (piece.alpha <= 0) {
-      debris.splice(i, 1);
-    } else piece.update();
-  });
-  requestAnimationFrame(explosion);
-}
-
-function moveAlienEnemy(
-  enemyObject,
-  canvasName,
-  gameNr,
-  gameScore,
-  speedingSubject,
-  accelerationX,
-  accelerationY,
-  marginX,
-  randomY,
-  direction
-) {
-  enemyObject.x += enemyObject.dx * (enemyObject.speed * objectSpeedUp);
-  enemyObject.y += enemyObject.dy * (enemyObject.speed * objectSpeedUp);
-
-  if (enemyObject.x + 10 > canvasName.width || enemyObject.x - 10 < 0) {
-    enemyObject.dx *= -1;
-  }
-  if (enemyObject.y < -100 || enemyObject.y > canvasName.height) {
-    randomX1 = Math.random() * 0.7 + 0.2;
-    randomX2 = Math.random() * 0.7 + 0.2;
-    returnAlienEnemy(
-      enemyObject,
-      canvasName,
-      gameNr,
-      marginX,
-      direction,
-      randomY
-    );
-    speedUp(gameScore, speedingSubject, accelerationX, accelerationY);
-  }
-}
-
-function killEnemy(
-  actionObject,
-  enemyObject,
-  gameNr,
-  canvasName,
-  marginX,
-  randomY,
-  direction,
-  gameScore,
-  speedingSubject,
-  accelerationX,
-  accelerationY
-) {
-  if (movement == "active") {
-    if (
-      actionObject.x > enemyObject.x - 20 &&
-      actionObject.x < enemyObject.x + 20 &&
-      actionObject.y > enemyObject.y - 3 &&
-      actionObject.y < enemyObject.y + 6
-    ) {
-      returnAlienEnemy(
-        enemyObject,
-        canvasName,
-        gameNr,
-        marginX,
-        direction,
-        randomY
-      );
-      scorePoints(gameNr);
-      speedUp(gameScore, speedingSubject, accelerationX, accelerationY);
-    }
-  }
-}
-
-function resetAlienEnemy(
-  enemyObject,
-  canvasName,
-  gameNr,
-  marginX,
-  marginY,
-  alienSpeed,
-  direction,
-  randomY
-) {
-  if (gameNr == 2) {
-    (enemyObject.x = canvasName.width * marginX), (enemyObject.y = marginY);
-    enemyObject.dx = 1 * direction;
-    enemyObject.dy = 1;
-    enemyObject.speed = 1;
-  } else if (gameNr == 3) {
-    (enemyObject.x = canvasName.width + marginX),
-      (enemyObject.y = canvasName.height * randomY);
-    enemyObject.dx = -4;
-    enemyObject.dy = -1;
-    enemyObject.speed = alienSpeed;
-  }
-}
-
-function returnAlienEnemy(
-  enemyObject,
-  canvasName,
-  gameNr,
-  marginX,
-  direction,
-  randomY
-) {
-  if (gameNr == 2) {
-    (enemyObject.x = canvasName.width * marginX), (enemyObject.y = -10);
-    enemyObject.dx *= direction;
-  } else if (gameNr == 3) {
-    (enemyObject.x = canvasName.width + marginX),
-      (enemyObject.y = canvasName.height * randomY);
-  }
-}
-
-function moveAlienEnemy2(
-  enemyObject,
-  canvasName,
-  gameNr,
-  marginX,
-  direction,
-  randomY
-) {
-  enemyObject.x += enemyObject.dx * (enemyObject.speed * objectSpeedUp);
-  enemyObject.y += enemyObject.dy * (enemyObject.speed * objectSpeedUp);
-
-  if (enemyObject.x > canvasName.width + 200 || enemyObject.x < -20) {
-    randomY1 = Math.random() * 0.2 + 0.2;
-    randomY2 = Math.random() * 0.2 + 0.4;
-    randomY3 = Math.random() * 0.2 + 0.6;
-    returnAlienEnemy(
-      enemyObject,
-      canvasName,
-      gameNr,
-      marginX,
-      direction,
-      randomY
-    );
-  }
-  if (
-    enemyObject.y < canvasName.height * randomY - 20 ||
-    enemyObject.y > canvasName.height * randomY + 20
-  ) {
-    enemyObject.dy *= -1;
-  }
-}
-
-function moveComet(enemyObject, canvasName, marginX, marginY) {
-  enemyObject.x += enemyObject.dx * (enemyObject.speed * objectSpeedUp);
-  enemyObject.y += enemyObject.dy * (enemyObject.speed * objectSpeedUp);
-
-  if (enemyObject.x > canvasName.width + 200 || enemyObject.x < -20) {
-    returnComet(enemyObject, canvasName, marginX, marginY);
-  }
-}
-
-function resetComet(enemyObject, canvasName, marginX, marginY) {
-  (enemyObject.x = canvasName.width + marginX),
-    (enemyObject.y = canvasName.height * marginY);
-  enemyObject.dx = -2.5;
-  enemyObject.dy = 0;
-}
-
-function returnComet(enemyObject, canvasName, marginX, marginY) {
-  (enemyObject.x = canvasName.width + marginX),
-    (enemyObject.y = canvasName.height * marginY);
-}
-
 //GAME FUNCTIONS
+let gameOverScreens = document.querySelectorAll(".game-over");
 
-function scorePoints(gameNr) {
+function scorePoints(gameNr, gameScore) {
   let waitForStart = gamePlayed.slice(4) - 1;
-  if (startGameScreens[waitForStart].classList.contains("hide-screen")) {
+  if (
+    startGameScreens[waitForStart].classList.contains("hide-screen") &&
+    gameOverScreens[waitForStart].classList.contains("hide-screen")
+  ) {
     switch (gameNr) {
       case 1:
         score1++;
+        speedUp(gameScore);
         break;
       case 2:
         score2++;
+        speedUp(gameScore);
         break;
       case 3:
         score3++;
+        speedUp(gameScore);
         break;
     }
   }
 }
 
-function speedUp(gameScore, speedingSubject, accelerationX, accelerationY) {
+function speedUp(gameScore) {
   var testScore = /^[1-9]{1}[5]{1,2}$/;
   let x;
-  if (gameScore == 10) {
+  if (gameScore == 10 || gameScore == 30 || gameScore == 60) {
     x = "enemy";
   } else if (testScore.test(gameScore)) {
     x = "speed";
@@ -2037,56 +1398,56 @@ function speedUp(gameScore, speedingSubject, accelerationX, accelerationY) {
     x = "none";
   }
 
-  if (x == "speed") {
-    speedingSubject.dx = speedingSubject.dx * accelerationX;
-    speedingSubject.dy = speedingSubject.dy * accelerationY;
-
-    if ((gamePlayed == "game2") & (heartNr != undefined)) {
-      heartNr.dy = 1;
-    }
-  }
-
   if ((gamePlayed == "game1") & (x == "enemy")) {
-    cowboy2.x = cowboy1.x;
-    cowboy2.dx = cowboy1.dx * -1.2;
-    bullet2.dx = bullet1.dx * -1;
-    bullet2.dy = -2.5;
+    positionXcowboy = cowboysArray[CI].x;
+    directionC = (cowboysArray[CI].dx / 2.5) * -1;
+    CI++;
+    cowboysArray[CI].update();
+    cowboyX = cowboysArray[CI].x;
+    cowboyY = cowboysArray[CI].y;
+    enemyBulletsArray[CI].reset();
   }
 
-  if (x == "none") {
+  if (x == "speed") {
     if ((gamePlayed == "game2") & (heartNr != undefined)) {
-      heartNr.dy = 0;
+      heartsArray[heartNr].fall();
+    }
+    if (gamePlayed == "game3") {
+      if (SI < starsArray.length - 1) {
+        SI++;
+      }
+      starsArray[SI].fall();
     }
   }
 }
 
-function gameOver(enemyObject, lukeNr, gameNr) {
+function gameOver(lukesArray, enemyObject) {
   let waitForStart = gamePlayed.slice(4) - 1;
   if (startGameScreens[waitForStart].classList.contains("hide-screen")) {
-    if (
-      enemyObject.x - enemyObject.size > lukeNr.x - 20 &&
-      enemyObject.x + enemyObject.size < lukeNr.x + 20 &&
-      enemyObject.y > lukeNr.y - 16 &&
-      enemyObject.y < lukeNr.y + 10
-    ) {
+    if (gamePlayed == "game1" || gamePlayed == "game3") {
+      for (var i = 0; i < enemyObject.length; i++) {
+        if (
+          enemyObject[i].x > lukesArray[0].x - 20 &&
+          enemyObject[i].x < lukesArray[0].x + 20 &&
+          enemyObject[i].y > lukesArray[0].y - 6 &&
+          enemyObject[i].y < lukesArray[0].y + 10
+        ) {
+          pauseGame(gamePlayed);
+          if (gamePlayed == "game1") {
+            gameover1.classList.remove("hide-screen");
+            CI = 0;
+          }
+          if (gamePlayed == "game3") {
+            gameover3.classList.remove("hide-screen");
+          }
+        }
+      }
+    }
+
+    if (gamePlayed == "game2") {
       pauseGame(gamePlayed);
-
-      if (gamePlayed == "game1") {
-        gameover1.classList.remove("hide-screen");
-      }
-
-      if (gamePlayed == "game2") {
-        randomX3 = Math.random() * 0.8 + 0.1;
-        heartNr = undefined;
-        gameover2.classList.remove("hide-screen");
-      }
-
-      if (gamePlayed == "game3") {
-        randomY1 = Math.random() * 0.2 + 0.2;
-        randomY2 = Math.random() * 0.2 + 0.4;
-        randomY3 = Math.random() * 0.2 + 0.6;
-        gameover3.classList.remove("hide-screen");
-      }
+      heartNr = undefined;
+      gameover2.classList.remove("hide-screen");
     }
   }
 }
@@ -2121,38 +1482,26 @@ function resetGame(gameNr) {
 
 function pauseGame(gamePlayed) {
   if (gamePlayed == "game1") {
-    bullet1.dx = 0;
-    bullet1.dy = 0;
-    bullet2.dx = 0;
-    bullet2.dy = 0;
-    cowboy1.dx = 0;
-    cowboy2.dx = 0;
-    luke1.speed = 0;
+    for (var i = 0; i < lukesArray1.length; i++) {
+      lukesArray1[i].dy = 0;
+      lukesArray1[i].dx = 0;
+      lukesArray1[i].speed = 0;
+    }
   }
   if (gamePlayed == "game2") {
-    star1.dy = 0;
-    heartNr.dy = 0;
-    evilAlien1.dx = 0;
-    evilAlien1.dy = 0;
-    evilAlien2.dx = 0;
-    evilAlien2.dy = 0;
-    evilAlien3.dx = 0;
-    evilAlien3.dy = 0;
-    evilAlien4.dx = 0;
-    evilAlien4.dy = 0;
-    luke2.speed = 0;
+    for (var i = 0; i < lukesArray2.length; i++) {
+      lukesArray2[i].dy = 0;
+      lukesArray2[i].dx = 0;
+      lukesArray2[i].speed = 0;
+    }
   }
   if (gamePlayed == "game3") {
-    comet1.dx = 0;
-    comet2.dx = 0;
-    star2.dx = 0;
-    alienEnemy1.dx = 0;
-    alienEnemy1.dy = 0;
-    alienEnemy2.dx = 0;
-    alienEnemy2.dy = 0;
-    alienEnemy3.dx = 0;
-    alienEnemy3.dy = 0;
-    luke3.speed = 0;
+    for (var i = 0; i < lukesArray3.length; i++) {
+      lukesArray3[i].dy = 0;
+      lukesArray3[i].dx = 0;
+      lukesArray3[i].speed = 0;
+    }
+    fuelBar.pause();
   }
 }
 
@@ -2161,92 +1510,479 @@ const canvas1 = document.getElementById("theGame1");
 const ctx1 = canvas1.getContext("2d");
 let score1 = 0;
 let requestIdGame1;
+let cowboysArray = [];
+let enemyBulletsArray = [];
+let lukesArray1 = [];
+let backgroundStarsArray1 = [];
+let positionXcowboy;
+let directionC;
+let cowboyX;
+let cowboyY;
+let EBI = 0;
+let CI = 0;
 
-const earth = {
-  x: 0,
-  y: canvas1.height - 5,
-  w: canvas1.width,
-  h: 5,
-};
+class backgroundStars {
+  constructor(canvasName, backgroundDX, backgroundDY) {
+    this.x = Math.random() * (canvasName.width - 1) + 1;
+    this.y = Math.random() * (canvasName.height - 1) + 1;
+    this.dx = backgroundDX;
+    this.dy = backgroundDY;
 
-const luke1 = {
-  x: canvas1.width / 2,
-  y: canvas1.height / 2 - 60,
-  w: 60,
-  h: 4,
-  size: 4.5,
-  speed: 2,
-  dx: 0,
-  dy: 0,
-};
+    this.draw = function (gameCanvas) {
+      gameCanvas.beginPath();
+      gameCanvas.arc(this.x, this.y, 1, 0, 2 * Math.PI, false);
+      gameCanvas.fillStyle = "#3b2c00";
+      gameCanvas.fill();
+      gameCanvas.closePath();
+    };
 
-const bullet1 = {
-  x: canvas1.width / 2,
-  y: canvas1.height,
-  size: 2,
-  speed: 2,
-  dx: 1.5,
-  dy: -2.5,
-};
+    this.left = function () {
+      this.dx = backgroundDX + 0.5;
+    };
 
-const bullet2 = {
-  x: canvas1.width / 2,
-  y: canvas1.height,
-  size: 2,
-  speed: 2,
-  dx: 1.5,
-  dy: -2.5,
-};
+    this.right = function () {
+      this.dx = backgroundDX - 1;
+    };
 
-const cowboy1 = {
-  x: canvas1.width / 2,
-  y: canvas1.height,
-  size: 6,
-  dx: 2,
-};
+    this.up = function () {
+      this.dy = backgroundDY + 1;
+    };
 
-const cowboy2 = {
-  x: canvas1.width,
-  y: canvas1.height,
-  size: 6,
-  dx: -2,
-};
+    this.down = function () {
+      this.dy = backgroundDY - 0.5;
+    };
 
-function drawEarth() {
-  drawRectObject(ctx1, "#003b00", earth.x, earth.y, earth.w, earth.h);
+    this.returnX = function (canvasName) {
+      if (this.x > canvasName.width) {
+        this.x = 1;
+      } else if (this.x < 0) {
+        this.x = canvasName.width - 1;
+      }
+      this.y = Math.random() * (canvasName.height - 1) + 1;
+    };
+
+    this.returnY = function (canvasName) {
+      if (this.y > canvasName.height) {
+        this.y = 1;
+      } else if (this.y < 0) {
+        this.y = canvasName.height - 1;
+      }
+      this.x = Math.random() * (canvasName.width - 1) + 1;
+    };
+
+    this.steady = function () {
+      this.dx = backgroundDX;
+      this.dy = backgroundDY;
+    };
+  }
 }
+
+class enemyBullets {
+  constructor() {
+    this.x = cowboyX;
+    this.y = cowboyY - 10;
+    this.speed = 2;
+    this.dx = 0.5;
+    this.dy = -2;
+
+    this.draw = function (gameCanvas) {
+      gameCanvas.beginPath();
+      gameCanvas.arc(this.x, this.y, 2, 0, 2 * Math.PI, false);
+      gameCanvas.fillStyle = "#808080";
+      gameCanvas.fill();
+      gameCanvas.closePath();
+    };
+
+    this.return = function () {
+      this.x = cowboyX;
+      this.y = cowboyY;
+    };
+
+    this.reset = function () {
+      this.x = cowboyX;
+      this.y = cowboyY - 10;
+      this.speed = 2;
+      this.dx = 0.5;
+      this.dy = -2;
+    };
+  }
+}
+
+class multipleCowboys {
+  constructor(canvasName) {
+    this.x = canvasName.width + 20;
+    this.y = canvasName.height - 5;
+    this.dx = 0;
+
+    this.draw = function (gameCanvas) {
+      drawRoundObject(
+        gameCanvas,
+        "#DAA520",
+        this.x,
+        this.y - 10,
+        5,
+        -100,
+        Math.PI - 0.5,
+        true
+      );
+      drawRoundObject(
+        gameCanvas,
+        "#DEB887",
+        this.x,
+        this.y - 4,
+        6,
+        -100,
+        Math.PI - 0.5,
+        true
+      );
+      drawEllipseObject(
+        gameCanvas,
+        "#DAA520",
+        this.x,
+        this.y - 10,
+        15,
+        1,
+        0,
+        0,
+        Math.PI * 2,
+        true
+      );
+    };
+
+    this.update = function () {
+      this.x = positionXcowboy;
+      this.dx = 2 * directionC;
+    };
+
+    this.reset = function (canvasName) {
+      this.x = canvasName.width + 20;
+      this.y = canvasName.height - 5;
+      this.dx = 0;
+    };
+  }
+}
+
+class multipleLukes {
+  constructor(canvasName, marginXluke, marginYluke) {
+    this.x = canvasName.width / marginXluke;
+    this.y = canvasName.height / 2 + marginYluke;
+    this.speed = 2;
+    this.dx = 0;
+    this.dy = 0;
+    this.w = 60;
+    this.h = 4;
+    this.size = 4.5;
+
+    this.draw = function drawLuke(gameCanvas) {
+      drawRoundObject(
+        gameCanvas,
+        "#05db05",
+        this.x,
+        this.y,
+        this.size,
+        -100,
+        Math.PI - 0.5,
+        true
+      );
+      drawRoundObject(
+        gameCanvas,
+        "#000000",
+        this.x - 2,
+        this.y - 1,
+        1,
+        -100,
+        Math.PI - 0.5,
+        true
+      );
+      drawRoundObject(
+        gameCanvas,
+        "#000000",
+        this.x + 2,
+        this.y - 1,
+        1,
+        -100,
+        Math.PI - 0.5,
+        true
+      );
+      drawEllipseObject(
+        gameCanvas,
+        "#808080",
+        this.x,
+        this.y + 5,
+        20,
+        2,
+        0,
+        0,
+        Math.PI * 2,
+        true
+      );
+      drawRoundObject(
+        gameCanvas,
+        "#05db05",
+        this.x - 4,
+        this.y + 5.2,
+        1,
+        -100,
+        Math.PI - 0.5,
+        true
+      );
+      drawRoundObject(
+        gameCanvas,
+        "#05db05",
+        this.x + 4,
+        this.y + 5.2,
+        1,
+        -100,
+        Math.PI - 0.5,
+        true
+      );
+      drawRoundObject(
+        gameCanvas,
+        "#05db05",
+        this.x - 11,
+        this.y + 5.2,
+        1,
+        -100,
+        Math.PI - 0.5,
+        true
+      );
+      drawRoundObject(
+        gameCanvas,
+        "#05db05",
+        this.x + 11,
+        this.y + 5.2,
+        1,
+        -100,
+        Math.PI - 0.5,
+        true
+      );
+      drawRoundObject(
+        gameCanvas,
+        "#05db05",
+        this.x - 18,
+        this.y + 5.2,
+        1,
+        -100,
+        Math.PI - 0.5,
+        true
+      );
+      drawRoundObject(
+        gameCanvas,
+        "#05db05",
+        this.x + 18,
+        this.y + 5.2,
+        1,
+        -100,
+        Math.PI - 0.5,
+        true
+      );
+    };
+
+    this.reset = function (canvasName, marginXluke, marginYluke) {
+      this.x = canvasName.width / marginXluke;
+      this.y = canvasName.height / 2 - marginYluke;
+      this.speed = 2;
+      this.dx = 0;
+      this.dy = 0;
+    };
+  }
+}
+
+function fillBackgroundStarsArray(
+  canvasName,
+  backgroundStarsArray,
+  backgroundDX,
+  backgroundDY
+) {
+  for (i = 0; i < 150; i++) {
+    backgroundStarsArray[i] = new backgroundStars(
+      canvasName,
+      backgroundDX,
+      backgroundDY
+    );
+  }
+}
+
+function drawBackgroundStarsArray(gameCanvas, backgroundStarsArray) {
+  for (i = 0; i < backgroundStarsArray.length; i++) {
+    backgroundStarsArray[i].draw(gameCanvas);
+  }
+}
+
+function moveBackgroundStars(canvasName, backgroundStarsArray) {
+  for (i = 0; i < backgroundStarsArray.length; i++) {
+    backgroundStarsArray[i].x += backgroundStarsArray[i].dx;
+    backgroundStarsArray[i].y += backgroundStarsArray[i].dy;
+
+    if (
+      backgroundStarsArray[i].x > canvasName.width ||
+      backgroundStarsArray[i].x < 0
+    ) {
+      backgroundStarsArray[i].returnX(canvasName);
+    }
+
+    if (
+      backgroundStarsArray[i].y > canvasName.height ||
+      backgroundStarsArray[i].y < 0
+    ) {
+      backgroundStarsArray[i].returnY(canvasName);
+    }
+  }
+}
+
+function fillLukesArray(canvasName, lukesArray, marginXluke, marginYluke) {
+  for (var i = 0; i < 1; i++) {
+    lukesArray[i] = new multipleLukes(canvasName, marginXluke, marginYluke);
+  }
+}
+
+function drawLukesArray(gameCanvas, lukesArray) {
+  for (var i = 0; i < lukesArray.length; i++) {
+    lukesArray[i].draw(gameCanvas);
+  }
+}
+
+function moveLukesArray(lukesArray, maxHeight, minHeight, maxWidth, minWidth) {
+  for (var i = 0; i < lukesArray.length; i++) {
+    lukesArray[i].x += lukesArray[i].dx * lukesArray[i].speed;
+    lukesArray[i].y += lukesArray[i].dy * (lukesArray[i].speed / 2);
+
+    if (lukesArray[i].x > maxWidth) {
+      lukesArray[i].x = maxWidth;
+    }
+
+    if (lukesArray[i].x < minWidth) {
+      lukesArray[i].x = minWidth;
+    }
+    if (lukesArray[i].y > maxHeight) {
+      lukesArray[i].y = maxHeight;
+    }
+
+    if (lukesArray[i].y < minHeight) {
+      lukesArray[i].y = minHeight;
+    }
+  }
+}
+
+function resetLukesArray(lukesArray, canvasName, marginXluke, marginYluke) {
+  for (i = 0; i < lukesArray.length; i++) {
+    lukesArray[i].reset(canvasName, marginXluke, marginYluke);
+  }
+}
+
+function fillCowboysArray(canvasName) {
+  for (var i = 0; i < 4; i++) {
+    cowboysArray[i] = new multipleCowboys(canvasName);
+  }
+}
+
+function drawCowboysArray(gameCanvas) {
+  for (var i = 0; i < cowboysArray.length; i++) {
+    cowboysArray[i].draw(gameCanvas);
+  }
+}
+
+function moveCowboysArray(canvasName) {
+  for (var i = 0; i < cowboysArray.length; i++) {
+    cowboysArray[i].x += cowboysArray[i].dx;
+    if (
+      cowboysArray[i].x + 10 > canvasName.width ||
+      cowboysArray[i].x - 10 < 0
+    ) {
+      cowboysArray[i].dx *= -1;
+    }
+  }
+}
+
+function resetCowboysArray(canvasName) {
+  for (var i = 0; i < cowboysArray.length; i++) {
+    cowboysArray[i].reset(canvasName);
+  }
+  positionXcowboy = canvasName.width / 2;
+  directionC = -1;
+  cowboysArray[0].update();
+}
+
+function fillEnemyBulletsArray() {
+  for (var i = 0; i < cowboysArray.length; i++) {
+    cowboyX = cowboysArray[i].x;
+    cowboyY = cowboysArray[i].y;
+    enemyBulletsArray[i] = new enemyBullets();
+  }
+}
+
+function drawEnemyBulletsArray(gameCanvas) {
+  for (var i = 0; i < enemyBulletsArray.length; i++) {
+    enemyBulletsArray[i].draw(gameCanvas);
+  }
+}
+
+function moveEnemyBulletsArray(canvasName, gameNr, gameScore) {
+  for (var i = 0; i < enemyBulletsArray.length; i++) {
+    enemyBulletsArray[i].x += enemyBulletsArray[i].dx;
+    enemyBulletsArray[i].y += enemyBulletsArray[i].dy;
+    if (
+      enemyBulletsArray[i].x + 10 > canvasName.width ||
+      enemyBulletsArray[i].x - 10 < 0
+    ) {
+      enemyBulletsArray[i].dx *= -1;
+    }
+    if (
+      enemyBulletsArray[i].y > canvasName.height ||
+      enemyBulletsArray[i].y < 0
+    ) {
+      cowboyX = cowboysArray[i].x;
+      cowboyY = cowboysArray[i].y;
+      enemyBulletsArray[i].return();
+      if (
+        enemyBulletsArray[i].x < canvasName.width &&
+        enemyBulletsArray[i].x > 0
+      ) {
+        scorePoints(gameNr, gameScore);
+      }
+    }
+  }
+}
+
+function resetEnemyBulletsArray(canvasName) {
+  for (var i = 0; i < enemyBulletsArray.length; i++) {
+    cowboyX = cowboysArray[i].x;
+    cowboyY = cowboysArray[i].y;
+    enemyBulletsArray[i].reset(canvasName);
+  }
+  EBI = 0;
+}
+
+fillBackgroundStarsArray(canvas1, backgroundStarsArray1, 0, 0);
+fillLukesArray(canvas1, lukesArray1, 2, -60);
+fillCowboysArray(canvas1);
+fillEnemyBulletsArray(canvas1);
 
 function drawGameElements1() {
   emptyCanvas(ctx1, canvas1);
-  drawBackgroundStars(ctx1);
-  drawEarth();
-  drawCowboyEnemy(ctx1, cowboy1);
-  drawCowboyEnemy(ctx1, cowboy2);
-  drawLuke(ctx1, luke1);
-  drawBullets(ctx1, bullet1);
-  drawBullets(ctx1, bullet2);
+  drawBackgroundStarsArray(ctx1, backgroundStarsArray1);
+  drawEarth(canvas1, ctx1);
+  drawLukesArray(ctx1, lukesArray1);
+  drawCowboysArray(ctx1);
+  drawEnemyBulletsArray(ctx1);
   drawScore(ctx1, canvas1, score1);
 }
 
 function game1Action() {
   drawGameElements1();
-  moveLuke(luke1, 100, 10, 280, 20);
-  moveCowboyEnemy(cowboy1, canvas1);
-  moveCowboyEnemy(cowboy2, canvas1);
-  moveBullet(bullet1, cowboy1, canvas1, 1, score1, 1, 1, -1, 0, 0);
-  moveBullet(bullet2, cowboy2, canvas1, 1, score1, 1, 1, 1, 0, 0);
-  gameOver(bullet1, luke1, 1);
-  gameOver(bullet2, luke1, 1);
+  moveBackgroundStars(canvas1, backgroundStarsArray1);
+  moveLukesArray(lukesArray1, 100, 10, 280, 20);
+  moveCowboysArray(canvas1);
+  moveEnemyBulletsArray(canvas1, 1, score1);
+  gameOver(lukesArray1, enemyBulletsArray);
   requestIdGame1 = requestAnimationFrame(game1Action);
 }
 
 function resetGame1() {
   emptyCanvas(ctx1, canvas1);
-  resetCowboyEnemy(cowboy1, canvas1, 150, 1);
-  resetCowboyEnemy(cowboy2, canvas1, -15, -1);
-  resetBullet(bullet1, cowboy1, 1.5, -2.5, 0, 0);
-  resetBullet(bullet2, cowboy2, 0, 0, 0, 0);
-  resetLuke(luke1, canvas1, 0, 50);
+  resetLukesArray(lukesArray1, canvas1, 2, 40);
+  resetCowboysArray(canvas1);
+  resetEnemyBulletsArray(canvas1);
   resetScore(1);
   cancelAnimationFrame(requestIdGame1);
 }
@@ -2256,11 +1992,17 @@ const canvas2 = document.getElementById("theGame2");
 const ctx2 = canvas2.getContext("2d");
 let score2 = 0;
 let requestIdGame2;
-let randomX1 = Math.random() * 0.7 + 0.2;
-let randomX2 = Math.random() * 0.7 + 0.2;
-let randomX3 = Math.random() * 0.8 + 0.1;
-let heartNr;
 let debris = [];
+let bulletsArray = [];
+let aliensArray = [];
+let heartsArray = [];
+let lukesArray2 = [];
+let backgroundStarsArray2 = [];
+let heartNr;
+let BI = 0;
+let AI = 0;
+let direction = 1;
+let marginXheart;
 
 class Piece {
   constructor(x, y, radius, dx, dy) {
@@ -2274,7 +2016,7 @@ class Piece {
   draw() {
     ctx2.save();
     ctx2.globalAlpha = this.alpha;
-    ctx2.fillStyle = "green";
+    ctx2.fillStyle = "red";
     ctx2.beginPath();
     ctx2.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
     ctx2.fill();
@@ -2288,372 +2030,464 @@ class Piece {
   }
 }
 
-const luke2 = {
-  x: canvas2.width / 2,
-  y: canvas2.height - 20,
-  w: 60,
-  h: 4,
-  size: 4.5,
-  speed: 2,
-  dx: 0,
-  dy: 0,
-};
+class multipleBullets {
+  constructor() {
+    this.x = 310;
+    this.y = -5;
+    this.dx = 0;
+    this.dy = 0;
+    this.radius = 2;
+    this.color = "#808080";
+    this.speed = 1;
+    this.size = 2;
 
-const bulletLuke = {
-  x: luke2.x,
-  y: luke2.y,
-  size: 2,
-  speed: 5,
-  dx: 0,
-  dy: 0,
-};
+    this.draw = function (gameCanvas) {
+      gameCanvas.beginPath();
+      gameCanvas.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
+      gameCanvas.fillStyle = this.color;
+      gameCanvas.fill();
+      gameCanvas.closePath();
+    };
 
-const evilAlien1 = {
-  x: 200,
-  y: -10,
-  w: 60,
-  h: 4,
-  size: 3,
-  speed: 1,
-  dx: 1,
-  dy: 1,
-};
+    this.update = function (actionSubject) {
+      this.x = actionSubject.x;
+      this.y = actionSubject.y - 1;
+    };
+    this.shoot = function () {
+      this.dy = -2;
+    };
+    this.reset = function () {
+      this.x = 310;
+      this.y = -5;
+      this.dx = 0;
+      this.dy = 0;
+    };
+  }
+}
 
-const evilAlien2 = {
-  x: 100,
-  y: -10,
-  w: 60,
-  h: 4,
-  size: 3,
-  speed: 1,
-  dx: -1,
-  dy: 1,
-};
+class multipleHearts {
+  constructor(canvasName) {
+    this.x = canvasName.width - (Math.random() * 0.7 + 0.2);
+    this.y = 10;
+    this.d = Math.min(9, 9);
+    this.k = 8;
+    this.dx = 0;
+    this.dy = 0;
 
-const evilAlien3 = {
-  x: 200,
-  y: -10,
-  w: 60,
-  h: 4,
-  size: 3,
-  speed: 1,
-  dx: 2,
-  dy: 1,
-};
+    this.draw = function (gameCanvas) {
+      gameCanvas.save();
+      gameCanvas.beginPath();
+      gameCanvas.translate(this.x, this.y);
+      gameCanvas.moveTo(7, 6);
+      gameCanvas.bezierCurveTo(7, 3, 7, 2, 5, 2);
+      gameCanvas.bezierCurveTo(2, 2, 2, 6, 2, 6);
+      gameCanvas.bezierCurveTo(2, 8, 4, 10, 7, 12);
+      gameCanvas.bezierCurveTo(11, 10, 13, 8, 13, 6);
+      gameCanvas.bezierCurveTo(13, 6, 13, 2, 10, 2);
+      gameCanvas.bezierCurveTo(8, 2, 7, 3, 7, 4);
+      gameCanvas.fillStyle = "#FF0000";
+      gameCanvas.fill();
+      gameCanvas.closePath();
+      gameCanvas.restore();
+    };
 
-const evilAlien4 = {
-  x: 100,
-  y: -10,
-  w: 60,
-  h: 4,
-  size: 3,
-  speed: 1,
-  dx: -2,
-  dy: 1,
-};
+    this.lose = function (canvasName) {
+      this.x = canvasName.width * (Math.random() * 0.7 + 0.2);
+      this.y = -20;
+    };
+    this.fall = function () {
+      this.dy = 1;
+    };
+    this.reset = function (canvasName) {
+      this.x = canvasName.width - marginXheart;
+      this.y = 10;
+      this.dx = 0;
+      this.dy = 0;
+    };
+  }
+}
 
-const star1 = {
-  x: canvas2.width * (Math.random() * 0.8 + 0.1),
-  y: -15,
-  r: 6,
-  n: 5,
-  inset: -1,
-  size: 3,
-  speed: 1,
-  dx: 0,
-  dy: 2,
-};
+class multipleAliens {
+  constructor(canvasName) {
+    this.x = canvasName.width * (Math.random() * 0.7 + 0.2);
+    this.y = -(Math.random() * 200 + 10);
+    this.w = 60;
+    this.h = 4;
+    this.size = 3;
+    this.speed = 1;
+    this.dx = (Math.random() * 2 + 1) * direction;
+    this.dy = Math.random() * 0.9 + 1.0;
 
-const heart1 = {
-  x: canvas2.width - 60,
-  y: 10,
-  d: Math.min(9, 9),
-  k: 8,
-  dx: 0,
-  dy: 0,
-};
+    this.draw = function (gameCanvas) {
+      drawRoundObject(
+        gameCanvas,
+        "#05db05",
+        this.x,
+        this.y,
+        this.size,
+        -100,
+        Math.PI - 0.5,
+        true
+      );
+      drawRoundObject(
+        gameCanvas,
+        "#FF0000",
+        this.x - 1.5,
+        this.y,
+        1,
+        -100,
+        Math.PI - 0.5,
+        true
+      );
+      drawRoundObject(
+        gameCanvas,
+        "#FF0000",
+        this.x + 1.5,
+        this.y,
+        1,
+        -100,
+        Math.PI - 0.5,
+        true
+      );
+      drawEllipseObject(
+        gameCanvas,
+        "#FF0000",
+        this.x,
+        this.y + 4,
+        10,
+        2,
+        0,
+        0,
+        Math.PI * 2,
+        true
+      );
+      drawRoundObject(
+        gameCanvas,
+        "#05db05",
+        this.x - 3,
+        this.y + 4.2,
+        1,
+        -100,
+        Math.PI - 0.5,
+        true
+      );
+      drawRoundObject(
+        gameCanvas,
+        "#05db05",
+        this.x + 3,
+        this.y + 4.2,
+        1,
+        -100,
+        Math.PI - 0.5,
+        true
+      );
+      drawRoundObject(
+        gameCanvas,
+        "#05db05",
+        this.x - 7,
+        this.y + 4.2,
+        1,
+        -100,
+        Math.PI - 0.5,
+        true
+      );
+      drawRoundObject(
+        gameCanvas,
+        "#05db05",
+        this.x + 7,
+        this.y + 4.2,
+        1,
+        -100,
+        Math.PI - 0.5,
+        true
+      );
+      drawRoundObject(
+        gameCanvas,
+        "#05db05",
+        this.x - 11,
+        this.y + 4.2,
+        1,
+        -100,
+        Math.PI - 0.5,
+        true
+      );
+      drawRoundObject(
+        gameCanvas,
+        "#05db05",
+        this.x + 11,
+        this.y + 4.2,
+        1,
+        -100,
+        Math.PI - 0.5,
+        true
+      );
+    };
 
-const heart2 = {
-  x: canvas2.width - 45,
-  y: 10,
-  d: Math.min(9, 9),
-  k: 8,
-  dx: 0,
-  dy: 0,
-};
+    this.reset = function (canvasName) {
+      this.x = canvasName.width * (Math.random() * 0.7 + 0.2);
+      this.y = -(Math.random() * 200 + 10);
+      this.dx = (Math.random() * 2 + 1) * direction;
+      this.dy = Math.random() * 0.9 + 1.0;
+      this.speed = 1;
+    };
+  }
+}
 
-const heart3 = {
-  x: canvas2.width - 30,
-  y: 10,
-  d: Math.min(9, 9),
-  k: 8,
-  dx: 0,
-  dy: 0,
-};
+function fillBulletsArray() {
+  for (var i = 0; i < 5; i++) {
+    bulletsArray[i] = new multipleBullets();
+  }
+}
 
-// function multipleBullets(actionSubject) {
-//   this.x = actionSubject.x;
-//   this.y = actionSubject.y;
-//   this.dx = 0;
-//   this.dy = 0;
-//   this.radius = 2;
-//   this.color = "#808080";
-//   this.speed = 5;
-//   this.size = 2;
+function fillHeartsArray(canvasName) {
+  for (var i = 0; i < 3; i++) {
+    if (i == 0) {
+      marginXheart = 60;
+    } else if (i == 1) {
+      marginXheart = 45;
+    } else if (i == 2) {
+      marginXheart = 30;
+    }
+    heartsArray[i] = new multipleHearts(canvasName);
+  }
+}
 
-//   this.draw = function (gameCanvas) {
-//     gameCanvas.beginPath();
-//     gameCanvas.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
-//     gameCanvas.fillStyle = this.color;
-//     gameCanvas.fill();
-//     gameCanvas.closePath();
-//   };
-// }
+function fillAliensArray(canvasName) {
+  for (var i = 0; i < 8; i++) {
+    aliensArray[i] = new multipleAliens(canvasName);
+    direction *= -1;
+  }
+}
 
-// let bulletsArray = [];
+function drawHeartsArray(gameCanvas) {
+  for (var i = 0; i < heartsArray.length; i++) {
+    heartsArray[i].draw(gameCanvas);
+  }
+}
 
-// function fillBulletsArray(actionSubject, gameCanvas) {
-//   for (var i = 0; i < 5; i++) {
-//     bulletsArray[i] = new multipleBullets(actionSubject);
-//     bulletsArray[i].draw(gameCanvas);
-//   }
-// }
+function moveHeartsArray(canvasName, lukesArray) {
+  for (var i = 0; i < heartsArray.length; i++) {
+    heartsArray[i].y += heartsArray[i].dy;
+    heartsArray[i].x += heartsArray[i].dx;
 
-// function shootBulletsArray() {
-//   movement = "active";
-// }
+    if (
+      heartsArray[i].y + heartsArray[i].size > canvasName.height ||
+      heartsArray[i].y - heartsArray[i].size < -50
+    ) {
+      heartsArray[i].lose(canvasName);
+    }
+    if (
+      heartsArray[i].x > lukesArray[0].x - 20 &&
+      heartsArray[i].x < lukesArray[0].x + 20 &&
+      heartsArray[i].y > lukesArray[0].y - 16 &&
+      heartsArray[i].y < lukesArray[0].y + 10
+    ) {
+      if (i == 0) {
+        marginXheart = 60;
+      } else if (i == 1) {
+        marginXheart = 45;
+      } else if (i == 2) {
+        marginXheart = 30;
+      }
+      heartsArray[i].reset(canvasName);
+      if (heartNr == 1) {
+        heartNr = 0;
+      } else if (heartNr == 0) {
+        heartNr = undefined;
+      }
+    }
+  }
+}
 
-// function lukeMoveBulletsArray(
-//   actionSubject,
-//   canvasName,
-//   direction,
-//   marginX,
-//   marginY,
-//   maxWidth,
-//   minWidth,
-//   maxHeight,
-//   minHeight
-// ) {
-//   for (var i = 0; i < 5; i++) {
-//     if (movement == "active") {
-//       bulletsArray[i].y += -bulletsArray[i].speed;
-//       bulletsArray[i].x += bulletsArray[i].dx;
+function loseHeart(lukesArray, canvasName) {
+  let waitForStart = gamePlayed.slice(4) - 1;
+  if (startGameScreens[waitForStart].classList.contains("hide-screen")) {
+    for (var i = 0; i < aliensArray.length; i++) {
+      if (
+        aliensArray[i].x - aliensArray[i].size > lukesArray[0].x - 20 &&
+        aliensArray[i].x + aliensArray[i].size < lukesArray[0].x + 20 &&
+        aliensArray[i].y > lukesArray[0].y - 16 &&
+        aliensArray[i].y < lukesArray[0].y + 10
+      ) {
+        let AC = i;
+        enemyExplosion(AC, canvasName);
+        if (heartNr == undefined) {
+          heartNr = 0;
+          heartsArray[heartNr].lose(canvasName);
+        } else if (heartNr == 0) {
+          heartNr = 1;
+          heartsArray[heartNr].lose(canvasName);
+        } else if (heartNr == 1) {
+          heartNr = 2;
+          heartsArray[heartNr].lose(canvasName);
+          gameOver();
+        }
+      }
+    }
+  }
+}
 
-//       if (
-//         bulletsArray[i].y + bulletsArray[i].size > canvasName.height ||
-//         bulletsArray[i].y - bulletsArray[i].size < 0
-//       ) {
-//         returnBulletsArray(actionSubject, direction, marginX, marginY);
-//       }
-//     } else if (movement == "passive") {
-//       bulletsArray[i].y += actionSubject.dy * (actionSubject.speed / 2);
-//       bulletsArray[i].x += actionSubject.dx * actionSubject.speed;
+function resetHeartsArray(canvasName) {
+  for (var i = 0; i < heartsArray.length; i++) {
+    if (i == 0) {
+      marginXheart = 60;
+    } else if (i == 1) {
+      marginXheart = 45;
+    } else if (i == 2) {
+      marginXheart = 30;
+    }
+    heartsArray[i].reset(canvasName);
+  }
+}
 
-//       if (bulletsArray[i].x > maxWidth) {
-//         bulletsArray[i].x = maxWidth;
-//       }
+function drawAliensArray(gameCanvas) {
+  for (var i = 0; i < aliensArray.length; i++) {
+    aliensArray[i].draw(gameCanvas);
+  }
+}
 
-//       if (bulletsArray[i].x < minWidth) {
-//         bulletsArray[i].x = minWidth;
-//       }
+function moveAliensArray(canvasName) {
+  for (var i = 0; i < aliensArray.length; i++) {
+    aliensArray[i].y += aliensArray[i].dy;
+    aliensArray[i].x += aliensArray[i].dx;
 
-//       if (bulletsArray[i].y > maxHeight) {
-//         bulletsArray[i].y = maxHeight;
-//       }
+    if (aliensArray[i].x + 10 > canvasName.width || aliensArray[i].x - 10 < 0) {
+      aliensArray[i].dx *= -1;
+    }
+    if (aliensArray[i].y < -500 || aliensArray[i].y > canvasName.height) {
+      direction *= -1;
+      aliensArray[i].reset(canvasName);
+    }
+  }
+}
 
-//       if (bulletsArray[i].y < minHeight) {
-//         bulletsArray[i].y = minHeight;
-//       }
-//     }
-//   }
-// }
+function resetAliensArray(canvasName) {
+  for (var i = 0; i < aliensArray.length; i++) {
+    direction *= -1;
+    aliensArray[i].reset(canvasName);
+  }
+}
 
-// function returnBulletsArray(actionSubject, direction, marginX, marginY) {
-//   for (var i = 0; i < 5; i++) {
-//     (bulletsArray[i].x = actionSubject.x + marginX),
-//       (bulletsArray[i].y = actionSubject.y + marginY),
-//       bulletsArray[i].dx * direction;
-//     movement = "passive";
-//   }
-// }
+function drawBulletsArray(gameCanvas) {
+  for (var i = 0; i < bulletsArray.length; i++) {
+    bulletsArray[i].draw(gameCanvas);
+  }
+}
 
-// function resetBulletsArray(
-//   actionSubject,
-//   directionX,
-//   directionY,
-//   marginX,
-//   marginY
-// ) {
-//   for (var i = 0; i < 5; i++) {
-//     (bulletsArray[i].x = actionSubject.x + marginX),
-//       (bulletsArray[i].y = actionSubject.y + marginY),
-//       (bulletsArray[i].dx = directionX),
-//       (bulletsArray[i].dy = directionY);
-//     movement = "passive";
-//   }
-// }
+function shootBulletsArray(actionSubject) {
+  bulletsArray[BI].update(actionSubject);
+  bulletsArray[BI].shoot();
+  if (BI == 4) {
+    BI = 0;
+  } else {
+    BI++;
+  }
+}
+
+function moveBulletsArray(canvasName) {
+  for (var i = 0; i < bulletsArray.length; i++) {
+    bulletsArray[i].y += bulletsArray[i].dy;
+    bulletsArray[i].x += bulletsArray[i].dx;
+
+    if (
+      bulletsArray[i].y + bulletsArray[i].size > canvasName.height ||
+      bulletsArray[i].y - bulletsArray[i].size < -50
+    ) {
+      bulletsArray[i].reset();
+    }
+  }
+}
+
+function resetBulletsArray() {
+  for (var i = 0; i < bulletsArray.length; i++) {
+    bulletsArray[i].reset();
+  }
+}
+
+function killEnemy(canvasName, gameNr, gameScore) {
+  for (var KA = 0; KA < aliensArray.length; KA++) {
+    for (var i = 0; i < bulletsArray.length; i++) {
+      if (
+        bulletsArray[i].x > aliensArray[KA].x - 20 &&
+        bulletsArray[i].x < aliensArray[KA].x + 20 &&
+        bulletsArray[i].y > aliensArray[KA].y - 3 &&
+        bulletsArray[i].y < aliensArray[KA].y + 6
+      ) {
+        enemyExplosion(KA, canvasName);
+        bulletsArray[i].reset();
+        scorePoints(gameNr, gameScore);
+      }
+    }
+  }
+}
+
+function enemyExplosion(AC, canvasName) {
+  setTimeout(() => {
+    for (i = 0; i <= 150; i++) {
+      let dx = (Math.random() - 0.5) * 0.5;
+      let dy = (Math.random() - 0.5) * 0.3;
+      let radius = 0.5;
+      let piece = new Piece(
+        aliensArray[AC].x,
+        aliensArray[AC].y,
+        radius,
+        dx,
+        dy
+      );
+
+      debris.push(piece);
+    }
+    explosion();
+    aliensArray[AC].reset(canvasName);
+  }, 0);
+}
+
+function explosion() {
+  debris.forEach((piece, i) => {
+    if (piece.alpha <= 0) {
+      debris.splice(i, 1);
+    } else piece.update();
+  });
+  requestAnimationFrame(explosion);
+}
+
+fillBackgroundStarsArray(canvas2, backgroundStarsArray2, 0, 1);
+fillLukesArray(canvas2, lukesArray2, 2, 40);
+fillBulletsArray();
+fillHeartsArray(canvas2);
+fillAliensArray(canvas2);
 
 function drawGame2Elements() {
   emptyCanvas(ctx2, canvas2);
-  drawBackgroundStars(ctx2);
-  drawBullets(ctx2, bulletLuke);
-  drawLuke(ctx2, luke2);
-  drawStar(ctx2, star1);
-  drawHeart(ctx2, heart1);
-  drawHeart(ctx2, heart2);
-  drawHeart(ctx2, heart3);
-  drawAlienEnemy(ctx2, evilAlien1);
-  drawAlienEnemy(ctx2, evilAlien2);
-  drawAlienEnemy(ctx2, evilAlien3);
-  drawAlienEnemy(ctx2, evilAlien4);
+  drawBackgroundStarsArray(ctx2, backgroundStarsArray2);
+  drawBulletsArray(ctx2);
+  drawAliensArray(ctx2);
+  drawHeartsArray(ctx2);
+  drawLukesArray(ctx2, lukesArray2);
   drawScore(ctx2, canvas2, score2);
-  // fillBulletsArray(luke2, ctx2);
 }
 
 function game2Action() {
   drawGame2Elements();
-  // lukeMoveBulletsArray(luke2, canvas2, 0, 0, 10, 280, 20, 150, 70);
-  moveLuke(luke2, 140, 60, 280, 20);
-  lukeMoveBullet(bulletLuke, luke2, canvas2, 0, 0, 10, 280, 20, 150, 70);
-  moveHeart(heart1, luke2, canvas2, 240, 10);
-  moveHeart(heart2, luke2, canvas2, 255, 10);
-  moveStar(
-    star1,
-    luke2,
-    canvas2,
-    2,
-    Math.random() * 0.8 + 0.1,
-    -10,
-    score2,
-    star1,
-    1,
-    1.2
-  );
-  moveAlienEnemy(
-    evilAlien1,
-    canvas2,
-    2,
-    score2,
-    evilAlien1,
-    1,
-    1,
-    randomX1,
-    0,
-    -1
-  );
-  moveAlienEnemy(
-    evilAlien2,
-    canvas2,
-    2,
-    score2,
-    evilAlien2,
-    1,
-    1,
-    randomX2,
-    0,
-    -1
-  );
-  killEnemy(
-    bulletLuke,
-    evilAlien1,
-    2,
-    canvas2,
-    Math.random() * 0.3 + 0.2,
-    0,
-    -1,
-    score2,
-    evilAlien1,
-    1.2,
-    1.2
-  );
-  killEnemy(
-    bulletLuke,
-    evilAlien2,
-    2,
-    canvas2,
-    Math.random() * 0.3 + 0.5,
-    0,
-    1,
-    score2,
-    evilAlien2,
-    1.2,
-    1.2
-  );
-  loseHeart(evilAlien1, luke2, canvas2, 2, randomX1, -1, 0);
-  loseHeart(evilAlien2, luke2, canvas2, 2, randomX2, -1, 0);
-  moveAlienEnemy(
-    evilAlien3,
-    canvas2,
-    2,
-    score2,
-    evilAlien3,
-    1,
-    1,
-    randomX1,
-    0,
-    -1
-  );
-  moveAlienEnemy(
-    evilAlien4,
-    canvas2,
-    2,
-    score2,
-    evilAlien4,
-    1,
-    1,
-    randomX2,
-    0,
-    -1
-  );
-  killEnemy(
-    bulletLuke,
-    evilAlien3,
-    2,
-    canvas2,
-    Math.random() * 0.3 + 0.2,
-    0,
-    -1,
-    score2,
-    evilAlien3,
-    1.2,
-    1.2
-  );
-  killEnemy(
-    bulletLuke,
-    evilAlien4,
-    2,
-    canvas2,
-    Math.random() * 0.3 + 0.5,
-    0,
-    1,
-    score2,
-    evilAlien4,
-    1.2,
-    1.2
-  );
-  loseHeart(evilAlien3, luke2, canvas2, 2, randomX1, -1, 0);
-  loseHeart(evilAlien4, luke2, canvas2, 2, randomX2, -1, 0);
+  moveBackgroundStars(canvas2, backgroundStarsArray2);
+  moveLukesArray(lukesArray2, 140, 60, 280, 20);
+  moveBulletsArray(canvas2);
+  moveAliensArray(canvas2);
+  moveHeartsArray(canvas2, lukesArray2);
+  loseHeart(lukesArray2, canvas2);
+  killEnemy(canvas2, 2, score2);
   requestIdGame2 = requestAnimationFrame(game2Action);
 }
 
 function resetGame2() {
   emptyCanvas(ctx2, canvas2);
-  resetAlienEnemy(evilAlien1, canvas2, 2, randomX1, -10, 1, -1, 0);
-  resetAlienEnemy(evilAlien2, canvas2, 2, randomX2, -75, 1, -1, 0);
-  resetAlienEnemy(evilAlien3, canvas2, 2, randomX1, -10, 1, -2, 0);
-  resetAlienEnemy(evilAlien4, canvas2, 2, randomX2, -75, 1, 2, 0);
-  resetLuke(luke2, canvas2, 0, -35);
-  // resetBulletsArray(luke2, 0, 0, 0, 10);
-  resetBullet(bulletLuke, luke2, 0, 0, 0, 10);
-  resetHeart(heart1, 240, 10);
-  resetHeart(heart2, 255, 10);
-  resetHeart(heart3, 270, 10);
-  resetStar(star1, canvas2, 2, Math.random() * 0.8 + 0.1, -10);
+  resetLukesArray(lukesArray2, canvas2, 2, 40);
+  resetBulletsArray();
+  resetAliensArray(canvas2);
+  resetHeartsArray(canvas2);
   resetScore(2);
   cancelAnimationFrame(requestIdGame2);
   objectSpeedUp = 1;
-  randomX1 = Math.random() * 0.3 + 0.2;
-  randomX2 = Math.random() * 0.3 + 0.5;
 }
 
 //GAME 3
@@ -2661,138 +2495,543 @@ const canvas3 = document.getElementById("theGame3");
 const ctx3 = canvas3.getContext("2d");
 let score3 = 0;
 let requestIdGame3;
-let randomY1 = Math.random() * 0.2 + 0.2;
-let randomY2 = Math.random() * 0.2 + 0.4;
-let randomY3 = Math.random() * 0.2 + 0.6;
+let aliensArray2 = [];
+let cometsArray = [];
+let starsArray = [];
+let lukesArray3 = [];
+let rocksArray = [];
+let backgroundStarsArray3 = [];
+let SI = 0;
 
-const luke3 = {
-  x: 30,
-  y: canvas3.height / 2,
-  w: 60,
-  h: 4,
-  size: 4.5,
-  speed: 2,
-  dx: 0,
-  dy: 0,
-};
+class multipleComets {
+  constructor(canvasName) {
+    this.x = canvasName.width + (Math.random() * 460 + 20);
+    this.y = canvasName.height * (Math.random() * 0.8 + 0.1);
+    this.dx = -2.5;
+    this.dy = 0;
+    this.speed = 1.2;
+    this.w = 20;
+    this.h = 10;
+    this.size = Math.random() * 2.8 + 9.1;
 
-const star2 = {
-  x: canvas3.width + 10,
-  y: canvas3.height * (Math.random() * 0.8 + 0.1),
-  r: 6,
-  n: 5,
-  inset: -1,
-  size: 3,
-  speed: 1,
-  dx: -2,
-  dy: 0,
-};
+    this.draw = function (gameCanvas) {
+      drawRoundObject(
+        gameCanvas,
+        "#D2691E",
+        this.x,
+        this.y,
+        this.size,
+        0,
+        Math.PI * 2
+      );
+      drawRoundObject(
+        gameCanvas,
+        "#8B4513",
+        this.x - 4,
+        this.y - 4,
+        this.size * 0.2,
+        0,
+        Math.PI * 2
+      );
+      drawRoundObject(
+        gameCanvas,
+        "#8B4513",
+        this.x + 3,
+        this.y + 3,
+        this.size * 0.3,
+        0,
+        Math.PI * 2
+      );
+      drawRoundObject(
+        gameCanvas,
+        "#8B4513",
+        this.x - 2,
+        this.y - 2,
+        this.size * 0.2,
+        0,
+        Math.PI * 2
+      );
+    };
 
-let alienEnemy1 = {
-  x: canvas3.width + 10,
-  y: randomY1,
-  w: 60,
-  h: 4,
-  size: 3,
-  speed: 1.2,
-  dx: -2.5,
-  dy: 1.5,
-};
+    this.reset = function (canvasName) {
+      this.x = canvasName.width + (Math.random() * 460 + 20);
+      this.y = canvasName.height * (Math.random() * 0.8 + 0.1);
+      this.dx = -2.5;
+      this.dy = 0;
+      this.speed = 1.2;
+    };
+  }
+}
 
-let alienEnemy2 = {
-  x: canvas3.width + 10,
-  y: randomY2,
-  w: 60,
-  h: 4,
-  size: 3,
-  speed: 1.2,
-  dx: -2.5,
-  dy: 1.5,
-};
+class FuelBar {
+  constructor() {
+    this.w = 45;
+    this.fu = 0.05;
 
-let alienEnemy3 = {
-  x: canvas3.width + 10,
-  y: randomY3,
-  w: 60,
-  h: 4,
-  size: 3,
-  speed: 1.2,
-  dx: -2.5,
-  dy: 1.5,
-};
+    this.draw = function (gameCanvas, canvasName) {
+      gameCanvas.beginPath();
+      gameCanvas.rect(canvasName.width - 55, 12, this.w, 4);
+      gameCanvas.fillStyle = "#05db05";
+      gameCanvas.fill();
+      gameCanvas.closePath();
+    };
 
-let comet1 = {
-  x: canvas3.width - 100,
-  y: canvas3.height * 0.3,
-  w: 20,
-  h: 10,
-  size: 9,
-  speed: 1.2,
-  dx: -2.5,
-  dy: 0,
-};
+    this.use = function () {
+      if (this.w > 0) {
+        this.w -= this.fu;
+      } else {
+        this.w = 0;
+      }
+    };
 
-let comet2 = {
-  x: canvas3.width + 60,
-  y: canvas3.height * 0.7,
-  w: 20,
-  h: 10,
-  size: 9,
-  speed: 1.2,
-  dx: -2.5,
-  dy: 0,
-};
+    this.refill = function (lukesArray) {
+      if (this.w <= 20) {
+        this.w += 25;
+      } else {
+        this.w += 25 - (this.w - 20);
+      }
+      lukesArray[0].speed = 2;
+    };
+
+    this.reset = function () {
+      this.w = 45;
+      this.fu = 0.05;
+    };
+
+    this.pause = function () {
+      this.fu = 0;
+    };
+  }
+}
+
+class multipleStars {
+  constructor(canvasName) {
+    this.x = canvasName.width + 10;
+    this.y = canvasName.height * (Math.random() * 0.8 + 0.1);
+    this.dx = 0;
+    this.dy = 0;
+    this.r = 6;
+    this.n = 5;
+    this.inset = -1;
+    this.size = 3;
+    this.speed = 1;
+
+    this.draw = function (gameCanvas) {
+      gameCanvas.save();
+      gameCanvas.beginPath();
+      gameCanvas.translate(this.x, this.y);
+      gameCanvas.moveTo(0, 0 - this.r);
+      for (let x = 0; x < this.n; x++) {
+        gameCanvas.rotate(Math.PI / this.n);
+        gameCanvas.lineTo(0, 0 - this.r * this.inset);
+        gameCanvas.rotate(Math.PI / this.n);
+        gameCanvas.lineTo(0, 0 - this.r);
+      }
+      gameCanvas.fillStyle = "#05db05";
+      gameCanvas.fill();
+      gameCanvas.closePath();
+      gameCanvas.restore();
+    };
+
+    this.fall = function () {
+      this.dx = -2;
+    };
+
+    this.return = function (canvasName) {
+      this.x = canvasName.width + 10;
+      this.y = canvasName.height * (Math.random() * 0.8 + 0.1);
+    };
+
+    this.reset = function (canvasName) {
+      this.x = canvasName.width + 10;
+      this.y = canvasName.height * (Math.random() * 0.8 + 0.1);
+      this.dx = 0;
+      this.dy = 0;
+    };
+  }
+}
+
+class multipleAliens2 {
+  constructor(canvasName) {
+    this.x = canvasName.width + (Math.random() * 460 + 20);
+    this.y = canvasName.height * (Math.random() * 0.8 + 0.1);
+    this.w = 60;
+    this.h = 4;
+    this.size = 3;
+    this.speed = Math.random() * 0.8 + 0.8;
+    this.dx = -2.5;
+    this.dy = 0;
+
+    this.draw = function (gameCanvas) {
+      drawRoundObject(
+        gameCanvas,
+        "#05db05",
+        this.x,
+        this.y,
+        this.size,
+        -100,
+        Math.PI - 0.5,
+        true
+      );
+      drawRoundObject(
+        gameCanvas,
+        "#FF0000",
+        this.x - 1.5,
+        this.y,
+        1,
+        -100,
+        Math.PI - 0.5,
+        true
+      );
+      drawRoundObject(
+        gameCanvas,
+        "#FF0000",
+        this.x + 1.5,
+        this.y,
+        1,
+        -100,
+        Math.PI - 0.5,
+        true
+      );
+      drawEllipseObject(
+        gameCanvas,
+        "#FF0000",
+        this.x,
+        this.y + 4,
+        10,
+        2,
+        0,
+        0,
+        Math.PI * 2,
+        true
+      );
+      drawRoundObject(
+        gameCanvas,
+        "#05db05",
+        this.x - 3,
+        this.y + 4.2,
+        1,
+        -100,
+        Math.PI - 0.5,
+        true
+      );
+      drawRoundObject(
+        gameCanvas,
+        "#05db05",
+        this.x + 3,
+        this.y + 4.2,
+        1,
+        -100,
+        Math.PI - 0.5,
+        true
+      );
+      drawRoundObject(
+        gameCanvas,
+        "#05db05",
+        this.x - 7,
+        this.y + 4.2,
+        1,
+        -100,
+        Math.PI - 0.5,
+        true
+      );
+      drawRoundObject(
+        gameCanvas,
+        "#05db05",
+        this.x + 7,
+        this.y + 4.2,
+        1,
+        -100,
+        Math.PI - 0.5,
+        true
+      );
+      drawRoundObject(
+        gameCanvas,
+        "#05db05",
+        this.x - 11,
+        this.y + 4.2,
+        1,
+        -100,
+        Math.PI - 0.5,
+        true
+      );
+      drawRoundObject(
+        gameCanvas,
+        "#05db05",
+        this.x + 11,
+        this.y + 4.2,
+        1,
+        -100,
+        Math.PI - 0.5,
+        true
+      );
+    };
+
+    this.reset = function (canvasName) {
+      this.x = canvasName.width + (Math.random() * 460 + 20);
+      this.y = canvasName.height * (Math.random() * 0.8 + 0.1);
+      this.dx = -2.5;
+      this.dy = 0;
+      this.speed = Math.random() * 0.8 + 0.8;
+    };
+  }
+}
+
+class multipleRocks {
+  constructor(canvasName) {
+    this.x = canvasName.width + (Math.random() * 460 + 20);
+    this.y = canvasName.height * (Math.random() * 0.8 + 0.1);
+    this.dx = -2.5;
+    this.dy = 0;
+    this.speed = Math.random() * 0.6 + 1.2;
+    this.w = 20;
+    this.h = 10;
+    this.size = Math.random() * 3.5 + 3.1;
+
+    this.draw = function (gameCanvas) {
+      drawRoundObject(
+        gameCanvas,
+        "#D2691E",
+        this.x,
+        this.y,
+        this.size,
+        0,
+        Math.PI * 2
+      );
+      drawRoundObject(
+        gameCanvas,
+        "#8B4513",
+        this.x - 2,
+        this.y - 2,
+        this.size * 0.2,
+        0,
+        Math.PI * 2
+      );
+      drawRoundObject(
+        gameCanvas,
+        "#8B4513",
+        this.x + 1,
+        this.y + 1,
+        this.size * 0.3,
+        0,
+        Math.PI * 2
+      );
+      drawRoundObject(
+        gameCanvas,
+        "#8B4513",
+        this.x - 1,
+        this.y - 1,
+        this.size * 0.2,
+        0,
+        Math.PI * 2
+      );
+    };
+
+    this.reset = function (canvasName) {
+      this.x = canvasName.width + (Math.random() * 460 + 20);
+      this.y = canvasName.height * (Math.random() * 0.8 + 0.1);
+      this.dx = -2.5;
+      this.dy = 0;
+      this.speed = Math.random() * 0.6 + 1.2;
+    };
+  }
+}
+
+function useFuel(lukesArray) {
+  let waitForStart = gamePlayed.slice(4) - 1;
+  if (startGameScreens[waitForStart].classList.contains("hide-screen")) {
+    fuelBar.use();
+  }
+  if (fuelBar.w === 0) {
+    lukesArray[0].speed = 0;
+  }
+}
+
+function fillStarsArray(canvasName) {
+  for (var i = 0; i < 3; i++) {
+    starsArray[i] = new multipleStars(canvasName);
+  }
+}
+
+function drawStarsArray(gameCanvas) {
+  for (var i = 0; i < starsArray.length; i++) {
+    starsArray[i].draw(gameCanvas);
+  }
+}
+
+function dropStar() {
+  starsArray[SI].dx = -2;
+}
+
+function moveStarsArray(canvasName, lukesArray, gameNr, gameScore) {
+  for (var i = 0; i < starsArray.length; i++) {
+    starsArray[i].y += starsArray[i].dy;
+    starsArray[i].x += starsArray[i].dx;
+
+    if (starsArray[i].x > canvasName.width + 50 || starsArray[i].x < 0) {
+      starsArray[i].return(canvasName);
+    }
+    let waitForStart = gamePlayed.slice(4) - 1;
+    if (
+      startGameScreens[waitForStart].classList.contains("hide-screen") &&
+      gameOverScreens[waitForStart].classList.contains("hide-screen")
+    ) {
+      if (
+        starsArray[i].x > lukesArray[0].x - 20 &&
+        starsArray[i].x < lukesArray[0].x + 20 &&
+        starsArray[i].y > lukesArray[0].y - 16 &&
+        starsArray[i].y < lukesArray[0].y + 10
+      ) {
+        scorePoints(gameNr, gameScore);
+        starsArray[i].return(canvasName);
+        fuelBar.refill(lukesArray);
+      }
+    }
+  }
+}
+
+function resetStarsArray(canvasName) {
+  for (var i = 0; i < starsArray.length; i++) {
+    starsArray[i].reset(canvasName);
+  }
+  SI = 0;
+  dropStar();
+}
+
+function fillAliensArray2(canvasName) {
+  for (var i = 0; i < 5; i++) {
+    aliensArray2[i] = new multipleAliens2(canvasName);
+  }
+}
+
+function drawAliensArray2(gameCanvas) {
+  for (var i = 0; i < aliensArray2.length; i++) {
+    aliensArray2[i].draw(gameCanvas);
+  }
+}
+
+function moveAliensArray2(canvasName) {
+  for (var i = 0; i < aliensArray2.length; i++) {
+    //aliensArray2[i].y += aliensArray2[i].dy * aliensArray2[i].speed;
+    aliensArray2[i].x += aliensArray2[i].dx * aliensArray2[i].speed;
+
+    if (aliensArray2[i].x > canvasName.width + 500 || aliensArray2[i].x < -20) {
+      aliensArray2[i].reset(canvasName);
+    }
+    // if (
+    //   aliensArray2[i].y < canvasName.height * 0.7 ||
+    //   aliensArray2[i].y < canvasName.height * 0.3
+    // ) {
+    //   aliensArray2[i].dy *= -1;
+    // }
+  }
+}
+
+function resetAliensArray2(canvasName) {
+  for (var i = 0; i < aliensArray2.length; i++) {
+    aliensArray2[i].reset(canvasName);
+  }
+}
+
+function fillRocksArray(canvasName) {
+  for (var i = 0; i < 3; i++) {
+    rocksArray[i] = new multipleRocks(canvasName);
+  }
+}
+
+function drawRocksArray(gameCanvas) {
+  for (var i = 0; i < rocksArray.length; i++) {
+    rocksArray[i].draw(gameCanvas);
+  }
+}
+
+function moveRocksArray(canvasName) {
+  for (var i = 0; i < rocksArray.length; i++) {
+    rocksArray[i].x += rocksArray[i].dx * rocksArray[i].speed;
+
+    if (rocksArray[i].x > canvasName.width + 500 || rocksArray[i].x < -20) {
+      rocksArray[i].reset(canvasName);
+    }
+  }
+}
+
+function resetRocksArray(canvasName) {
+  for (var i = 0; i < rocksArray.length; i++) {
+    rocksArray[i].reset(canvasName);
+  }
+}
+
+function fillCometsArray(canvasName) {
+  for (var i = 0; i < 3; i++) {
+    cometsArray[i] = new multipleComets(canvasName);
+  }
+}
+
+function drawCometsArray(gameCanvas) {
+  for (var i = 0; i < cometsArray.length; i++) {
+    cometsArray[i].draw(gameCanvas);
+  }
+}
+
+function moveCometsArray(canvasName) {
+  for (var i = 0; i < cometsArray.length; i++) {
+    cometsArray[i].x += cometsArray[i].dx * cometsArray[i].speed;
+
+    if (cometsArray[i].x > canvasName.width + 500 || cometsArray[i].x < -20) {
+      cometsArray[i].reset(canvasName);
+    }
+  }
+}
+
+function resetCometsArray(canvasName) {
+  for (var i = 0; i < cometsArray.length; i++) {
+    cometsArray[i].reset(canvasName);
+  }
+}
+
+let fuelBar = new FuelBar();
+fillLukesArray(canvas3, lukesArray3, 4, 0);
+fillBackgroundStarsArray(canvas3, backgroundStarsArray3, -1, 0);
+fillCometsArray(canvas3);
+fillRocksArray(canvas3);
+fillStarsArray(canvas3);
+fillAliensArray2(canvas3);
 
 function drawGame3Elements() {
   emptyCanvas(ctx3, canvas3);
-  drawBackgroundStars(ctx3);
-  drawLuke(ctx3, luke3);
-  drawStar(ctx3, star2);
-  drawComet(ctx3, comet1);
-  drawComet(ctx3, comet2);
-  drawAlienEnemy(ctx3, alienEnemy1);
-  drawAlienEnemy(ctx3, alienEnemy2);
-  drawAlienEnemy(ctx3, alienEnemy3);
+  drawBackgroundStarsArray(ctx3, backgroundStarsArray3);
+  fuelBar.draw(ctx3, canvas3);
+  drawLukesArray(ctx3, lukesArray3);
+  drawCometsArray(ctx3);
+  drawRocksArray(ctx3);
+  drawAliensArray2(ctx3);
+  drawStarsArray(ctx3);
   drawScore(ctx3, canvas3, score3);
 }
 
 function game3Action() {
   drawGame3Elements();
-  moveLuke(luke3, 140, 10, 160, 20);
-  moveStar(
-    star2,
-    luke3,
-    canvas3,
-    3,
-    -10,
-    Math.random() * 0.8 + 0.1,
-    score3,
-    star2,
-    1.2,
-    1
-  );
-  moveComet(comet1, canvas3, 15, Math.random() * 0.4 + 0.1);
-  moveComet(comet2, canvas3, 15, Math.random() * 0.4 + 0.5);
-  moveAlienEnemy2(alienEnemy1, canvas3, 3, 15, 1, randomY1);
-  moveAlienEnemy2(alienEnemy2, canvas3, 3, 15, 1, randomY2);
-  moveAlienEnemy2(alienEnemy3, canvas3, 3, 15, 1, randomY3);
-  gameOver(alienEnemy1, luke3, 3);
-  gameOver(alienEnemy2, luke3, 3);
-  gameOver(alienEnemy3, luke3, 3);
-  gameOver(comet1, luke3, 3);
-  gameOver(comet2, luke3, 3);
+  moveBackgroundStars(canvas3, backgroundStarsArray3);
+  useFuel(lukesArray3);
+  moveLukesArray(lukesArray3, 140, 10, 160, 20);
+  moveStarsArray(canvas3, lukesArray3, 3, score3);
+  moveAliensArray2(canvas3);
+  moveCometsArray(canvas3);
+  moveRocksArray(canvas3);
+  gameOver(lukesArray3, aliensArray2);
+  gameOver(lukesArray3, cometsArray);
+  gameOver(lukesArray3, rocksArray);
   requestIdGame3 = requestAnimationFrame(game3Action);
 }
 
 function resetGame3() {
   emptyCanvas(ctx3, canvas3);
-  resetLuke(luke3, canvas3, 50, 0);
-  resetStar(star2, canvas3, 3, -35, Math.random() * 0.8 + 0.1);
-  resetComet(comet1, canvas3, 15, 0.3);
-  resetComet(comet2, canvas3, 185, 0.7);
-  resetAlienEnemy(alienEnemy1, canvas3, 3, 65, 0.15, 0.6, 1, randomY1);
-  resetAlienEnemy(alienEnemy2, canvas3, 3, 165, 0.5, 0.6, 1, randomY2);
-  resetAlienEnemy(alienEnemy3, canvas3, 3, 15, 0.85, 0.6, 1, randomY3);
+  resetLukesArray(lukesArray3, canvas3, 4, 0);
+  resetStarsArray(canvas3);
+  resetAliensArray2(canvas3);
+  resetCometsArray(canvas3);
+  resetRocksArray(canvas3);
+  fuelBar.reset();
   resetScore(3);
   cancelAnimationFrame(requestIdGame3);
   objectSpeedUp = 1;

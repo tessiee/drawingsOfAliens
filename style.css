@@ -105,17 +105,6 @@ body {
   border-radius: 4px;
 }
 
-.openReg2 {
-  font-weight: bolder;
-}
-
-.openReg2:hover {
-  text-shadow: 0 2px 10px red;
-  color: var(--highlighted-blood);
-  cursor: pointer;
-  font-size: 19px;
-}
-
 .closeIntro {
   color: var(--dangerous-yellow);
   font-size: 80%;
@@ -280,8 +269,9 @@ header h1 {
 }
 
 .sidebar .logo img {
-  height: 120px;
-  width: 120px;
+  height: 100px;
+  width: 100px;
+  margin-block: 10px;
 }
 
 .sidebar ul {
@@ -301,6 +291,7 @@ header h1 {
 
 .sidebar ul li a:hover {
   text-shadow: 0 2px 10px rgb(0, 161, 0);
+  font-size: 18.5px;
 }
 
 .sidebar ul li a.exclusive {
@@ -311,6 +302,7 @@ header h1 {
 
 .sidebar ul li a.exclusive:hover {
   text-shadow: 0 2px 10px rgb(200, 0, 0);
+  font-size: 24px;
 }
 
 /* BOXES WITH DRAWINGS */
@@ -360,10 +352,8 @@ header h1 {
   text-align: center;
 }
 
-.drawings img {
-  height: 100px;
-  width: 100px;
-  margin: 50px;
+.drawings img.hide-drawing {
+  display: none;
 }
 
 .drawings.hideDrawings {
@@ -1176,8 +1166,9 @@ header h1 {
   background-color: rgba(0, 0, 0, 0.836);
   margin-top: 25px;
   width: 570px;
-  height: 485px;
+  height: 494px;
   border: none;
+  border-radius: 10px;
 }
 
 .start-game .startgame-text {

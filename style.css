@@ -1196,6 +1196,36 @@ header h1 {
   font-size: 130%;
 }
 
+.bonus-round {
+  z-index: 3;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.836);
+  margin-top: 25px;
+  width: 570px;
+  height: 494px;
+  border: none;
+  border-radius: 10px;
+}
+
+.bonus-round .bonusround-text {
+  margin-top: 40px;
+  font-size: 140px;
+  font-weight: 900;
+}
+
+.bonus-round img {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  width: 570px;
+  height: 160px;
+  border: none;
+  border-radius: 10px;
+}
+
 /*  FOOTER */
 
 .footer {

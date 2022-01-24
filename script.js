@@ -1324,20 +1324,20 @@ function keyDown(e) {
 
   if (e.key === "Right" || e.key === "ArrowRight") {
     controlledObject.dx = controlledObject.speed;
-    if (gamePlayed == "game3") {
+    if (gamePlayed == "game1") {
       objectSpeedUp = 1.2;
     }
-    if (gamePlayed == "game3" || gamePlayed == "game1") {
+    if (gamePlayed == "game1" || gamePlayed == "game3") {
       for (i = 0; i < controlledBackground.length; i++) {
         controlledBackground[i].right();
       }
     }
   } else if (e.key === "Left" || e.key === "ArrowLeft") {
     controlledObject.dx = -controlledObject.speed;
-    if (gamePlayed == "game3") {
+    if (gamePlayed == "game1") {
       objectSpeedUp = 0.5;
     }
-    if (gamePlayed == "game3" || gamePlayed == "game1") {
+    if (gamePlayed == "game1" || gamePlayed == "game3") {
       for (i = 0; i < controlledBackground.length; i++) {
         controlledBackground[i].left();
       }
@@ -1378,7 +1378,7 @@ function keyUp(e) {
   ) {
     controlledObject.dx = 0;
     objectSpeedUp = 1;
-    if (gamePlayed == "game3" || gamePlayed == "game1") {
+    if (gamePlayed == "game1" || gamePlayed == "game3") {
       for (i = 0; i < controlledBackground.length; i++) {
         controlledBackground[i].steady();
       }
@@ -1448,6 +1448,18 @@ function speedUp(gameScore) {
   // }
 
   if (gamePlayed == "game1") {
+    if ((x == "extra") & (SI < starsArray.length - 1)) {
+      SI++;
+    }
+    starsArray[SI].fall();
+  }
+  if (gamePlayed == "game2") {
+    if ((x == "speed") & (heartNr != undefined)) {
+      console.log("bleh");
+      heartsArray[heartNr].fall();
+    }
+  }
+  if (gamePlayed == "game3") {
     if (x == "extra") {
       positionXcowboy = cowboysArray[CI].x;
       directionC = (cowboysArray[CI].dx / 2.5) * -1;
@@ -1457,17 +1469,6 @@ function speedUp(gameScore) {
       cowboyY = cowboysArray[CI].y;
       enemyBulletsArray[CI].reset();
     }
-  }
-  if (gamePlayed == "game2") {
-    if ((x == "speed") & (heartNr != undefined)) {
-      heartsArray[heartNr].fall();
-    }
-  }
-  if (gamePlayed == "game3") {
-    if ((x == "extra") & (SI < starsArray.length - 1)) {
-      SI++;
-    }
-    starsArray[SI].fall();
   }
 }
 
@@ -1485,10 +1486,10 @@ function gameOver(lukesArray, enemyObject) {
           pauseGame(gamePlayed);
           if (gamePlayed == "game1") {
             gameover1.classList.remove("hide-screen");
-            CI = 0;
           }
           if (gamePlayed == "game3") {
             gameover3.classList.remove("hide-screen");
+            CI = 0;
           }
         }
       }
@@ -1560,16 +1561,16 @@ const canvas1 = document.getElementById("theGame1");
 const ctx1 = canvas1.getContext("2d");
 let score1 = 0;
 let requestIdGame1;
-let cowboysArray = [];
-let enemyBulletsArray = [];
+let aliensArray1 = [];
+let cometsArray = [];
+let starsArray = [];
+let fuelStarsArray = [];
 let lukesArray1 = [];
+let rocksArray = [];
 let backgroundStarsArray1 = [];
-let positionXcowboy;
-let directionC;
-let cowboyX;
-let cowboyY;
-let EBI = 0;
-let CI = 0;
+let SI = 0;
+let FSI = 0;
+let alienSpeed = 1;
 
 //GAME 2 CONSTANTS
 const canvas2 = document.getElementById("theGame2");
@@ -1578,7 +1579,7 @@ let score2 = 0;
 let requestIdGame2;
 let debris = [];
 let bulletsArray = [];
-let aliensArray = [];
+let aliensArray2 = [];
 let heartsArray = [];
 let lukesArray2 = [];
 let backgroundStarsArray2 = [];
@@ -1593,16 +1594,16 @@ const canvas3 = document.getElementById("theGame3");
 const ctx3 = canvas3.getContext("2d");
 let score3 = 0;
 let requestIdGame3;
-let aliensArray2 = [];
-let cometsArray = [];
-let starsArray = [];
-let fuelStarsArray = [];
+let cowboysArray = [];
+let enemyBulletsArray = [];
 let lukesArray3 = [];
-let rocksArray = [];
 let backgroundStarsArray3 = [];
-let SI = 0;
-let FSI = 0;
-let alienSpeed = 1;
+let positionXcowboy;
+let directionC;
+let cowboyX;
+let cowboyY;
+let EBI = 0;
+let CI = 0;
 
 //GAME CLASSES
 
@@ -2211,12 +2212,60 @@ class AlienHorizontal {
   }
 }
 
+// class HillBilly {
+//   constructor(canvasName) {
+//     this.draw = function (gameCanvas) {
+//       drawRoundObject(
+//         gameCanvas,
+//         "#DAA520",
+//         this.x,
+//         this.y - 20,
+//         5,
+//         -100,
+//         Math.PI - 0.5,
+//         true
+//       );
+//       drawRoundObject(
+//         gameCanvas,
+//         "#DEB887",
+//         this.x,
+//         this.y - 14,
+//         6,
+//         -100,
+//         Math.PI - 0.5,
+//         true
+//       );
+//       drawEllipseObject(
+//         gameCanvas,
+//         "#DAA520",
+//         this.x,
+//         this.y - 20,
+//         15,
+//         1,
+//         0,
+//         0,
+//         Math.PI * 2,
+//         true
+//       );
+//       drawRectObject(gameCanvas, "#FF0000", this.x - 38, this.y - 12, 50, 5);
+//       drawRectObject(gameCanvas, "#FF0000", this.x - 25, this.y - 17, 15, 10);
+//     };
+
+//     this.update = function () {
+//       this.x = positionXcowboy;
+//       this.dx = 2 * directionC;
+//     };
+
+//     this.reset = function (canvasName) {
+//       this.x = canvasName.width + 20;
+//       this.y = canvasName.height - 5;
+//       this.dx = 0;
+//     };
+//   }
+// }
+
 class Cowboy {
   constructor(canvasName) {
-    this.x = canvasName.width + 20;
-    this.y = canvasName.height - 5;
-    this.dx = 0;
-
     this.draw = function (gameCanvas) {
       drawRoundObject(
         gameCanvas,
@@ -2303,9 +2352,7 @@ class Comet {
     this.dx = -2.5;
     this.dy = 0;
     this.speed = 1.2;
-    this.w = 20;
-    this.h = 10;
-    this.size = Math.random() * 2.8 + 9.1;
+    this.size = Math.random() * 2.8 + 7.1;
 
     this.draw = function (gameCanvas) {
       drawRoundObject(
@@ -2679,12 +2726,12 @@ function loseHeart(lukesArray, canvasName) {
     gameOverScreens[waitForStart].classList.contains("hide-screen") &&
     bonusRoundArray[waitForStart].classList.contains("hide-screen")
   ) {
-    for (var i = 0; i < aliensArray.length; i++) {
+    for (var i = 0; i < aliensArray2.length; i++) {
       if (
-        aliensArray[i].x - aliensArray[i].size > lukesArray[0].x - 20 &&
-        aliensArray[i].x + aliensArray[i].size < lukesArray[0].x + 20 &&
-        aliensArray[i].y > lukesArray[0].y - 16 &&
-        aliensArray[i].y < lukesArray[0].y + 10
+        aliensArray2[i].x - aliensArray2[i].size > lukesArray[0].x - 20 &&
+        aliensArray2[i].x + aliensArray2[i].size < lukesArray[0].x + 20 &&
+        aliensArray2[i].y > lukesArray[0].y - 16 &&
+        aliensArray2[i].y < lukesArray[0].y + 10
       ) {
         let AC = i;
         enemyExplosion(AC, canvasName);
@@ -2717,43 +2764,46 @@ function resetHeartsArray(canvasName) {
   }
 }
 
-function fillAliensArray(canvasName) {
+function fillAliensArray2(canvasName) {
   for (var i = 0; i < 8; i++) {
-    aliensArray[i] = new AlienVertical(canvasName);
+    aliensArray2[i] = new AlienVertical(canvasName);
     direction *= -1;
   }
 }
 
-function moveAliensArray(canvasName) {
-  for (var i = 0; i < aliensArray.length; i++) {
-    aliensArray[i].y += aliensArray[i].dy;
-    aliensArray[i].x += aliensArray[i].dx;
+function moveAliensArray2(canvasName) {
+  for (var i = 0; i < aliensArray2.length; i++) {
+    aliensArray2[i].y += aliensArray2[i].dy;
+    aliensArray2[i].x += aliensArray2[i].dx;
 
-    if (aliensArray[i].x + 10 > canvasName.width || aliensArray[i].x - 10 < 0) {
-      aliensArray[i].dx *= -1;
+    if (
+      aliensArray2[i].x + 10 > canvasName.width ||
+      aliensArray2[i].x - 10 < 0
+    ) {
+      aliensArray2[i].dx *= -1;
     }
-    if (aliensArray[i].y < -500 || aliensArray[i].y > canvasName.height) {
+    if (aliensArray2[i].y < -500 || aliensArray2[i].y > canvasName.height) {
       direction *= -1;
-      aliensArray[i].reset(canvasName);
+      aliensArray2[i].reset(canvasName);
     }
   }
 }
 
-function resetAliensArray(canvasName) {
-  for (var i = 0; i < aliensArray.length; i++) {
+function resetAliensArray2(canvasName) {
+  for (var i = 0; i < aliensArray2.length; i++) {
     direction *= -1;
-    aliensArray[i].reset(canvasName);
+    aliensArray2[i].reset(canvasName);
   }
 }
 
 function killEnemy(canvasName, gameNr, gameScore) {
-  for (var KA = 0; KA < aliensArray.length; KA++) {
+  for (var KA = 0; KA < aliensArray2.length; KA++) {
     for (var i = 0; i < bulletsArray.length; i++) {
       if (
-        bulletsArray[i].x > aliensArray[KA].x - 20 &&
-        bulletsArray[i].x < aliensArray[KA].x + 20 &&
-        bulletsArray[i].y > aliensArray[KA].y - 3 &&
-        bulletsArray[i].y < aliensArray[KA].y + 6
+        bulletsArray[i].x > aliensArray2[KA].x - 20 &&
+        bulletsArray[i].x < aliensArray2[KA].x + 20 &&
+        bulletsArray[i].y > aliensArray2[KA].y - 3 &&
+        bulletsArray[i].y < aliensArray2[KA].y + 6
       ) {
         enemyExplosion(KA, canvasName);
         bulletsArray[i].reset();
@@ -2770,8 +2820,8 @@ function enemyExplosion(AC, canvasName) {
       let dy = (Math.random() - 0.5) * 0.3;
       let radius = 0.5;
       let piece = new Piece(
-        aliensArray[AC].x,
-        aliensArray[AC].y,
+        aliensArray2[AC].x,
+        aliensArray2[AC].y,
         radius,
         dx,
         dy
@@ -2780,7 +2830,7 @@ function enemyExplosion(AC, canvasName) {
       debris.push(piece);
     }
     explosion();
-    aliensArray[AC].reset(canvasName);
+    aliensArray2[AC].reset(canvasName);
   }, 0);
 }
 
@@ -2894,25 +2944,25 @@ function resetStarsArray(canvasName) {
   dropStar();
 }
 
-function fillAliensArray2(canvasName) {
+function fillAliensArray1(canvasName) {
   for (var i = 0; i < 5; i++) {
-    aliensArray2[i] = new AlienHorizontal(canvasName);
+    aliensArray1[i] = new AlienHorizontal(canvasName);
   }
 }
 
-function moveAliensArray2(canvasName) {
-  for (var i = 0; i < aliensArray2.length; i++) {
-    aliensArray2[i].x += aliensArray2[i].dx * aliensArray2[i].speed;
+function moveAliensArray1(canvasName) {
+  for (var i = 0; i < aliensArray1.length; i++) {
+    aliensArray1[i].x += aliensArray1[i].dx * aliensArray1[i].speed;
 
-    if (aliensArray2[i].x > canvasName.width + 500 || aliensArray2[i].x < -20) {
-      aliensArray2[i].reset(canvasName);
+    if (aliensArray1[i].x > canvasName.width + 500 || aliensArray1[i].x < -20) {
+      aliensArray1[i].reset(canvasName);
     }
   }
 }
 
-function resetAliensArray2(canvasName) {
-  for (var i = 0; i < aliensArray2.length; i++) {
-    aliensArray2[i].reset(canvasName);
+function resetAliensArray1(canvasName) {
+  for (var i = 0; i < aliensArray1.length; i++) {
+    aliensArray1[i].reset(canvasName);
   }
 }
 
@@ -2960,40 +3010,58 @@ function resetCometsArray(canvasName) {
   }
 }
 
-//GET GAME 1 GOING
+// GET GAME 1 GOING
 
+let fuelBar = new FuelBar();
+fillLukesArray(canvas1, lukesArray1, 4, 0);
 fillBackgroundStarsArray(canvas1, backgroundStarsArray1, -1, 0);
-fillLukesArray(canvas1, lukesArray1, 2, -60);
-fillCowboysArray(canvas1);
-fillEnemyBulletsArray(canvas1);
+fillCometsArray(canvas1);
+fillRocksArray(canvas1);
+fillStarsArray(canvas1, "#FFD700");
+fillFuelStarsArray(canvas1, "#05db05");
+fillAliensArray1(canvas1);
 
-function drawGameElements1() {
+function drawGame1Elements() {
   emptyCanvas(ctx1, canvas1);
-  drawEarth(canvas1, ctx1);
   drawArrayOnCanvas(ctx1, backgroundStarsArray1);
   drawArrayOnCanvas(ctx1, lukesArray1);
-  drawArrayOnCanvas(ctx1, cowboysArray);
-  drawArrayOnCanvas(ctx1, enemyBulletsArray);
+  drawArrayOnCanvas(ctx1, cometsArray);
+  drawArrayOnCanvas(ctx1, rocksArray);
+  drawArrayOnCanvas(ctx1, aliensArray1);
+  drawArrayOnCanvas(ctx1, starsArray);
+  drawArrayOnCanvas(ctx1, fuelStarsArray);
+  fuelBar.draw(ctx1, canvas1);
   drawScore(ctx1, canvas1, score1);
 }
 
 function game1Action() {
-  drawGameElements1();
+  drawGame1Elements();
   moveBackgroundStars(canvas1, backgroundStarsArray1);
-  moveLukesArray(lukesArray1, 100, 10, 280, 20);
-  moveCowboysArray(canvas1);
-  moveEnemyBulletsArray(canvas1, 1, score1);
-  gameOver(lukesArray1, enemyBulletsArray);
+  useFuel(lukesArray1);
+  moveLukesArray(lukesArray1, 140, 10, 160, 20);
+  moveStarsArray(canvas1, lukesArray1, 1, score1);
+  moveFuelStarsArray(canvas1, lukesArray1);
+  moveAliensArray1(canvas1);
+  moveCometsArray(canvas1);
+  moveRocksArray(canvas1);
+  gameOver(lukesArray1, aliensArray1);
+  gameOver(lukesArray1, cometsArray);
+  gameOver(lukesArray1, rocksArray);
   requestIdGame1 = requestAnimationFrame(game1Action);
 }
 
 function resetGame1() {
   emptyCanvas(ctx1, canvas1);
-  resetLukesArray(lukesArray1, canvas1, 2, 40);
-  resetCowboysArray(canvas1);
-  resetEnemyBulletsArray(canvas1);
+  resetLukesArray(lukesArray1, canvas1, 4, 0);
+  resetStarsArray(canvas1);
+  resetFuelStarsArray(canvas1);
+  resetAliensArray1(canvas1);
+  resetCometsArray(canvas1);
+  resetRocksArray(canvas1);
+  fuelBar.reset();
   resetScore(1);
   cancelAnimationFrame(requestIdGame1);
+  objectSpeedUp = 1;
 }
 
 //GET GAME 2 GOING
@@ -3002,13 +3070,13 @@ fillBackgroundStarsArray(canvas2, backgroundStarsArray2, 0, 1);
 fillLukesArray(canvas2, lukesArray2, 2, 40);
 fillBulletsArray();
 fillHeartsArray(canvas2);
-fillAliensArray(canvas2);
+fillAliensArray2(canvas2);
 
 function drawGame2Elements() {
   emptyCanvas(ctx2, canvas2);
   drawArrayOnCanvas(ctx2, backgroundStarsArray2);
   drawArrayOnCanvas(ctx2, bulletsArray);
-  drawArrayOnCanvas(ctx2, aliensArray);
+  drawArrayOnCanvas(ctx2, aliensArray2);
   drawArrayOnCanvas(ctx2, heartsArray);
   drawArrayOnCanvas(ctx2, lukesArray2);
   drawScore(ctx2, canvas2, score2);
@@ -3019,7 +3087,7 @@ function game2Action() {
   moveBackgroundStars(canvas2, backgroundStarsArray2);
   moveLukesArray(lukesArray2, 140, 60, 280, 20);
   moveBulletsArray(canvas2);
-  moveAliensArray(canvas2);
+  moveAliensArray2(canvas2);
   moveHeartsArray(canvas2, lukesArray2);
   loseHeart(lukesArray2, canvas2);
   killEnemy(canvas2, 2, score2);
@@ -3030,65 +3098,47 @@ function resetGame2() {
   emptyCanvas(ctx2, canvas2);
   resetLukesArray(lukesArray2, canvas2, 2, 40);
   resetBulletsArray();
-  resetAliensArray(canvas2);
+  resetAliensArray2(canvas2);
   resetHeartsArray(canvas2);
   resetScore(2);
   cancelAnimationFrame(requestIdGame2);
   objectSpeedUp = 1;
 }
 
-// GET GAME 3 GOING
+//GET GAME 3 GOING
 
-let fuelBar = new FuelBar();
-fillLukesArray(canvas3, lukesArray3, 4, 0);
-fillBackgroundStarsArray(canvas3, backgroundStarsArray3, -1, 0);
-fillCometsArray(canvas3);
-fillRocksArray(canvas3);
-fillStarsArray(canvas3, "#FFD700");
-fillFuelStarsArray(canvas3, "#05db05");
-fillAliensArray2(canvas3);
+fillBackgroundStarsArray(canvas3, backgroundStarsArray3, 0, -0.5);
+fillLukesArray(canvas3, lukesArray3, 2, -60);
+fillCowboysArray(canvas3);
+fillEnemyBulletsArray(canvas3);
 
-function drawGame3Elements() {
+function drawGameElements3() {
   emptyCanvas(ctx3, canvas3);
+  drawEarth(canvas3, ctx3);
   drawArrayOnCanvas(ctx3, backgroundStarsArray3);
   drawArrayOnCanvas(ctx3, lukesArray3);
-  drawArrayOnCanvas(ctx3, cometsArray);
-  drawArrayOnCanvas(ctx3, rocksArray);
-  drawArrayOnCanvas(ctx3, aliensArray2);
-  drawArrayOnCanvas(ctx3, starsArray);
-  drawArrayOnCanvas(ctx3, fuelStarsArray);
-  fuelBar.draw(ctx3, canvas3);
+  drawArrayOnCanvas(ctx3, cowboysArray);
+  drawArrayOnCanvas(ctx3, enemyBulletsArray);
   drawScore(ctx3, canvas3, score3);
 }
 
 function game3Action() {
-  drawGame3Elements();
+  drawGameElements3();
   moveBackgroundStars(canvas3, backgroundStarsArray3);
-  useFuel(lukesArray3);
-  moveLukesArray(lukesArray3, 140, 10, 160, 20);
-  moveStarsArray(canvas3, lukesArray3, 3, score3);
-  moveFuelStarsArray(canvas3, lukesArray3);
-  moveAliensArray2(canvas3);
-  moveCometsArray(canvas3);
-  moveRocksArray(canvas3);
-  gameOver(lukesArray3, aliensArray2);
-  gameOver(lukesArray3, cometsArray);
-  gameOver(lukesArray3, rocksArray);
+  moveLukesArray(lukesArray3, 100, 10, 280, 20);
+  moveCowboysArray(canvas3);
+  moveEnemyBulletsArray(canvas3, 3, score3);
+  gameOver(lukesArray3, enemyBulletsArray);
   requestIdGame3 = requestAnimationFrame(game3Action);
 }
 
 function resetGame3() {
   emptyCanvas(ctx3, canvas3);
-  resetLukesArray(lukesArray3, canvas3, 4, 0);
-  resetStarsArray(canvas3);
-  resetFuelStarsArray(canvas3);
-  resetAliensArray2(canvas3);
-  resetCometsArray(canvas3);
-  resetRocksArray(canvas3);
-  fuelBar.reset();
+  resetLukesArray(lukesArray3, canvas3, 2, 40);
+  resetCowboysArray(canvas3);
+  resetEnemyBulletsArray(canvas3);
   resetScore(3);
   cancelAnimationFrame(requestIdGame3);
-  objectSpeedUp = 1;
 }
 
 //FOOTER
